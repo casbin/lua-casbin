@@ -1,10 +1,10 @@
-Model2 = {
+Test = {
     area,
     length,
     breadth,
 }
 
-function Model2:new(o, length, breadth)
+function Test:new(o, length, breadth)
     o = o or {}
     setmetatable(o, self)
     self.__index = self
@@ -14,9 +14,9 @@ function Model2:new(o, length, breadth)
     return o
 end
 
-function Model2:get()
+function Test:get()
     return self.area;
 end
 
 
-return Model2
+return Test
