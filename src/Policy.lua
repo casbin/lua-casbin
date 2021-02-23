@@ -2,6 +2,14 @@ Policy = {
     model = {},
 }
 
+function Policy:new()
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    self.model = {}
+    return o
+end
+
 --[[
      * buildRoleLinks initializes the roles in RBAC.
      *
@@ -42,7 +50,7 @@ end
      * @return the policy rules of section sec and policy type ptype.
 ]]
 function Policy:getPolicy(sec, ptype)
-    
+
 end
 
 --[[
