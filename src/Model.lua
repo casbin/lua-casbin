@@ -13,26 +13,31 @@
 --limitations under the License.
 
 require "src/Policy"
+require "src/Assertion"
+require "src/util"
 
 Model = Policy:new()
---[[ private var ]]
-model = {}
+
 function Model:new()
     o = Policy:new()
     setmetatable(o, self)
     self.__index = self
 
-    self.sectionNameMap = {}
+    self.sectionNameMap = {
+         ["r"] = "request_definition",
+         ["p"] = "policy_definition",
+         ["g"] = "role_definition",
+         ["e"] = "policy_effect",
+         ["m"] = "matchers"
+    }     
+
+    self.requiredSections = {"r", "p", "e", "m"} -- Minimal required sections for a model to be valid
     self.modCount = 0   -- used by CoreEnforcer to detect changes to Model
     return o
 end
 
-function Model:Model()
-    model = {}
-end
-
 function Model:getModCount()
-
+     return self.modCount
 end
 
 function Model:loadAssertion(model, cfg, sec, key)
@@ -49,14 +54,43 @@ end
 ]]
 function Model:addDef(sec, key, value)
 
+     if value == "" then return false end
+
+     if self.model[sec] == nil then
+          self.model[sec] = {}
+     end
+
+     if self.model[sec][key] == nil then
+          self.model[sec][key] = {}
+     end
+
+     self.model[sec][key] = Assertion:new()
+     self.model[sec][key].key = key
+     self.model[sec][key].value = value
+
+     if sec == "r" or sec == "p" then
+          self.model[sec][key].tokens = splitCommaDelimited(self.model[sec][key].value)
+          for k,v in pairs(self.model[sec][key].tokens) do
+               v = key .. "_" .. v
+          end
+     else
+          self.model[sec][key].value = removeComments(escapeAssertion(self.model[sec][key].value))
+     end
+     
+     self.modCount = self.modCount + 1
+     return true
 end
 
 function Model:getKeySuffix(i)
+     if i == 1 then
+          return ""
+     end
 
+     return ""..i
 end
 
 function Model:loadSection(model, cfg, sec)
-
+     
 end
 
 --[[
