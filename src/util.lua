@@ -22,3 +22,36 @@ function arrayToString(rule)
     end
     return str
 end 
+
+--[[
+    * splitCommaDelimited splits a comma-delimited string into a string array. It assumes that any
+    * number of whitespace might exist before or after the comma and that tokens do not include
+    * whitespace as part of their value.
+    *
+    * @param str the comma-delimited string.
+    * @return the array with the string tokens.
+]]
+function splitCommaDelimited(str)
+    str = str .. ","
+    local t ={}
+    for word in s:gmatch("([^,]+),%s*") do
+         table.insert(t,word)
+    end
+    return t
+end
+
+--Escapes the dots in the assertion, because the expression evaluation doesn't support such variable names.
+function escapeAssertion(str)
+    str = str:gsub("%r.","r_",1)
+    str = str:gsub("%p.","p_",1)
+
+    return str
+end
+
+--Removes the comments starting with # in the text.
+function removeComments(str)
+    local i, _ = string.find(str, "#")
+    str = str:sub(1,i-1)
+
+    return str
+end

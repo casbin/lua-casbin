@@ -25,6 +25,13 @@ Assertion = {
     RM
 }
 
+function Assertion:new()
+    local o = {}
+    setmetatable(o,self)
+    self.__index = self
+    return o
+end
+
 function Assertion:buildRoleLinks(rm)
     self.RM = rm
     local count = 0
