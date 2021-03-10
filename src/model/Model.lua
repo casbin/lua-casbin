@@ -12,9 +12,9 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/Policy"
-require "src/Assertion"
-require "src/util"
+require "src/model/Policy"
+require "src/model/Assertion"
+require "src/util/util"
 
 Model = Policy:new()
 
