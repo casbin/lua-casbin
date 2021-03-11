@@ -12,7 +12,7 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/RoleManager"
+require "src/rbac/RoleManager"
 --[[
     * Assertion represents an expression in a section of the model.
     * For example: r = sub, obj, act
@@ -24,6 +24,13 @@ Assertion = {
     policy,
     RM
 }
+
+function Assertion:new()
+    local o = {}
+    setmetatable(o,self)
+    self.__index = self
+    return o
+end
 
 function Assertion:buildRoleLinks(rm)
     self.RM = rm
