@@ -12,8 +12,8 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/util"
-require "src/Adapter"
+require "src/util/util"
+require "src/persist/Adapter"
 
 --[[
     * FileAdapter is the file adapter for Casbin.
