@@ -79,4 +79,32 @@ function Util.logPrintf(format, ...)
     end
 end
 
-return Util;
+function Util.arrayEquals(a, b)
+    if #a ~= #b then
+        return false
+    end
+    for i = 1, #a do
+        if a[i] ~= b[i] then
+            return false
+        end
+    end
+    return true
+end
+
+function Util.array2DEquals(a, b)
+    if #a ~= #b then
+        return false
+    end
+    for i = 1, #a do
+        if ~Util.arrayEquals(a[i], b[i]) then
+            return false
+        end
+    end
+    return true
+end
+
+function Util.arrayRemoveDuplications(s)
+    return true
+end
+
+return Util

@@ -16,6 +16,7 @@ require "src/rbac/RoleManager"
 --[[
     * Assertion represents an expression in a section of the model.
     * For example: r = sub, obj, act
+    policy = {{}}
 ]]
 Assertion = {
     key,
