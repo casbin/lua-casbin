@@ -14,7 +14,7 @@
 
 require "src/model/Policy"
 require "src/model/Assertion"
-require "src/util/util"
+require "src/util/Util"
 
 Model = Policy:new()
 
@@ -41,7 +41,8 @@ function Model:getModCount()
 end
 
 function Model:loadAssertion(model, cfg, sec, key)
-
+    local value = cfg:getString(self.sectionNameMap[sec].."::"..key)
+    return model:addDef(sec, key, value)
 end
 
 --[[
@@ -69,12 +70,12 @@ function Model:addDef(sec, key, value)
      self.model[sec][key].value = value
 
      if sec == "r" or sec == "p" then
-          self.model[sec][key].tokens = splitCommaDelimited(self.model[sec][key].value)
+          self.model[sec][key].tokens = Util.splitCommaDelimited(self.model[sec][key].value)
           for k,v in pairs(self.model[sec][key].tokens) do
                v = key .. "_" .. v
           end
      else
-          self.model[sec][key].value = removeComments(escapeAssertion(self.model[sec][key].value))
+          self.model[sec][key].value = Util.removeComments(Util.escapeAssertion(self.model[sec][key].value))
      end
      
      self.modCount = self.modCount + 1
@@ -90,7 +91,14 @@ function Model:getKeySuffix(i)
 end
 
 function Model:loadSection(model, cfg, sec)
-     
+    local i = 1
+    while true do
+        if ~self:loadAssertion(model, cfg, sec, sec..self:getKeySuffix(i)) then
+            break;
+        else
+            i = i + 1
+        end
+    end
 end
 
 --[[
@@ -99,7 +107,14 @@ end
      * @param path the path of the model file.
 ]]
 function Model:loadModel(path)
+    local cfg = Config:newConfig(path)
 
+    self:loadSection(self, cfg, "r")
+    self:loadSection(self, cfg, "p")
+    self:loadSection(self, cfg, "e")
+    self:loadSection(self, cfg, "m")
+
+    self:loadSection(self, cfg, "g")
 end
 
 --[[
@@ -108,7 +123,14 @@ end
      * @param text the model text.
 ]]
 function Model:loadModelFromText(text)
+    local cfg = Config:newConfigFromText(text)
 
+    self:loadSection(self, cfg, "r")
+    self:loadSection(self, cfg, "p")
+    self:loadSection(self, cfg, "e")
+    self:loadSection(self, cfg, "m")
+
+    self:loadSection(self, cfg, "g")
 end
 
 --[[
@@ -131,7 +153,12 @@ end
 
 --      * printModel prints the model to the log.
 function Model:printModel()
-
+    Util.logPrint("Model:")
+    for k,v in pairs(self.model) do
+        for k2, v2 in pairs(v) do
+            Util.logPrintf("%s.%s: %s", k, k2, v2)
+        end
+    end
 end
 
 return Model

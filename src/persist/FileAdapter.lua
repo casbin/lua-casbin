@@ -12,7 +12,7 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/util/util"
+require "src/util/Util"
 require "src/persist/Adapter"
 
 --[[
@@ -62,7 +62,7 @@ function FileAdapter:savePolicy(filePath)
     for ptype, ast in pairs(model.model["p"]) do
         local str = ptype
         for _, rule in pairs(ast.policy) do
-            str = str .. arrayToString(rule) .. "\n"
+            str = str .. Util.arrayToString(rule) .. "\n"
         end
         f:write(str)
     end
@@ -70,7 +70,7 @@ function FileAdapter:savePolicy(filePath)
     for ptype, ast in pairs(model.model["g"]) do
         local str = ptype
         for _, rule in pairs(ast.policy) do
-            str = str .. arrayToString(rule) .. "\n"
+            str = str .. Util.arrayToString(rule) .. "\n"
         end
         f:write(str)
     end
