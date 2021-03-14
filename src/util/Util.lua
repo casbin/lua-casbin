@@ -13,9 +13,20 @@
 --limitations under the License.
 
 -- Utility Functions for lua-casbin
+require("logging")
+
+Util = {}
+
+Util.logger = logging.new(function(self, level, message)
+    print(level, message)
+    return true
+end)
+
+-- Whether to print logs or not.
+Util.enableLog = true
 
 -- arrayToString convert table of strings to one string
-function arrayToString(rule)
+function Util.arrayToString(rule)
     local str = ""
     for i = 1, #rule do
         str = str .. ", " .. rule[i]
@@ -31,7 +42,7 @@ end
     * @param str the comma-delimited string.
     * @return the array with the string tokens.
 ]]
-function splitCommaDelimited(str)
+function Util.splitCommaDelimited(str)
     str = str .. ","
     local t ={}
     for word in s:gmatch("([^,]+),%s*") do
@@ -41,7 +52,7 @@ function splitCommaDelimited(str)
 end
 
 --Escapes the dots in the assertion, because the expression evaluation doesn't support such variable names.
-function escapeAssertion(str)
+function Util.escapeAssertion(str)
     str = str:gsub("%r.","r_",1)
     str = str:gsub("%p.","p_",1)
 
@@ -49,9 +60,23 @@ function escapeAssertion(str)
 end
 
 --Removes the comments starting with # in the text.
-function removeComments(str)
+function Util.removeComments(str)
     local i, _ = string.find(str, "#")
     str = str:sub(1,i-1)
 
     return str
 end
+
+function Util.logPrint(v)
+    if enableLog then
+        Util.logger:info(v)
+    end
+end
+
+function Util.logPrintf(format, ...)
+    if enableLog then
+        Util.logger.info(format, ...)
+    end
+end
+
+return Util;
