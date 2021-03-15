@@ -1,5 +1,5 @@
 # lua-casbin
-An authorization library that supports access control models like ACL, RBAC, ABAC in Lua
+An authorization library that supports access control models like ACL, RBAC, ABAC in Lua (OpenResty)
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/casbin/lobby)
 
