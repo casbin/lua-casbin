@@ -1,4 +1,3 @@
- 
 --Copyright 2021 The casbin Authors. All Rights Reserved.
 --
 --Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,9 +12,24 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-Effect = {
-    ALLOW = 0,
-    INDETERMINATE = 1,
-    DENY = 2
-}
-Effect.__index = Effect
+require "src/effect/Effect"
+
+--[[
+    * Effector is the interface for Casbin effectors.
+]]
+Effector = {}
+Effector.__index = Effector
+Effector.Effect = {}
+setmetatable(Effector.Effect, Effect)
+--[[
+    * mergeEffects merges all matching results collected by the enforcer into a single decision.
+    *
+    * @param expr the expression of [policy_effect].
+    * @param effects the effects of all matched rules.
+    * @param results the matcher results of all matched rules.
+    * @return the final effect.
+]]
+
+function Effector:mergeEffects(expr, effects, results)
+    
+end
