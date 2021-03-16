@@ -112,6 +112,10 @@ function Util.trim(s)
     return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
 
+--[[
+    * Splits string "str" with any "delimiter" and returns a table
+    * (optional) 'x' is the maximum no. of times the string should be split
+]]
 function Util.split(str, delimiter, x)
     local result = {}
     local from  = 1
