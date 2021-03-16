@@ -24,6 +24,10 @@ function Role:new(name)
     return o
 end
 
+function Role:getName()
+    return self.name
+end
+
 function Role:addRole(role)
     for i=1, #self.roles do
         if self.roles[i].name == role.name then

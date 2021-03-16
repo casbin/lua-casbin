@@ -12,6 +12,8 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
+require "src/rbac/DomainRoles"
+
 DefaultRoleManager = {
     defaultDomain = 'casbin::default',
     allDomains,
@@ -67,15 +69,57 @@ function getMatchingDomainRoles(...)
     end
 end
 
-function generateTempRoles(...)
+function generateTempRoles(domain)
+    local flag = 0
+    for k, v in pairs(allDomains) do
+        if k == domain then
+            flag = 1
+        end
+    end
+    if flag == 0 then
+        allDomains[domain] = DomainRoles:new()
+    end
 
+    allRoles = DomainRoles:new()
+    local patternDomains = getPatternMatchedDomainNames(domain)
+
+    for i=1, #patternDomains do
+        local flag = 0
+        for k, v in pairs(allDomains) do
+            if k == patternDomains[i] then
+                flag = 1
+            end
+        end
+        if flag == 0 then
+            allDomains[patternDomains[i]] = DomainRoles:new()
+        end
+        createTempRolesForDomain(allRoles, patternDomains[i])
+    end
+
+    return allRoles
 end
 
 function getPatternMatchedDomainNames(domain)
+    local patternDomains = {}
+    table.insert(patternDomains, domain)
 
+    if domainMatchingFunc ~= nil then
+        for k, v in pairs(allDomains) do
+            local f = loadstring (tostring(domainMatchingFunc)) --  domainMatchingFunc.test(domain, k)
+            if f() then
+                table.insert(patternDomains, k)
+            end
+        end
+    end
+
+    return patternDomains
 end
 
 function createTempRolesForDomain(allRoles, domainName)
+    --for roleName, role in pairs(allDomains[domainName]) do
+    --    role1 = allRoles:creatRole(role:getName(), matchingFunc)
+    --
+    --end
 
 end
 
@@ -106,11 +150,30 @@ end
 
 --       * hasLink determines whether role: name1 inherits role: name2. domain is a prefix to the roles.
 function DefaultRoleManager:hasLink(name1, name2, ...)
+    local domain = {...}
+    if #domain > 1 then
+        error("error: domain should be 1 parameter")
+    end
+    if #domain >= 1 and domain[1] == "*" then
+        error("error: domain can't be *")
+    end
 
-end
+    if name1 == name2 then
+        return true
+    end
 
-function isValidDomainOrThrow(...)
+    if domainMatchingFunc ~= nil then
+        allRoles = generateTempRoles(domainName(domain))
+    else
+        allRoles = getOrCreateDomainRoles(domainName(domain))
+    end
 
+    if not(allRoles:hasRole(name1, matchingFunc)) or not(allRoles:hasRole(name2, matchingFunc)) then
+        return false
+    end
+
+    role1 = allRoles:createRole(name1, matchingFunc)
+    return role1:hasRole(name2, maxHierarchyLevel)
 end
 
 --  * getRoles gets the roles that a subject inherits. domain is a prefix to the roles.
