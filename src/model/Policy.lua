@@ -32,7 +32,7 @@ end
      * @param rm the role manager.
 ]]
 function Policy:buildRoleLinks(rm)
-    if ~self.model["g"] then
+    if not self.model["g"] then
         for _, v in pairs(self.model["g"]) do
             v:buildRoleLinks(rm)
         end
@@ -44,13 +44,13 @@ end
 ]]
 function Policy:printPolicy()
     Util.logPrint("Policy:")
-    if ~self.model["p"] then
+    if not self.model["p"] then
         for k, ast in pairs(self.model["p"]) do
             Util.logPrint(k .. ":" .. ast.value .. ":" .. ast.policy)
         end
     end
 
-    if ~self.model["g"] then
+    if not self.model["g"] then
         for k, ast in pairs(self.model["g"]) do
             Util.logPrint(k .. ":" .. ast.value .. ":" .. ast.policy)
         end
@@ -70,13 +70,13 @@ end
      * clearPolicy clears all current policy.
 ]]
 function Policy:clearPolicy()
-    if ~self.model["p"] then
+    if not self.model["p"] then
         for _, v in pairs(self.model["p"]) do
             v.policy = nil
         end
     end
 
-    if ~self.model["g"] then
+    if not self.model["g"] then
         for _, v in pairs(self.model["g"]) do
             v.policy = nil
         end
@@ -150,7 +150,7 @@ end
      * @return succeeds or not.
 ]]
 function Policy:addPolicy(sec, ptype, rule)
-    if ~self:hasPolicy(sec, ptype, rule) then
+    if not self:hasPolicy(sec, ptype, rule) then
         self.model[sec][ptype].policy[#policy + 1] = rule
         return true
     end

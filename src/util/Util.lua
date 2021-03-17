@@ -96,7 +96,7 @@ function Util.array2DEquals(a, b)
         return false
     end
     for i = 1, #a do
-        if ~Util.arrayEquals(a[i], b[i]) then
+        if not Util.arrayEquals(a[i], b[i]) then
             return false
         end
     end
