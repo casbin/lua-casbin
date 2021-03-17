@@ -57,8 +57,8 @@ function Config:addConfig(section, option, value)
 end
 
 function Config:parse(fname)
-    lines = {}
-    local f = assert(io.open(self.filePath,"r"))
+    local lines = {}
+    local f = assert(io.open(fname,"r"))
 
     if f then
         for line in f:lines() do
@@ -75,7 +75,8 @@ function Config:parseBuffer(lines)
     local buf = {}
     local lineNum = 0
     local canWrite = false
-
+	local line = ""
+	
     while true do
         if canWrite then
             if self:write(section, lineNum, buf) == true then
@@ -131,7 +132,7 @@ function Config:write(section, lineNum, b)
 
     if buf == "" then return end
 
-    optionVal = Util.split(buf, "=", 1)
+    local optionVal = Util.split(buf, "=", 1)
 
     if #optionVal~=2 then
         error("parse the content error : line "..lineNum.." , "..optionVal[1].." = ?")
@@ -146,7 +147,7 @@ end
 
 -- getBool lookups up the value using the provided key and converts the value to a bool
 function Config:getBool(key)
-    local s = self.get(key)
+    local s = self:get(key)
     if s == "true" then
         return true
     elseif s == "false" then
@@ -156,13 +157,13 @@ end
 
 -- getNum lookups up the value using the provided key and converts the value to a number
 function Config:getNum(key)
-    local s = self.get(key)
+    local s = self:get(key)
     return tonumber(s)
 end
 
 -- getString lookups up the value using the provided key and converts the value to a string
 function Config:getString(key)
-    return self.get(key)
+    return self:get(key)
 end
 
 --[[
@@ -170,7 +171,7 @@ end
     of string by splitting the string by comma.
 ]]
 function Config:getStrings(key)
-    local s = self.get(key)
+    local s = self:get(key)
     if s == "" then return end
     local v = Util.split(s, ",")
 
