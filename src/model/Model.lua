@@ -93,7 +93,7 @@ end
 function Model:loadSection(model, cfg, sec)
     local i = 1
     while true do
-        if ~self:loadAssertion(model, cfg, sec, sec..self:getKeySuffix(i)) then
+        if not self:loadAssertion(model, cfg, sec, sec..self:getKeySuffix(i)) then
             break;
         else
             i = i + 1
