@@ -11,11 +11,13 @@
 --WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 --See the License for the specific language governing permissions and
 --limitations under the License.
+require "src/Util/util"
 
 Config = {
     DEFAULT_SECTION = "default",
     DEFAULT_COMMENT = "#",
     DEFAULT_COMMENT_SEM = ";",
+    DEFAULT_MULTI_LINE_SEPARATOR = "\\",
     data = {}
 }
 
@@ -45,30 +47,123 @@ end
 
 -- addConfig adds a new section->key:value to the configuration.
 function Config:addConfig(section, option, value)
-    
+    if section == "" then section = self.DEFAULT_SECTION end
+
+    if self.data[section] == nil then
+        self.data[section] = {}
+    end
+
+    self.data[section][option] = value
 end
 
 function Config:parse(fname)
-    
+    local lines = {}
+    local f = assert(io.open(fname,"r"))
+
+    if f then
+        for line in f:lines() do
+            table.insert(lines, line)
+        end
+    end
+
+    f:close()
+    self:parseBuffer(lines)
 end
 
-function Config:parseBuffer()
-    
+function Config:parseBuffer(lines)
+    local section = ""
+    local buf = {}
+    local lineNum = 0
+    local canWrite = false
+	local line = ""
+	
+    while true do
+        if canWrite then
+            if self:write(section, lineNum, buf) == true then
+                buf = {}
+            end
+            canWrite = false
+        end
+        lineNum = lineNum + 1
+
+        line = lines[lineNum]
+
+        if lineNum>#lines then
+            if #buf>0 then
+                if self:write(section, lineNum, buf) == true then
+                    buf = {}
+                end
+            end
+            break
+        end
+
+        line = Util.trim(line)
+
+        if line == "" or self.DEFAULT_COMMENT == string.sub(line, 1, 1) or self.DEFAULT_COMMENT_SEM == string.sub(line, 1, 1) then
+            canWrite = true
+        elseif "[" == string.sub(line, 1, 1) and "]" == string.sub(line, -1, -1) then
+            if #buf>0 then
+                if self:write(section, lineNum, buf) == true then
+                    buf = {}
+                end
+            end
+
+            section = string.sub(line, 2, -2)
+        else 
+            local p = ""
+
+            if self.DEFAULT_MULTI_LINE_SEPARATOR == string.sub(line, -2, -1) then
+                p = string.sub(line, 1, -3)
+                p = p .. " "
+            else
+                p = line
+                canWrite = true
+            end
+        table.insert(buf, p)
+        end
+    end
+end
+
+function Config:write(section, lineNum, b)
+    local buf = ""
+    for _, v in pairs(b) do
+        buf = buf .. v
+    end
+
+    if buf == "" then return end
+
+    local optionVal = Util.split(buf, "=", 1)
+
+    if #optionVal~=2 then
+        error("parse the content error : line "..lineNum.." , "..optionVal[1].." = ?")
+    end
+
+    local option = Util.trim(optionVal[1])
+    local value = Util.trim(optionVal[2])
+
+    self:addConfig(section, option, value)
+    return true
 end
 
 -- getBool lookups up the value using the provided key and converts the value to a bool
 function Config:getBool(key)
-    
+    local s = self:get(key)
+    if s == "true" then
+        return true
+    elseif s == "false" then
+        return false
+    end
 end
 
 -- getNum lookups up the value using the provided key and converts the value to a number
 function Config:getNum(key)
-    
+    local s = self:get(key)
+    return tonumber(s)
 end
 
 -- getString lookups up the value using the provided key and converts the value to a string
 function Config:getString(key)
-    
+    return self:get(key)
 end
 
 --[[
@@ -76,15 +171,49 @@ end
     of string by splitting the string by comma.
 ]]
 function Config:getStrings(key)
-    
+    local s = self:get(key)
+    if s == "" then return end
+    local v = Util.split(s, ",")
+
+    return v
 end
 
 -- Set sets the value for the specific key in the Config
 function Config:set(key, value)
-    
+    if #key == 0 then
+        error("key is empty")
+    end
+
+    local section = ""
+    local option  = ""
+
+    local keys = Util.split(string.lower(key), "::")
+    if #keys >= 2 then
+        section = keys[1]
+        option = keys[2]
+    else
+        option = keys[1]
+    end
+
+    self:addConfig(section, option, value)
 end
 
 -- section.key or key
 function Config:get(key)
-    
+    local section = self.DEFAULT_SECTION
+    local option  = ""
+
+    local keys = Util.split(string.lower(key), "::")
+    if #keys >= 2 then
+        section = keys[1]
+        option = keys[2]
+    else
+        option = keys[1]
+    end
+
+    if self.data[section][option] ~= nil then
+        return self.data[section][option]
+    else
+        return ""
+    end
 end 

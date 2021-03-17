@@ -30,7 +30,7 @@ function DefaultEffector:mergeEffects(expr, effects, results)
 
     if expr == "some(where (p_eft == allow))" then
         result = false
-        for _, eft in effects do
+        for _, eft in pairs(effects) do
             if eft == self.Effect.ALLOW then
                 result = true
                 break
@@ -38,7 +38,7 @@ function DefaultEffector:mergeEffects(expr, effects, results)
         end
     elseif expr == "!some(where (p_eft == deny))" then
         result = true
-        for _, eft in effects do
+        for _, eft in pairs(effects) do
             if eft == self.Effect.DENY then
                 result = false
                 break
@@ -46,7 +46,7 @@ function DefaultEffector:mergeEffects(expr, effects, results)
         end
     elseif expr == "some(where (p_eft == allow)) && !some(where (p_eft == deny))" then
         result = false
-        for _, eft in effects do
+        for _, eft in pairs(effects) do
             if eft == self.Effect.ALLOW then
                 result = true
             elseif eft == self.Effect.DENY then
@@ -56,7 +56,7 @@ function DefaultEffector:mergeEffects(expr, effects, results)
         end
     elseif expr == "priority(p_eft) || deny" then
         result = false
-        for _, eft in effects do
+        for _, eft in pairs(effects) do
             if eft ~= self.Effect.INDETERMINATE then
                 if eft == self.Effect.ALLOW then
                     result = true

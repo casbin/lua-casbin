@@ -107,4 +107,28 @@ function Util.arrayRemoveDuplications(s)
     return true
 end
 
+-- Trims the leading and trailing whitespaces from a string
+function Util.trim(s)
+    return (s:gsub("^%s*(.-)%s*$", "%1"))
+end
+
+--[[
+    * Splits string "str" with any "delimiter" and returns a table
+    * (optional) 'x' is the maximum no. of times the string should be split
+]]
+function Util.split(str, delimiter, x)
+    local result = {}
+    local from  = 1
+    local delim_from, delim_to = string.find(str, delimiter, from)
+    while delim_from do
+        table.insert(result, string.sub(str, from, delim_from-1))
+        from = delim_to + 1
+        delim_from, delim_to = string.find(str, delimiter, from)
+        if x~=nil then x = x - 1 end
+        if x == 0 then break end
+    end
+    table.insert(result, string.sub(str, from))
+    return result
+end
+
 return Util
