@@ -32,7 +32,7 @@ end
      * @param rm the role manager.
 ]]
 function Policy:buildRoleLinks(rm)
-    if not self.model["g"] then
+    if self.model["g"] then
         for _, v in pairs(self.model["g"]) do
             v:buildRoleLinks(rm)
         end
@@ -44,13 +44,13 @@ end
 ]]
 function Policy:printPolicy()
     Util.logPrint("Policy:")
-    if not self.model["p"] then
+    if self.model["p"] then
         for k, ast in pairs(self.model["p"]) do
             Util.logPrint(k .. ":" .. ast.value .. ":" .. ast.policy)
         end
     end
 
-    if not self.model["g"] then
+    if self.model["g"] then
         for k, ast in pairs(self.model["g"]) do
             Util.logPrint(k .. ":" .. ast.value .. ":" .. ast.policy)
         end
@@ -63,22 +63,22 @@ end
      * @return the policy text.
 ]]
 function Policy:savePolicyToText()
-
+    
 end
 
 --[[
      * clearPolicy clears all current policy.
 ]]
 function Policy:clearPolicy()
-    if not self.model["p"] then
+    if self.model["p"] then
         for _, v in pairs(self.model["p"]) do
-            v.policy = nil
+            v.policy = {}
         end
     end
 
-    if not self.model["g"] then
+    if self.model["g"] then
         for _, v in pairs(self.model["g"]) do
-            v.policy = nil
+            v.policy = {}
         end
     end
 end
@@ -151,7 +151,7 @@ end
 ]]
 function Policy:addPolicy(sec, ptype, rule)
     if not self:hasPolicy(sec, ptype, rule) then
-        self.model[sec][ptype].policy[#policy + 1] = rule
+        table.insert(self.model[sec][ptype].policy, rule)
         return true
     end
     return false
@@ -165,7 +165,18 @@ end
      * @return succeeds or not.
 ]]
 function Policy:addPolicies(sec, ptype, rules)
+    local size = #self.model[sec][ptype].policy
+    for _, rule in pairs(rules) do
+        if not self:hasPolicy(sec, ptype, rule) then
+            table.insert(self.model[sec][ptype].policy, rule)
+        end
+    end
 
+    if size < #self.model[sec][ptype].policy then
+        return true
+    else 
+        return false
+    end
 end
 
 --[[
@@ -178,7 +189,14 @@ end
      * @return succeeds or not.
 ]]
 function Policy:updatePolicy(sec, ptype, oldRule, newRule)
+    if not self:hasPolicy(sec, ptype, oldRule) then return false end
 
+    for k, v in pairs(self.model[sec][ptype].policy) do
+        if Util.arrayEquals(oldRule, v) then
+            table.remove(self.model[sec][ptype].policy, k)
+            table.insert(self.model[sec][ptype].policy, newRule)
+        end
+    end
 end
 
 --[[
@@ -193,7 +211,7 @@ function Policy:removePolicy(sec, ptype, rule)
     for i = 1, #self.model[sec][ptype].policy do
         local r = self.model[sec][ptype].policy[i]
         if Util.arrayEquals(r, rule) then
-            self.model[sec][ptype].policy[i] = nil
+            table.remove(self.model[sec][ptype].policy, i)
             return true
         end
     end
@@ -208,7 +226,21 @@ end
      * @return succeeds or not.
 ]]
 function Policy:removePolicies(sec, ptype, rules)
+    local size = #self.model[sec][ptype].policy
+    for _, rule in pairs(rules) do
+        for k, v in pairs(self.model[sec][ptype].policy) do
+            if Util.arrayEquals(rule, v) then
+                table.remove(self.model[sec][ptype].policy, k)
+                break
+            end
+        end
+    end
 
+    if size > #self.model[sec][ptype].policy then
+        return true
+    else 
+        return false
+    end
 end
 
 --[[
@@ -259,11 +291,18 @@ function Policy:getValuesForFieldInPolicy(sec, ptype, fieldIndex)
 end
 
 function Policy:buildIncrementalRoleLinks(rm, op, sec, ptype, rules)
-
+    if sec == "g" then
+        self.model[sec][ptype]:buildIncrementalRoleLinks(rm, op, rules)
+    end
 end
 
 function Policy:hasPolicies(sec, ptype, rules)
-
+    for _, rule in pairs(rules) do
+        if self:hasPolicy(sec, ptype, rule) then
+            return true
+        end
+    end
+    return false
 end
 
 return Policy
