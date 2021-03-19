@@ -139,7 +139,20 @@ end
      * @return the section text.
 ]]
 function Model:saveSectionToText(sec)
+     res = "[" .. self.sectionNameMap[sec] .. "]\n"
 
+     if not self.model[sec] then
+          return ""
+     end
+
+     for key, ast in pairs(self.model[sec]) do
+          local val = ast.value:gsub("%_", ".")
+          local x = string.format("%s = %s\n", key, val)
+
+          res = res .. x
+     end
+
+     return res
 end
 
 --[[
