@@ -63,7 +63,27 @@ end
      * @return the policy text.
 ]]
 function Policy:savePolicyToText()
-    
+    local res = ""
+
+    if self.model["p"] then
+        for key, ast in pairs(self.model["p"]) do
+            for _, rule in pairs(ast.policy) do
+                local x = string.format("%s, %s\n", key, table.concat(rule, ", "))
+                res = res .. x
+            end
+        end
+    end
+
+    if self.model["g"] then
+        for key, ast in pairs(self.model["g"]) do
+            for _, rule in pairs(ast.policy) do
+                local x = string.format("%s, %s\n", key, table.concat(rule, ", "))
+                res = res .. x
+            end
+        end
+    end
+
+    return res
 end
 
 --[[
