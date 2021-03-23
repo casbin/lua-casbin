@@ -131,4 +131,17 @@ function Util.split(str, delimiter, x)
     return result
 end
 
+--[[
+    * isInstance checks if o has parent as it's parent tables(metatables) recursively
+    * @param base table, parent table
+    * @returns true/false
+]]
+function Util.isInstance(o, parent)
+    while o do
+        o = getmetatable(o)
+        if parent == o then return true end
+    end
+    return false
+end
+
 return Util
