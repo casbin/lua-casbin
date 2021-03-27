@@ -28,7 +28,8 @@ Util.enableLog = true
 -- arrayToString convert table of strings to one string
 function Util.arrayToString(rule)
     local str = ""
-    for i = 1, #rule do
+    if #rule>0 then str = rule[1] end
+    for i = 2, #rule do
         str = str .. ", " .. rule[i]
     end
     return str
@@ -45,26 +46,55 @@ end
 function Util.splitCommaDelimited(str)
     str = str .. ","
     local t ={}
-    for word in s:gmatch("([^,]+),%s*") do
-         table.insert(t,word)
+    for word in str:gmatch("([^,]+),%s*") do
+         table.insert(t,Util.trim(word))
     end
     return t
 end
 
 --Escapes the dots in the assertion, because the expression evaluation doesn't support such variable names.
 function Util.escapeAssertion(str)
-    str = str:gsub("%r.","r_",1)
-    str = str:gsub("%p.","p_",1)
-
+    if string.sub(str, 1, 1) == "r" or string.sub(str, 1, 1) == "p" then
+        str = str:gsub("%.","_", 1)
+    end
+    str = str:gsub("% r."," r_")
+    str = str:gsub("% p."," p_")
+    str = str:gsub("%&r.","&r_")
+    str = str:gsub("%&p.","&p_")
+    str = str:gsub("%|r.","|r_")
+    str = str:gsub("%|p.","|p_")
+    str = str:gsub("%>r.",">r_")
+    str = str:gsub("%>p.",">p_")
+    str = str:gsub("%<r.","<r_")
+    str = str:gsub("%<p.","<p_")
+    str = str:gsub("%-r.","-r_")
+    str = str:gsub("%-p.","-p_")
+    str = str:gsub("%+r.","+r_")
+    str = str:gsub("%+p.","+p_")
+    str = str:gsub("%*r.","*r_")
+    str = str:gsub("%*p.","*p_")
+    str = str:gsub("%/r.","/r_")
+    str = str:gsub("%/p.","/p_")
+    str = str:gsub("%!r.","!r_")
+    str = str:gsub("%!p.","!p_")
+    str = str:gsub("%(r.","(r_")
+    str = str:gsub("%(p.","(p_")
+    str = str:gsub("%)r.",")r_")
+    str = str:gsub("%)p.",")p_")
+    str = str:gsub("%=r.","=r_")
+    str = str:gsub("%=p.","=p_")
+    str = str:gsub("%,r.",",r_")
+    str = str:gsub("%,p.",",p_")
+    
     return str
 end
 
 --Removes the comments starting with # in the text.
 function Util.removeComments(str)
     local i, _ = string.find(str, "#")
-    str = str:sub(1,i-1)
+    if i then str = str:sub(1,i-1) end
 
-    return str
+    return Util.trim(str)
 end
 
 function Util.logPrint(v)
@@ -104,7 +134,15 @@ function Util.array2DEquals(a, b)
 end
 
 function Util.arrayRemoveDuplications(s)
-    return true
+    local hash = {}
+    local res = {}
+    for _, v in pairs(s) do
+        if not hash[v] then
+            table.insert(res, v)
+            hash[v] = true
+        end
+    end
+    return res
 end
 
 -- Trims the leading and trailing whitespaces from a string
@@ -121,13 +159,13 @@ function Util.split(str, delimiter, x)
     local from  = 1
     local delim_from, delim_to = string.find(str, delimiter, from)
     while delim_from do
-        table.insert(result, string.sub(str, from, delim_from-1))
+        table.insert(result, Util.trim(string.sub(str, from, delim_from-1)))
         from = delim_to + 1
         delim_from, delim_to = string.find(str, delimiter, from)
         if x~=nil then x = x - 1 end
         if x == 0 then break end
     end
-    table.insert(result, string.sub(str, from))
+    table.insert(result, Util.trim(string.sub(str, from)))
     return result
 end
 
