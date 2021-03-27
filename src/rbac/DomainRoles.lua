@@ -19,12 +19,18 @@ require "src/rbac/Role"
 ]]
 DomainRoles = {}
 
--- private var
-local roles = {}
+function DomainRoles:new()
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    self.roles = {}
+    return o
+end
+
 
 function DomainRoles:hasRole(name, matchingFunc)
     if matchingFunc ~= nil then
-        for r, n in pairs(roles) do
+        for r, n in pairs(self.roles) do
             local f = loadstring (tostring(matchingFunc))
             if f() then
                 return true
@@ -32,7 +38,7 @@ function DomainRoles:hasRole(name, matchingFunc)
         end
         return false
     else
-        if roles[name] ~= nil then
+        if self.roles[name] ~= nil then
             return true
         else
             return false
@@ -42,26 +48,26 @@ end
 
 function DomainRoles:createRole(name, matchingFunc)
     local flag = 0
-    for k, v in pairs(roles) do
+    for k, v in pairs(self.roles) do
         if k == name then
-            role = roles[name]
+            self.roles = self.roles[name]
             flag = 1
         end
     end
     if flag == 0 then
-        roles[name] = Role:new(name)
-        role = roles[name]
+        self.roles[name] = self.roles:new(name)
+        self.roles = self.roles[name]
     end
 
     if matchingFunc ~= nil then
-        for k, v in pairs(roles) do
+        for k, v in pairs(self.roles) do
             if isRoleEntryMatchExists(k, name, matchingFunc) then
-                role:addRole(k)
+                self.roles:addRole(k)
             end
         end
     end
-    
-    return role
+
+    return self.roles
 end
 
 function isRoleEntryMatchExists(roleEntryKey, name, matchingFunc)
@@ -77,14 +83,14 @@ function isRoleEntryMatchExists(roleEntryKey, name, matchingFunc)
 end
 
 function DomainRoles:getOrCreate(name)
-    for k, v in pairs(roles) do
+    for k, v in pairs(self.roles) do
         if k == name then
-            return roles[k]
+            return self.roles[k]
         end
     end
 
-    roles[name] = Role:new(name)
-    return roles[name]
+    self.roles[name] = Role:new(name)
+    return self.roles[name]
 end
 
 
