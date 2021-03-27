@@ -306,7 +306,7 @@ function Policy:getValuesForFieldInPolicy(sec, ptype, fieldIndex)
         values[#values + 1] = rule[fieldIndex]
     end
 
-    Util.arrayRemoveDuplications(values)
+    values = Util.arrayRemoveDuplications(values)
     return values
 end
 
