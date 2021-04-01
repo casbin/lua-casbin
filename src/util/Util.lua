@@ -13,7 +13,7 @@
 --limitations under the License.
 
 -- Utility Functions for lua-casbin
-require("logging")
+local logging = require("logging")
 
 Util = {}
 
