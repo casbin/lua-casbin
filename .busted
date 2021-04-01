@@ -1,0 +1,8 @@
+return {
+   default = {
+      output = "htest",
+      verbose = true,
+      ["exclude-pattern"] = "sum_spec", -- do not run spec files inside fixture
+      ["auto-insulate"] = false
+   }
+}

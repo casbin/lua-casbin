@@ -1,0 +1,6 @@
+describe("util test", function()
+    it("tests remove_comments", function()
+        local util = require("src.util.Util")
+        assert.are.equals("r.act == p.act", util.removeComments("r.act == p.act # comments"))
+    end)
+end)

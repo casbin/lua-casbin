@@ -1,0 +1,40 @@
+name: build
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        lua-version: ["5.1", "5.2", "5.3", "5.4", "luajit"]
+
+    name: Lua ${{ matrix.lua-version }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Lua ${{ matrix.lua-version }}
+      uses: leafo/gh-actions-lua@v8.0.0
+      with:
+        python-version: ${{ matrix.lua-version }}
+
+    - name: Set up luarocks
+      uses: leafo/gh-actions-luarocks@v4.0.0
+
+    - name: Install dependencies
+      run: |
+        luarocks install lualogging
+        luarocks install busted
+        luarocks install cluacov
+        luarocks install luacheck
+        luarocks install busted-htest        
+
+    - name: Run tests
+      run: busted spec -o htest
