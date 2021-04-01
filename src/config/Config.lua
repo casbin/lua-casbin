@@ -11,13 +11,13 @@
 --WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 --See the License for the specific language governing permissions and
 --limitations under the License.
-require "src/Util/util"
+require "src/util/Util"
 
 Config = {
     DEFAULT_SECTION = "default",
     DEFAULT_COMMENT = "#",
     DEFAULT_COMMENT_SEM = ";",
-    DEFAULT_MULTI_LINE_SEPARATOR = "\\",
+    DEFAULT_MULTI_LINE_SEPARATOR = "\\\\", -- This is equivalent to "\\" in the text since "\" is a special character in Lua
     data = {}
 }
 
@@ -113,7 +113,7 @@ function Config:parseBuffer(lines)
             local p = ""
 
             if self.DEFAULT_MULTI_LINE_SEPARATOR == string.sub(line, -2, -1) then
-                p = string.sub(line, 1, -3)
+                p = Util.trim(string.sub(line, 1, -3))
                 p = p .. " "
             else
                 p = line
@@ -148,17 +148,23 @@ end
 -- getBool lookups up the value using the provided key and converts the value to a bool
 function Config:getBool(key)
     local s = self:get(key)
-    if s == "true" then
+    if string.upper(s) == "TRUE" then
         return true
-    elseif s == "false" then
+    elseif string.upper(s) == "FALSE" then
         return false
+    else
+        error("Not a boolean value")
     end
 end
 
 -- getNum lookups up the value using the provided key and converts the value to a number
 function Config:getNum(key)
     local s = self:get(key)
-    return tonumber(s)
+    if tonumber(s) then
+        return tonumber(s)
+    else
+        error("Not a num value")
+    end
 end
 
 -- getString lookups up the value using the provided key and converts the value to a string
@@ -211,9 +217,11 @@ function Config:get(key)
         option = keys[1]
     end
 
-    if self.data[section][option] ~= nil then
-        return self.data[section][option]
-    else
+    if self.data[section] == nil then
         return ""
+    elseif self.data[section][option] == nil then
+        return ""
+    else
+        return self.data[section][option]
     end
 end 
