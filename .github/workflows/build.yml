@@ -23,7 +23,7 @@ jobs:
     - name: Set up Lua ${{ matrix.lua-version }}
       uses: leafo/gh-actions-lua@v8.0.0
       with:
-        python-version: ${{ matrix.lua-version }}
+        luaVersion: ${{ matrix.lua-version }}
 
     - name: Set up luarocks
       uses: leafo/gh-actions-luarocks@v4.0.0
