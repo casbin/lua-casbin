@@ -13,8 +13,7 @@
 --limitations under the License.
 
 local config = require("src.config.Config")
-local path = os.getenv("PWD") or io.popen("cd"):read()
-path  = path .. "/test.ini" -- path to the test.ini file
+local path = "test.ini" -- path to the test.ini file
 local config = Config:newConfig(path)
 
 describe("config tests", function()
