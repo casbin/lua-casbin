@@ -1,7 +1,9 @@
 # lua-casbin
-An authorization library that supports access control models like ACL, RBAC, ABAC in Lua (OpenResty)
-
+[![GitHub Action](https://github.com/casbin/lua-casbin/workflows/build/badge.svg?branch=master)](https://github.com/casbin/lua-casbin/actions)
+[![Coverage Status](https://coveralls.io/repos/github/casbin/lua-casbin/badge.svg?branch=master)](https://coveralls.io/github/casbin/lua-casbin?branch=master)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/casbin/lobby)
+
+An authorization library that supports access control models like ACL, RBAC, ABAC in Lua (OpenResty)
 
 **News**: Are you still worried about how to write the correct Casbin policy? ``Casbin online editor`` is coming to help! Try it at: http://casbin.org/editor/
 
