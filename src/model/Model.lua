@@ -33,6 +33,12 @@ function Model:new()
 
     self.requiredSections = {"r", "p", "e", "m"} -- Minimal required sections for a model to be valid
     self.modCount = 0   -- used by CoreEnforcer to detect changes to Model
+
+    -- PolicyOperations: [key] = POLICY_ADD/POLICY_REMOVE and value = string(key)
+    self.PolicyOperations = {
+         POLICY_ADD = "POLICY_ADD",
+         POLICY_REMOVE = "POLICY_REMOVE"
+    }
     return o
 end
 
