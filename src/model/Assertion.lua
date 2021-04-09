@@ -102,9 +102,9 @@ function Assertion:buildIncrementalRoleLinks(rm, op, rules)
             end
         end
 
-        if op == POLICY_ADD then
+        if op == "POLICY_ADD" then
             self.RM.addLink(name1, name2, domain)
-        elseif op == POLICY_REMOVE then
+        elseif op == "POLICY_REMOVE" then
             self.RM.deleteLink(name1, name2, domain)
         else
             error("invalid operation")

@@ -27,6 +27,7 @@ CoreEnforcer = {
     aviatorEval,    -- cached instance of AviatorEvaluatorInstance
     modelModCount,  -- detect changes in Model so that we can invalidate AviatorEvaluatorInstance cache
 }
+CoreEnforcer.__index = CoreEnforcer
 
 --[[
 private:
