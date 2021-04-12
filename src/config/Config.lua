@@ -18,7 +18,6 @@ Config = {
     DEFAULT_COMMENT = "#",
     DEFAULT_COMMENT_SEM = ";",
     DEFAULT_MULTI_LINE_SEPARATOR = "\\\\", -- This is equivalent to "\\" in the text since "\" is a special character in Lua
-    data = {}
 }
 
 --[[
@@ -31,6 +30,7 @@ function Config:newConfig(confName)
     local c = {}
     setmetatable(c,self)
     self.__index = self
+    c.data = {}
     c:parse(confName)
     return c
 end
@@ -216,7 +216,7 @@ function Config:get(key)
     else
         option = keys[1]
     end
-
+    
     if self.data[section] == nil then
         return ""
     elseif self.data[section][option] == nil then
