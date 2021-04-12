@@ -30,12 +30,30 @@ jobs:
 
     - name: Install dependencies
       run: |
-        luarocks install lualogging
-        luarocks install busted
-        luarocks install cluacov
-        luarocks install luacheck
-        luarocks install busted-htest
-        luarocks install luacov-coveralls
+      	until luarocks install lualogging
+        do
+          sleep 1
+        done
+        until luarocks install busted
+        do
+          sleep 1
+        done
+        until luarocks install cluacov
+        do
+          sleep 1
+        done
+        until luarocks install luacheck
+        do
+          sleep 1
+        done
+        until luarocks install busted-htest
+        do
+          sleep 1
+        done
+        until luarocks install luacov-coveralls
+        do
+          sleep 1
+        done
 
     - name: Run tests
       run: busted spec -o htest
