@@ -30,11 +30,15 @@ jobs:
 
     - name: Install dependencies
       run: |
-      	until luarocks install lualogging
+        until luarocks install lualogging
         do
           sleep 1
         done
         until luarocks install busted
+        do
+          sleep 1
+        done
+        until luarocks install busted-htest
         do
           sleep 1
         done
@@ -46,13 +50,9 @@ jobs:
         do
           sleep 1
         done
-        until luarocks install busted-htest
-        do
-          sleep 1
-        done
         until luarocks install luacov-coveralls
         do
-          sleep 1
+          sleep 1 
         done
 
     - name: Run tests
