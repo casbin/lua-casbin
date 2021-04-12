@@ -22,7 +22,6 @@ function Policy:new()
     local o = {}
     setmetatable(o, self)
     self.__index = self
-    self.model = {}
     return o
 end
 
@@ -128,6 +127,9 @@ function Policy:getFilteredPolicy(sec, ptype, fieldIndex, ...)
     local res = {}
     local fieldValues = {...}
 
+    if not self.model[sec] then return res end
+    if not self.model[sec][ptype] then return res end
+    
     for _, rule in pairs(self.model[sec][ptype].policy) do
         local matched = true
         for i, v in ipairs(fieldValues) do
@@ -137,7 +139,7 @@ function Policy:getFilteredPolicy(sec, ptype, fieldIndex, ...)
             end
         end
         if matched then
-            res[#res + 1] = rule
+            table.insert(res, rule)
         end
     end
 
@@ -219,6 +221,17 @@ function Policy:updatePolicy(sec, ptype, oldRule, newRule)
     end
 end
 
+-- Updates multiple policy rules from the model.
+function Policy:updatePolicies(sec, ptype, oldRules, newRules)
+    for _, rule in pairs(oldRules) do
+        if not self:hasPolicy(sec, ptype, rule) then
+            return false
+        end
+    end
+
+    return self:removePolicies(sec, ptype, oldRules) and self:addPolicies(sec, ptype, newRules)
+end
+
 --[[
      * removePolicy removes a policy rule from the model.
      *
@@ -288,7 +301,31 @@ end
      * @return succeeds or not.
 ]]
 function Policy:removeFilteredPolicy(sec, ptype, fieldIndex, ...)
-    return #self:removeFilteredPolicyReturnsEffects(sec, ptype, fieldIndex, ...) > 0
+    local tmp = {}
+    local res = false
+    local fieldValues = {...}
+
+    if not self.model[sec] then return res end
+    if not self.model[sec][ptype] then return res end
+
+    for _, rule in pairs(self.model[sec][ptype].policy) do
+        local matched = true
+        for i, value in pairs(fieldValues) do
+            if value ~= "" and rule[fieldIndex+i] ~= value then
+                matched = false
+                break
+            end
+        end
+
+        if matched then
+            res = true
+        else
+            table.insert(tmp, rule)
+        end
+    end
+
+    self.model[sec][ptype].policy = tmp
+    return res
 end
 
 --[[

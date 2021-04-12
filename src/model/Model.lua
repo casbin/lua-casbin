@@ -12,6 +12,7 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
+require "src/config/Config"
 require "src/model/Policy"
 require "src/model/Assertion"
 require "src/util/Util"
@@ -19,10 +20,10 @@ require "src/util/Util"
 Model = Policy:new()
 
 function Model:new()
-    o = Policy:new()
+    local o = {}
     setmetatable(o, self)
     self.__index = self
-
+    self.model = {}
     self.sectionNameMap = {
          ["r"] = "request_definition",
          ["p"] = "policy_definition",
@@ -77,7 +78,7 @@ function Model:addDef(sec, key, value)
 
      if sec == "r" or sec == "p" then
           self.model[sec][key].tokens = Util.splitCommaDelimited(self.model[sec][key].value)
-          for k,v in pairs(self.model[sec][key].tokens) do
+          for _, v in pairs(self.model[sec][key].tokens) do
                v = key .. "_" .. v
           end
      else
