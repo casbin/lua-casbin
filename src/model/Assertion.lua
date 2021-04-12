@@ -18,16 +18,16 @@ require "src/rbac/RoleManager"
     * For example: r = sub, obj, act
     policy = {{}}
 ]]
-Assertion = {
-    key,
-    value,
-    tokens,
-    policy,
-    RM
-}
+Assertion = {}
 
 function Assertion:new()
     local o = {}
+    o.key = ""
+    o.value = ""
+    o.tokens = {}
+    o.policy = {}
+    o.RM = {}
+    
     setmetatable(o,self)
     self.__index = self
     return o
