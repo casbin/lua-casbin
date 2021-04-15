@@ -56,23 +56,28 @@ end
 --[[
     * savePolicy saves all policy rules to the storage.
 ]]
-function FileAdapter:savePolicy(filePath)
-    local f = assert(io.open(self.filePath,"w"))
+function FileAdapter:savePolicy(model, saveToFilePath)
+    local filePath = saveToFilePath
+    if not filePath then filePath = self.filePath end
 
-    for ptype, ast in pairs(model.model["p"]) do
-        local str = ptype
-        for _, rule in pairs(ast.policy) do
-            str = str .. Util.arrayToString(rule) .. "\n"
+    local f = assert(io.open(filePath,"w"))
+
+    if model.model["p"] then
+        for ptype, ast in pairs(model.model["p"]) do
+            for _, rule in pairs(ast.policy) do
+                local str = ptype .. ", " .. Util.arrayToString(rule) .. "\n"
+                f:write(str)
+            end
         end
-        f:write(str)
     end
 
-    for ptype, ast in pairs(model.model["g"]) do
-        local str = ptype
-        for _, rule in pairs(ast.policy) do
-            str = str .. Util.arrayToString(rule) .. "\n"
+    if model.model["g"] then
+        for ptype, ast in pairs(model.model["g"]) do
+            for _, rule in pairs(ast.policy) do
+                local str = ptype .. ", " .. Util.arrayToString(rule) .. "\n"
+                f:write(str)
+            end
         end
-        f:write(str)
     end
 
     f:close()
