@@ -19,8 +19,8 @@ function Role:new(name)
     local o = {}
     setmetatable(o, self)
     self.__index = self
-    self.name = name
-    self.roles = {}
+    o.name = name
+    o.roles = {}
     return o
 end
 

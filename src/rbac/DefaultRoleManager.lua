@@ -35,10 +35,14 @@ DefaultRoleManager = {
      * @param domainMatchingFunc a matcher for supporting domain pattern in g
 ]]
 function DefaultRoleManager:new(maxHierarchyLevel, matchingFunc, domainMatchingFunc)
-    self.allRoles = {}
-    self.maxHierarchyLevel = maxHierarchyLevel
-    self.matchingFunc = matchingFunc
-    self.domainMatchingFunc = domainMatchingFunc
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    o.allRoles = {}
+    o.maxHierarchyLevel = maxHierarchyLevel
+    o.matchingFunc = matchingFunc
+    o.domainMatchingFunc = domainMatchingFunc
+    return o
 end
 
 function DefaultRoleManager:hasRole(name)
