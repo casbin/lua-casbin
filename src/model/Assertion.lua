@@ -36,22 +36,22 @@ end
 function Assertion:buildRoleLinks(rm)
     self.RM = rm
     local count = 0
-    for i = 1, string.len(value) do
-        if string.sub(value,i,i) == '_' then
+    for i = 1, string.len(self.value) do
+        if string.sub(self.value,i,i) == '_' then
             count = count + 1
         end
     end
 
     for _, rule in pairs(self.policy) do
         if count < 2 then
-            error("the number of \"_\" in role definition should be at least 2")
+            error("the number of '_' in role definition should be at least 2")
         end
 
         if #rule < count then
             error("grouping policy elements do not meet role definition")
         end
         
-        local name1, name2 = nil 
+        local name1, name2
         local domain = {}
         for i, string in pairs(rule) do
             if i > count then break end
@@ -73,22 +73,22 @@ end
 function Assertion:buildIncrementalRoleLinks(rm, op, rules)
     self.RM = rm
     local count = 0
-    for i = 1, string.len(value) do
-        if string.sub(value,i,i) == '_' then
+    for i = 1, string.len(self.value) do
+        if string.sub(self.value,i,i) == '_' then
             count = count + 1
         end
     end
 
     for _, rule in pairs(rules) do
         if count < 2 then
-            error("the number of \"_\" in role definition should be at least 2")
+            error("the number of '_' in role definition should be at least 2")
         end
 
         if #rule < count then
             error("grouping policy elements do not meet role definition")
         end
         
-        local name1, name2 = nil 
+        local name1, name2
         local domain = {}
         for i, string in pairs(rule) do
             if i > count then break end

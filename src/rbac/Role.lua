@@ -19,14 +19,14 @@ function Role:new(name)
     local o = {}
     setmetatable(o, self)
     self.__index = self
-    self.name = name
-    self.roles = {}
+    o.name = name
+    o.roles = {}
     return o
 end
 
 function Role:addRole(role)
-    for i=1, #self.roles do
-        if self.roles[i].name == role.name then
+    for _, r in pairs(self.roles) do
+        if r.name == role.name then
             return
         end
     end
@@ -35,31 +35,27 @@ function Role:addRole(role)
 end
 
 function Role:deleteRole(role)
-    toRemove = {}
-    for i=1, #self.roles do
-        if self.roles[i].name == role.name then
-            table.remove(self.roles, i)
+    for k, r in pairs(self.roles) do
+        if r.name == role.name then
+            table.remove(self.roles, k)
         end
     end
 end
 
-function Role:hasRole(name, hierarchyLevel)
+function Role:hasRole(name, hierarchyLevel, matchingFunc)
     if self.name == name then
         return true
     end
+    if self:hasDirectRole(name, matchingFunc) then
+        return true
+    end
+
     if hierarchyLevel <= 0 then
         return false
     end
-    res = false
-    for i=1, #self.roles do
-        res = res or self.roles[i]:hasRole(name, hierarchyLevel - 1)
-    end
-    return res
-end
 
-function Role:hasDirectRole(name)
-    for i=1, #self.roles do
-        if self.roles[i] == name then
+    for _, r in pairs(self.roles) do
+        if r:hasRole(name, hierarchyLevel - 1, matchingFunc) then
             return true
         end
     end
@@ -67,15 +63,42 @@ function Role:hasDirectRole(name)
     return false
 end
 
-function Role:toString()
+function Role:hasDirectRole(name, matchingFunc)
+    if matchingFunc then
+        for _, r in pairs(self.roles) do
+            if matchingFunc(name, r.name) then
+                return true
+            end
+        end
+    else
+        for _, r in pairs(self.roles) do
+            if r.name == name then
+                return true
+            end
+        end
+    end
 
-    return
+    return false
+end
+
+function Role:toString()
+    local names = ""
+    names = self.name .. " < "
+    
+    for k, r in pairs(self.roles) do
+        if k==1 then 
+            names = names .. r.name
+        else
+            names = names .. ", " .. r.name
+        end
+    end
+    return names
 end
 
 function Role:getRoles()
-    names = {}
-    for i=1, #self.roles do
-        table.insert(names, self.roles[i])
+    local names = {}
+    for _, r in pairs(self.roles) do
+        table.insert(names, r.name)
     end
     return names
 end
