@@ -13,6 +13,7 @@
 --limitations under the License.
 
 local role_manager_module = require("src.rbac.DefaultRoleManager")
+local util_module = require("src.util.Util")
 
 -- test function for testing the matching function functionality in Role Manager
 -- true if n1=n2 or n1 matches the pattern of n2 or n2 matches the pattern of n1
@@ -77,9 +78,9 @@ describe("DefaultRoleManager tests", function ()
         assert.are.same(rm:getUsers("u2"),{})
         assert.are.same(rm:getUsers("u3"),{})
         assert.are.same(rm:getUsers("u4"),{})
-        assert.are.same(rm:getUsers("g1"),{"u2", "u1"})
-        assert.are.same(rm:getUsers("g2"),{"u3", "u4"})
-        assert.are.same(rm:getUsers("g3"),{"u4", "g1"})
+        assert.is.True(Util.areTablesSame(rm:getUsers("g1"),{"u2", "u1"}))
+        assert.is.True(Util.areTablesSame(rm:getUsers("g2"),{"u3", "u4"}))
+        assert.is.True(Util.areTablesSame(rm:getUsers("g3"),{"u4", "g1"}))
 
         rm:deleteLink("g1", "g3")
         rm:deleteLink("u4", "g2")

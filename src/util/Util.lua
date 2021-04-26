@@ -182,4 +182,31 @@ function Util.isInstance(o, parent)
     return false
 end
 
+-- Searches if all values in a table are present in the other table regardless of order
+function Util.areTablesSame(a, b)
+    local c = {}
+    for _, v in pairs(a) do
+        if c[v] then
+            c[v] = c[v] + 1
+        else
+            c[v] = 1
+        end
+    end
+
+    for _, v in pairs(b) do
+        if c[v] then
+            c[v] = c[v] - 1
+            if c[v] == 0 then
+                c[v] = nil
+            end
+        else
+            return false
+        end
+    end
+    for _, v in pairs(c) do
+        return false
+    end
+    return true
+end
+
 return Util
