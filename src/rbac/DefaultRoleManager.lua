@@ -63,7 +63,7 @@ end
 
 function DefaultRoleManager:createRole(name)
     if not self.allRoles[name] then
-        self.allRoles[name] = Role:new()
+        self.allRoles[name] = Role:new(name)
     end
 
     return self.allRoles[name]
@@ -81,8 +81,8 @@ end
 function DefaultRoleManager:addLink(name1, name2, ...)
     local domain = {...}
     if #domain == 1 then
-        name1 = domain[1] + "::" + name1
-        name2 = domain[1] + "::" + name2
+        name1 = domain[1] .. "::" .. name1
+        name2 = domain[1] .. "::" .. name2
     elseif #domain > 1 then
         error("domain should be only 1 parameter")
     else
@@ -118,15 +118,15 @@ end
 function DefaultRoleManager:deleteLink(name1, name2, ...)
     local domain = {...}
     if #domain == 1 then
-        name1 = domain[1] + "::" + name1
-        name2 = domain[1] + "::" + name2
+        name1 = domain[1] .. "::" .. name1
+        name2 = domain[1] .. "::" .. name2
     elseif #domain > 1 then
         error("domain should be only 1 parameter")
     else
         domain = nil
     end
 
-    if not self:hasRole(name1) or self:hasRole(name2) then
+    if not (self:hasRole(name1)) or not (self:hasRole(name2)) then
         error("name1 or name2 does not exist")
     end
 
@@ -139,8 +139,8 @@ end
 function DefaultRoleManager:hasLink(name1, name2, ...)
     local domain = {...}
     if #domain == 1 then
-        name1 = domain[1] + "::" + name1
-        name2 = domain[1] + "::" + name2
+        name1 = domain[1] .. "::" .. name1
+        name2 = domain[1] .. "::" .. name2
     elseif #domain > 1 then
         error("domain should be only 1 parameter")
     else
@@ -173,7 +173,7 @@ end
 function DefaultRoleManager:getRoles(name, ...)
     local domain = {...}
     if #domain == 1 then
-        name = domain[1] + "::" + name
+        name = domain[1] .. "::" .. name
     elseif #domain > 1 then
         error("domain should be only 1 parameter")
     else
@@ -199,7 +199,7 @@ end
 function DefaultRoleManager:getUsers(name, ...)
     local domain = {...}
     if #domain == 1 then
-        name = domain[1] + "::" + name
+        name = domain[1] .. "::" .. name
     elseif #domain > 1 then
         error("domain should be only 1 parameter")
     else
@@ -216,6 +216,8 @@ function DefaultRoleManager:getUsers(name, ...)
             end
         end
     end
+
+    return names
 end
 
 -- printRoles prints all the roles to log.

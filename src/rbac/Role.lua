@@ -83,13 +83,13 @@ end
 
 function Role:toString()
     local names = ""
-    names = self.name + " < "
+    names = self.name .. " < "
     
-    for k, r in pairs(self.rules) do
+    for k, r in pairs(self.roles) do
         if k==1 then 
-            names = names + r.name
+            names = names .. r.name
         else
-            names = names + ", " + r.name
+            names = names .. ", " .. r.name
         end
     end
     return names
