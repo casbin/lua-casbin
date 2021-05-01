@@ -183,4 +183,13 @@ describe("model tests", function()
         assert.are.same(res, filteredRules)
 
     end)
+
+    it("test printPolicy and printModel", function ()
+        local m = Model:new()
+        m:loadModel(basic_path)
+        assert.has_no.errors(function ()
+            m:printModel()
+            m:printPolicy()
+        end)
+    end)
 end)

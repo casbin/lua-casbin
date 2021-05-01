@@ -14,12 +14,14 @@
 
 require "src/model/Assertion"
 require "src/util/Util"
+require "src/util/Log"
 
 -- model's struct is map<string, map<string, Assertion>>
 Policy = {}
 
 function Policy:new()
     local o = {}
+    o.logger = Log:getLogger()
     setmetatable(o, self)
     self.__index = self
     return o
@@ -42,16 +44,18 @@ end
      * printPolicy prints the policy to log.
 ]]
 function Policy:printPolicy()
-    Util.logPrint("Policy:")
+    self.logger:info("Policy: \n")
     if self.model["p"] then
         for k, ast in pairs(self.model["p"]) do
-            Util.logPrint(k .. ":" .. ast.value .. ":" .. ast.policy)
+            self.logger:info("%s:   %s:", k, ast.value)
+            self.logger:info(ast.policy)
         end
     end
 
     if self.model["g"] then
         for k, ast in pairs(self.model["g"]) do
-            Util.logPrint(k .. ":" .. ast.value .. ":" .. ast.policy)
+            self.logger:info("%s:   %s:", k, ast.value)
+            self.logger:info(ast.policy)
         end
     end
 end
