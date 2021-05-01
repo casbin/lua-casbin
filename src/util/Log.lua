@@ -12,15 +12,15 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "logging"
-require "logging.file"
+local Logging = require "logging"
+local fileLogging = require "logging.file"
 
 -- The logging module for logging to console or any file
 Log = {}
 
 -- returns logger function for logging to console
 function Log:getLogger()
-    local logger = logging.new(function(self, level, message)
+    local logger = Logging.new(function(self, level, message)
         print(level, message)
         return true
       end)
@@ -32,6 +32,6 @@ function Log:getFileLogger(filePath)
     if not filePath then
         error("no filePath for logger provided")
     end
-    local logger = logging.file(filePath)
+    local logger = fileLogging(filePath)
     return logger
 end 
