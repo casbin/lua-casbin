@@ -173,10 +173,11 @@ end
 
 --      * printModel prints the model to the log.
 function Model:printModel()
-    Util.logPrint("Model:")
+     self.logger:info("Model: \n")
     for k,v in pairs(self.model) do
         for k2, v2 in pairs(v) do
-            Util.logPrintf("%s.%s: %s", k, k2, v2)
+            self.logger:info("[%s.%s]:", k, k2)
+            self.logger:info(v2)
         end
     end
 end

@@ -13,17 +13,7 @@
 --limitations under the License.
 
 -- Utility Functions for lua-casbin
-local logging = require("logging")
-
 Util = {}
-
-Util.logger = logging.new(function(self, level, message)
-    print(level, message)
-    return true
-end)
-
--- Whether to print logs or not.
-Util.enableLog = true
 
 -- arrayToString convert table of strings to one string
 function Util.arrayToString(rule)
@@ -95,18 +85,6 @@ function Util.removeComments(str)
     if i then str = str:sub(1,i-1) end
 
     return Util.trim(str)
-end
-
-function Util.logPrint(v)
-    if enableLog then
-        Util.logger:info(v)
-    end
-end
-
-function Util.logPrintf(format, ...)
-    if enableLog then
-        Util.logger.info(format, ...)
-    end
 end
 
 function Util.arrayEquals(a, b)

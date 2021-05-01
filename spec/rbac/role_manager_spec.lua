@@ -273,4 +273,26 @@ describe("DefaultRoleManager tests", function ()
         assert.are.same(rm:createRole("g1"):toString(), "g1 < g3")
         assert.are.same(rm:createRole("u4"):toString(), "u4 < g2, g3")
     end)
+
+    it("test printRoles", function ()
+        local rm = DefaultRoleManager:new(10)
+        rm:addLink("u1", "g1")
+        rm:addLink("u2", "g1")
+        rm:addLink("u3", "g2")
+        rm:addLink("u4", "g2")
+        rm:addLink("u4", "g3")
+        rm:addLink("g1", "g3")
+        --[[
+        # Current role inheritance tree:
+        #             g3    g2
+        #            /  \  /  \
+        #          g1    u4    u3
+        #         /  \
+        #       u1    u2
+        ]]
+
+        assert.has_no.errors(function ()
+            rm:printRoles()
+        end)
+    end)
 end)

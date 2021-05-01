@@ -13,6 +13,7 @@
 --limitations under the License.
 
 require "src/rbac/Role"
+require "src/util/Log"
 
 DefaultRoleManager = {
     maxHierarchyLevel = 0
@@ -38,6 +39,7 @@ function DefaultRoleManager:new(maxHierarchyLevel, matchingFunc, domainMatchingF
     local o = {}
     setmetatable(o, self)
     self.__index = self
+    o.logger = Log:getLogger()
     o.allRoles = {}
     o.maxHierarchyLevel = maxHierarchyLevel
     o.matchingFunc = matchingFunc
@@ -222,13 +224,15 @@ end
 
 -- printRoles prints all the roles to log.
 function DefaultRoleManager:printRoles(name, ...)
-    local lines = {}
+
+    self.logger:info("Roles: ")
     for _, role in pairs(self.allRoles) do
         local text = role:toString()
-        if text then table.insert(lines, text) end
+        if text then 
+            self.logger:info(text)
+        end
     end
 
-    -- TODO: add logger here
 end
 
 return DefaultRoleManager
