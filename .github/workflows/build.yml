@@ -28,6 +28,11 @@ jobs:
     - name: Set up luarocks
       uses: leafo/gh-actions-luarocks@v4.0.0
 
+    - name: Install PCRE
+      run: |
+        sudo apt-get update
+        sudo apt-get install libpcre3 libpcre3-dev
+
     - name: Install dependencies
       run: |
         until luarocks install lualogging
@@ -53,6 +58,14 @@ jobs:
         until luarocks install luacov-coveralls
         do
           sleep 1 
+        done
+        until luarocks install lrexlib-pcre
+        do
+          sleep 1
+        done
+        until luarocks install luaposix
+        do
+          sleep 1
         done
 
     - name: Run tests
