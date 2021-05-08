@@ -115,30 +115,30 @@ describe("BuiltInFunctions tests", function ()
         assert.is.True(BuiltInFunctions.globMatch("/foo", "/foo*"))
         assert.is.False(BuiltInFunctions.globMatch("/foo", "/foo/*"))
         assert.is.False(BuiltInFunctions.globMatch("/foo/bar", "/foo"))
-        assert.is.True(BuiltInFunctions.globMatch("/foo/bar", "/foo*"))  -- differs from Casbin Go
+        assert.is.False(BuiltInFunctions.globMatch("/foo/bar", "/foo*"))
         assert.is.True(BuiltInFunctions.globMatch("/foo/bar", "/foo/*"))
         assert.is.False(BuiltInFunctions.globMatch("/foobar", "/foo"))
         assert.is.True(BuiltInFunctions.globMatch("/foobar", "/foo*"))
         assert.is.False(BuiltInFunctions.globMatch("/foobar", "/foo/*"))
 
-        assert.is.True(BuiltInFunctions.globMatch("/prefix/foo", "*/foo")) -- differs from Casbin Go
-        assert.is.True(BuiltInFunctions.globMatch("/prefix/foo", "*/foo*")) -- differs from Casbin Go
+        assert.is.False(BuiltInFunctions.globMatch("/prefix/foo", "*/foo"))
+        assert.is.False(BuiltInFunctions.globMatch("/prefix/foo", "*/foo*"))
         assert.is.False(BuiltInFunctions.globMatch("/prefix/foo", "*/foo/*"))
         assert.is.False(BuiltInFunctions.globMatch("/prefix/foo/bar", "*/foo"))
-        assert.is.True(BuiltInFunctions.globMatch("/prefix/foo/bar", "*/foo*")) -- differs from Casbin Go
-        assert.is.True(BuiltInFunctions.globMatch("/prefix/foo/bar", "*/foo/*")) -- differs from Casbin Go
+        assert.is.False(BuiltInFunctions.globMatch("/prefix/foo/bar", "*/foo*"))
+        assert.is.False(BuiltInFunctions.globMatch("/prefix/foo/bar", "*/foo/*"))
         assert.is.False(BuiltInFunctions.globMatch("/prefix/foobar", "*/foo"))
-        assert.is.True(BuiltInFunctions.globMatch("/prefix/foobar", "*/foo*")) -- differs from Casbin Go
+        assert.is.False(BuiltInFunctions.globMatch("/prefix/foobar", "*/foo*"))
         assert.is.False(BuiltInFunctions.globMatch("/prefix/foobar", "*/foo/*"))
 
-        assert.is.True(BuiltInFunctions.globMatch("/prefix/subprefix/foo", "*/foo")) -- differs from Casbin Go
-        assert.is.True(BuiltInFunctions.globMatch("/prefix/subprefix/foo", "*/foo*")) -- differs from Casbin Go
+        assert.is.False(BuiltInFunctions.globMatch("/prefix/subprefix/foo", "*/foo"))
+        assert.is.False(BuiltInFunctions.globMatch("/prefix/subprefix/foo", "*/foo*"))
         assert.is.False(BuiltInFunctions.globMatch("/prefix/subprefix/foo", "*/foo/*"))
         assert.is.False(BuiltInFunctions.globMatch("/prefix/subprefix/foo/bar", "*/foo"))
-        assert.is.True(BuiltInFunctions.globMatch("/prefix/subprefix/foo/bar", "*/foo*")) -- differs from Casbin Go
-        assert.is.True(BuiltInFunctions.globMatch("/prefix/subprefix/foo/bar", "*/foo/*")) -- differs from Casbin Go
+        assert.is.False(BuiltInFunctions.globMatch("/prefix/subprefix/foo/bar", "*/foo*"))
+        assert.is.False(BuiltInFunctions.globMatch("/prefix/subprefix/foo/bar", "*/foo/*"))
         assert.is.False(BuiltInFunctions.globMatch("/prefix/subprefix/foobar", "*/foo"))
-        assert.is.True(BuiltInFunctions.globMatch("/prefix/subprefix/foobar", "*/foo*")) -- differs from Casbin Go
+        assert.is.False(BuiltInFunctions.globMatch("/prefix/subprefix/foobar", "*/foo*"))
         assert.is.False(BuiltInFunctions.globMatch("/prefix/subprefix/foobar", "*/foo/*"))
 
     end)

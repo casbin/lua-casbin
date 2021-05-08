@@ -77,7 +77,7 @@ end
 
 -- GlobMatch determines whether key1 matches the pattern of key2 using glob pattern
 function BuiltInFunctions.globMatch(key1, key2)
-    if posix.fnmatch(key2, key1) == 0 then
+    if posix.fnmatch(key2, key1, posix.FNM_PATHNAME or posix.FNM_PERIOD) == 0 then
         return true
     else
         return false
