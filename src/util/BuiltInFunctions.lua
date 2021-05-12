@@ -17,6 +17,14 @@ local posix = require("posix.fnmatch")
 
 BuiltInFunctions = {}
 
+-- Wrapper for keyMatch
+function BuiltInFunctions.keyMatchFunc(args)
+    if #args<2 then
+        error("BuiltInFunctions should have atleast 2 arguments")
+    end
+    return BuiltInFunctions.keyMatch(args[1], args[2])
+end
+
 -- KeyMatch determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
 -- For example, "/foo/bar" matches "/foo/*"
 function BuiltInFunctions.keyMatch(key1, key2)
@@ -30,6 +38,14 @@ function BuiltInFunctions.keyMatch(key1, key2)
         return (string.sub(key1, 1, i-1) == string.sub(key2, 1, i-1))
     end
     return (key1 == string.sub(key2, 1, i-1))
+end
+
+-- Wrapper for keyGet
+function BuiltInFunctions.keyGetFunc(args)
+    if #args<2 then
+        error("BuiltInFunctions should have atleast 2 arguments")
+    end
+    return BuiltInFunctions.keyGet(args[1], args[2])
 end
 
 -- KeyGet returns the matched part
@@ -49,12 +65,28 @@ function BuiltInFunctions.keyGet(key1, key2)
     return ""
 end
 
+-- Wrapper for keyMatch2
+function BuiltInFunctions.keyMatch2Func(args)
+    if #args<2 then
+        error("BuiltInFunctions should have atleast 2 arguments")
+    end
+    return BuiltInFunctions.keyMatch2(args[1], args[2])
+end
+
 -- KeyMatch2 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
 -- For example, "/foo/bar" matches "/foo/*", "/resource1" matches "/:resource"
 function BuiltInFunctions.keyMatch2(key1, key2)
     key2 = string.gsub(key2, "/%*", "/.*")
     local key = rex.gsub(key2, ":[^/]+", "[^/]+")
 	return BuiltInFunctions.regexMatch(key1, "^"..key.."$")
+end
+
+-- Wrapper for keyMatch3
+function BuiltInFunctions.keyMatch3Func(args)
+    if #args<2 then
+        error("BuiltInFunctions should have atleast 2 arguments")
+    end
+    return BuiltInFunctions.keyMatch3(args[1], args[2])
 end
 
 -- KeyMatch3 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
@@ -65,6 +97,14 @@ function BuiltInFunctions.keyMatch3(key1, key2)
 	return BuiltInFunctions.regexMatch(key1, "^"..key.."$")
 end
 
+-- Wrapper for regexMatch
+function BuiltInFunctions.regexMatchFunc(args)
+    if #args<2 then
+        error("BuiltInFunctions should have atleast 2 arguments")
+    end
+    return BuiltInFunctions.regexMatch(args[1], args[2])
+end
+
 -- RegexMatch determines whether key1 matches the pattern of key2 in regular expression.
 function BuiltInFunctions.regexMatch(key1, key2)
     local res = rex.match(key1, key2)
@@ -73,6 +113,14 @@ function BuiltInFunctions.regexMatch(key1, key2)
     else
         return false
     end
+end
+
+-- Wrapper for globMatch
+function BuiltInFunctions.globMatchFunc(args)
+    if #args<2 then
+        error("BuiltInFunctions should have atleast 2 arguments")
+    end
+    return BuiltInFunctions.globMatch(args[1], args[2])
 end
 
 -- GlobMatch determines whether key1 matches the pattern of key2 using glob pattern

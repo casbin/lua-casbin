@@ -78,8 +78,8 @@ function Model:addDef(sec, key, value)
 
      if sec == "r" or sec == "p" then
           self.model[sec][key].tokens = Util.splitCommaDelimited(self.model[sec][key].value)
-          for _, v in pairs(self.model[sec][key].tokens) do
-               v = key .. "_" .. v
+          for k, v in pairs(self.model[sec][key].tokens) do
+               self.model[sec][key].tokens[k] = key .. "_" .. self.model[sec][key].tokens[k]
           end
      else
           self.model[sec][key].value = Util.removeComments(Util.escapeAssertion(self.model[sec][key].value))
