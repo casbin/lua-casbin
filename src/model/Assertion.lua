@@ -42,30 +42,22 @@ function Assertion:buildRoleLinks(rm)
         end
     end
 
+    if count < 2 then
+        error("the number of '_' in role definition should be at least 2")
+    end
+
     for _, rule in pairs(self.policy) do
-        if count < 2 then
-            error("the number of '_' in role definition should be at least 2")
-        end
 
         if #rule < count then
             error("grouping policy elements do not meet role definition")
         end
         
-        local name1, name2
-        local domain = {}
-        for i, string in pairs(rule) do
-            if i > count then break end
-
-            if name1 == nil then
-                name1 = string
-            elseif name2 == nil then
-                name2 = string
-            else
-                table.insert(domain,string)
-            end
+        if rule[3] then
+            self.RM:addLink(rule[1], rule[2], rule[3])
+        else
+            self.RM:addLink(rule[1], rule[2])
         end
-
-        self.RM.addLink(name1, name2, domain)
+        
     end
 
 end
@@ -79,33 +71,28 @@ function Assertion:buildIncrementalRoleLinks(rm, op, rules)
         end
     end
 
+    if count < 2 then
+        error("the number of '_' in role definition should be at least 2")
+    end
+
     for _, rule in pairs(rules) do
-        if count < 2 then
-            error("the number of '_' in role definition should be at least 2")
-        end
 
         if #rule < count then
             error("grouping policy elements do not meet role definition")
         end
-        
-        local name1, name2
-        local domain = {}
-        for i, string in pairs(rule) do
-            if i > count then break end
-
-            if name1 == nil then
-                name1 = string
-            elseif name2 == nil then
-                name2 = string
-            else
-                table.insert(domain,string)
-            end
-        end
 
         if op == "POLICY_ADD" then
-            self.RM.addLink(name1, name2, domain)
+            if rule[3] then
+                self.RM:addLink(rule[1], rule[2], rule[3])
+            else
+                self.RM:addLink(rule[1], rule[2])
+            end
         elseif op == "POLICY_REMOVE" then
-            self.RM.deleteLink(name1, name2, domain)
+            if rule[3] then
+                self.RM:deleteLink(rule[1], rule[2], rule[3])
+            else
+                self.RM:deleteLink(rule[1], rule[2])
+            end
         else
             error("invalid operation")
         end

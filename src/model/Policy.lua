@@ -32,10 +32,11 @@ end
      *
      * @param rm the role manager.
 ]]
-function Policy:buildRoleLinks(rm)
+function Policy:buildRoleLinks(rmMap)
     if self.model["g"] then
-        for _, v in pairs(self.model["g"]) do
-            v:buildRoleLinks(rm)
+        for ptype, ast in pairs(self.model["g"]) do
+            local rm = rmMap[ptype]
+            ast:buildRoleLinks(rm)
         end
     end
 end

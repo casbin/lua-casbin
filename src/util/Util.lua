@@ -47,8 +47,8 @@ function Util.escapeAssertion(str)
     if string.sub(str, 1, 1) == "r" or string.sub(str, 1, 1) == "p" then
         str = str:gsub("%.","_", 1)
     end
-    str = str:gsub("% r."," r_")
-    str = str:gsub("% p."," p_")
+    str = str:gsub("% r%."," r_")
+    str = str:gsub("% p%."," p_")
     str = str:gsub("%&r.","&r_")
     str = str:gsub("%&p.","&p_")
     str = str:gsub("%|r.","|r_")
@@ -75,7 +75,6 @@ function Util.escapeAssertion(str)
     str = str:gsub("%=p.","=p_")
     str = str:gsub("%,r.",",r_")
     str = str:gsub("%,p.",",p_")
-    
     return str
 end
 

@@ -12,9 +12,18 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require("src.main.CoreEnforcer")
+require("src.util.BuiltInFunctions")
 
-Enforcer = {}
-setmetatable(Enforcer, CoreEnforcer)
+FunctionMap = {}
 
-return Enforcer
+-- FunctionMap provides a set of built in functions
+function FunctionMap:new()
+    local o = {}
+    o["keyMatch"] = BuiltInFunctions.keyMatchFunc
+    o["keyGet"] = BuiltInFunctions.keyGetFunc
+    o["keyMatch2"] = BuiltInFunctions.keyMatch2Func
+    o["keyMatch3"] = BuiltInFunctions.keyMatch3Func
+    o["regexMatch"] = BuiltInFunctions.regexMatchFunc
+    o["globMatch"] = BuiltInFunctions.globMatch
+    return o
+end
