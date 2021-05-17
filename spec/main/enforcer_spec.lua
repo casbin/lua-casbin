@@ -45,4 +45,52 @@ describe("Enforcer tests", function ()
         local e = Enforcer:new(model, policy)
         assert.is.True(e:enforce("cathy", "/cathy_data", "GET"))
     end)
+
+    it("abac sub_rule test", function ()
+        local model  = path .. "/examples/abac_rule_model.conf"
+        local policy  = path .. "/examples/abac_rule_policy.csv"
+        local sub1 = {
+            Name = "Alice",
+            Age = 16
+        }
+        local sub2 = {
+            Name = "Bob",
+            Age = 20
+        }
+        local sub3 = {
+            Name = "Alice",
+            Age = 65
+        }
+        local e = Enforcer:new(model, policy)
+        assert.is.False(e:enforce(sub1, "/data1", "read"))
+        assert.is.False(e:enforce(sub1, "/data2", "read"))
+        assert.is.False(e:enforce(sub1, "/data1", "write"))
+        assert.is.True(e:enforce(sub1, "/data2", "write"))
+
+        assert.is.True(e:enforce(sub2, "/data1", "read"))
+        assert.is.False(e:enforce(sub2, "/data2", "read"))
+        assert.is.False(e:enforce(sub2, "/data1", "write"))
+        assert.is.True(e:enforce(sub2, "/data2", "write"))
+
+        assert.is.False(e:enforce(sub3, "/data1", "write"))
+        assert.is.True(e:enforce(sub3, "/data1", "read"))
+        assert.is.False(e:enforce(sub3, "/data2", "read"))
+        assert.is.True(e:enforce(sub1, "/data2", "write"))
+    end)
+
+    it("in of matcher test", function ()
+        local model  = path .. "/examples/in_matcher_model.conf"
+        local policy  = path .. "/examples/in_matcher_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.True(e:enforce("alice", "data1", "read"))
+        assert.is.True(e:enforce("alice", "data1", "write"))
+        assert.is.False(e:enforce("alice", "data2", "read"))
+        assert.is.False(e:enforce("alice", "data2", "write"))
+
+        assert.is.False(e:enforce("bob", "data1", "read"))
+        assert.is.False(e:enforce("bob", "data1", "write"))
+        assert.is.True(e:enforce("bob", "data2", "read"))
+        assert.is.True(e:enforce("bob", "data2", "write"))
+    end)
 end)

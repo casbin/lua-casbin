@@ -354,7 +354,10 @@ function CoreEnforcer:enforce(...)
                 context[v] = pvals[k]
             end
 
-            local res, err = luaxp.evaluate(expString, context)
+            local tExpString = Util.findAndReplaceEval(expString, context)
+            tExpString = Util.replaceInOfMatcher(tExpString)
+            
+            local res, err = luaxp.evaluate(tExpString, context)
             if err then
                 error("evaluation error: " .. err.message)
             end
