@@ -208,8 +208,11 @@ end
 ]]
 function CoreEnforcer:loadPolicy()
     self.model:clearPolicy()
-    self.adapter:loadPolicy(self.model);
+    self.adapter:loadPolicy(self.model)
+
+    self.model:sortPoliciesByPriority()
     self.model:printPolicy()
+
     if self.autoBuildRoleLinks then
         self:buildRoleLinks()
     end
@@ -354,7 +357,10 @@ function CoreEnforcer:enforce(...)
                 context[v] = pvals[k]
             end
 
-            local res, err = luaxp.evaluate(expString, context)
+            local tExpString = Util.findAndReplaceEval(expString, context)
+            tExpString = Util.replaceInOfMatcher(tExpString)
+            
+            local res, err = luaxp.evaluate(tExpString, context)
             if err then
                 error("evaluation error: " .. err.message)
             end

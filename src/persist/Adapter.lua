@@ -23,10 +23,7 @@ function loadPolicyLine(line, model)
          return
      end
  
-     local tokens = {}
-     for str in string.gmatch(line, '([^, ]+)') do
-         table.insert(tokens,str)
-     end
+     local tokens = Util.split(line, ",")
      local key = tokens[1]
      local sec = key:sub(1,1)
  

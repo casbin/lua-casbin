@@ -182,4 +182,26 @@ function Model:printModel()
     end
 end
 
+-- sortPoliciesByPriority sorts policies by their priorities if 'priority' token exists
+function Model:sortPoliciesByPriority()
+     if not self.model["p"] then return end
+
+     for ptype, ast in pairs(self.model["p"]) do
+          local priorityIndex = 0
+          for inx, token in pairs(ast.tokens) do
+               if token == ptype .. "_priority" then
+                    priorityIndex = inx
+                    break
+               end
+          end
+          if priorityIndex == 0 then
+               return
+          end
+
+          table.sort(ast.policy, function (a, b)
+               return a[priorityIndex] < b[priorityIndex]
+          end)
+     end
+end
+
 return Model

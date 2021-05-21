@@ -47,34 +47,12 @@ function Util.escapeAssertion(str)
     if string.sub(str, 1, 1) == "r" or string.sub(str, 1, 1) == "p" then
         str = str:gsub("%.","_", 1)
     end
-    str = str:gsub("% r%."," r_")
-    str = str:gsub("% p%."," p_")
-    str = str:gsub("%&r.","&r_")
-    str = str:gsub("%&p.","&p_")
-    str = str:gsub("%|r.","|r_")
-    str = str:gsub("%|p.","|p_")
-    str = str:gsub("%>r.",">r_")
-    str = str:gsub("%>p.",">p_")
-    str = str:gsub("%<r.","<r_")
-    str = str:gsub("%<p.","<p_")
-    str = str:gsub("%-r.","-r_")
-    str = str:gsub("%-p.","-p_")
-    str = str:gsub("%+r.","+r_")
-    str = str:gsub("%+p.","+p_")
-    str = str:gsub("%*r.","*r_")
-    str = str:gsub("%*p.","*p_")
-    str = str:gsub("%/r.","/r_")
-    str = str:gsub("%/p.","/p_")
-    str = str:gsub("%!r.","!r_")
-    str = str:gsub("%!p.","!p_")
-    str = str:gsub("%(r.","(r_")
-    str = str:gsub("%(p.","(p_")
-    str = str:gsub("%)r.",")r_")
-    str = str:gsub("%)p.",")p_")
-    str = str:gsub("%=r.","=r_")
-    str = str:gsub("%=p.","=p_")
-    str = str:gsub("%,r.",",r_")
-    str = str:gsub("%,p.",",p_")
+    str = str:gsub("[^%w]+r%.", function (a)
+        return string.sub(a, 1, -3).."r_"
+    end)
+    str = str:gsub("[^%w]+p%.", function (a)
+        return string.sub(a, 1, -3).."p_"
+    end)
     return str
 end
 
@@ -185,5 +163,32 @@ function Util.areTablesSame(a, b)
     end
     return true
 end
+
+-- finds if string has eval and replaces eval(...) with its value so that it can be evaluated by luaxp
+function Util.findAndReplaceEval(str, context)
+    local m = string.gsub(str, "eval%((.-)%)", function (s)
+        return Util.escapeAssertion(context[Util.trim(s)])
+    end)
+    return m
+end
+
+-- replaces [obj] in (obj1, obj2, ...) to obj == obj1 || obj == obj2 || ...
+function Util.replaceInOfMatcher(str)
+    local s = string.gsub(str, "([^%s]+)(%s+)in(%s+)%((.*)%)", function (a, _, _ , b)
+        local t = ""
+        local vals = Util.splitCommaDelimited(b)
+        for k, v in pairs(vals) do
+            t = t .. a .. " == " .. v
+            if k<#vals then
+                t = t .. " || "
+            else
+                t = t .. " "
+            end
+        end
+        return t
+    end)
+    return s
+end
+
 
 return Util
