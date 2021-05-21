@@ -93,4 +93,33 @@ describe("Enforcer tests", function ()
         assert.is.True(e:enforce("bob", "data2", "read"))
         assert.is.True(e:enforce("bob", "data2", "write"))
     end)
+
+    it("explicit priority test", function ()
+        local model  = path .. "/examples/priority_model_explicit.conf"
+        local policy  = path .. "/examples/priority_policy_explicit.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.True(e:enforce("alice", "data1", "write"))
+        assert.is.True(e:enforce("alice", "data1", "read"))
+        assert.is.False(e:enforce("bob", "data2", "read"))
+        assert.is.True(e:enforce("bob", "data2", "write"))
+        assert.is.False(e:enforce("data1_deny_group", "data1", "read"))
+        assert.is.False(e:enforce("data1_deny_group", "data1", "write"))
+        assert.is.True(e:enforce("data2_allow_group", "data2", "read"))
+        assert.is.True(e:enforce("data2_allow_group", "data2", "write"))
+
+        local rule = {"1", "bob", "data2", "write", "deny"}
+        e.model:addPolicy("p", "p", rule)
+        e.model:sortPoliciesByPriority()
+        e.model:printPolicy()
+
+        assert.is.True(e:enforce("alice", "data1", "write"))
+        assert.is.True(e:enforce("alice", "data1", "read"))
+        assert.is.False(e:enforce("bob", "data2", "read"))
+        assert.is.False(e:enforce("bob", "data2", "write"))
+        assert.is.False(e:enforce("data1_deny_group", "data1", "read"))
+        assert.is.False(e:enforce("data1_deny_group", "data1", "write"))
+        assert.is.True(e:enforce("data2_allow_group", "data2", "read"))
+        assert.is.True(e:enforce("data2_allow_group", "data2", "write"))
+    end)
 end)

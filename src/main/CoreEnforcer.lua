@@ -208,8 +208,11 @@ end
 ]]
 function CoreEnforcer:loadPolicy()
     self.model:clearPolicy()
-    self.adapter:loadPolicy(self.model);
+    self.adapter:loadPolicy(self.model)
+
+    self.model:sortPoliciesByPriority()
     self.model:printPolicy()
+
     if self.autoBuildRoleLinks then
         self:buildRoleLinks()
     end
