@@ -394,7 +394,30 @@ function CoreEnforcer:enforce(...)
             end
         end
     else
+        local context = {}
+        for k, v in pairs(functions) do
+            context[k] = v
+        end
+        for k, v in pairs(rTokens) do
+            context[v] = rvals[k]
+        end
+        for k, v in pairs(pTokens) do
+            context[v] = ""
+        end
 
+        local tExpString = expString
+        tExpString = Util.replaceInOfMatcher(tExpString)
+            
+        local res, err = luaxp.evaluate(tExpString, context)
+        if err then
+            error("evaluation error: " .. err.message)
+        end
+
+        if res then
+            table.insert(policyEffects, Effect.ALLOW)
+        else
+            table.insert(policyEffects, Effect.INDETERMINATE)
+        end
     end
     
     local finalResult = DefaultEffector:mergeEffects(self.model.model["e"]["e"].value, policyEffects)
