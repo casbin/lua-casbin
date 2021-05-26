@@ -23,6 +23,98 @@ describe("Enforcer tests", function ()
         local e = Enforcer:new(model, policy)
         assert.is.True(e:enforce("alice", "data1", "read"))
         assert.is.False(e:enforce("alice", "data2", "read"))
+        assert.is.False(e:enforce("bob", "data1", "write"))
+        assert.is.True(e:enforce("bob", "data2", "write"))
+    end)
+
+    it("basic without spaces test", function ()
+        local model  = path .. "/examples/basic_model_without_spaces.conf"
+        local policy  = path .. "/examples/basic_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.True(e:enforce("alice", "data1", "read"))
+        assert.is.False(e:enforce("alice", "data1", "write"))
+        assert.is.False(e:enforce("alice", "data2", "read"))
+        assert.is.False(e:enforce("alice", "data2", "write"))
+        assert.is.False(e:enforce("bob", "data1", "read"))
+        assert.is.False(e:enforce("bob", "data1", "write"))
+        assert.is.False(e:enforce("bob", "data2", "read"))
+        assert.is.True(e:enforce("bob", "data2", "write"))
+    end)
+
+    it("basic with root model test", function ()
+        local model  = path .. "/examples/basic_with_root_model.conf"
+        local policy  = path .. "/examples/basic_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.True(e:enforce("root", "any", "any"))
+    end)
+
+    it("basic without resources test", function ()
+        local model  = path .. "/examples/basic_without_resources_model.conf"
+        local policy  = path .. "/examples/basic_without_resources_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.True(e:enforce("alice", "read"))
+        assert.is.False(e:enforce("alice", "write"))
+        assert.is.True(e:enforce("bob", "write"))
+        assert.is.False(e:enforce("bob", "read"))
+    end)
+
+    it("basic without users test", function ()
+        local model  = path .. "/examples/basic_without_users_model.conf"
+        local policy  = path .. "/examples/basic_without_users_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.True(e:enforce("data1", "read"))
+        assert.is.False(e:enforce("data1", "write"))
+        assert.is.True(e:enforce("data2", "write"))
+        assert.is.False(e:enforce("data2", "read"))
+    end)
+
+    it("keyMatch test", function ()
+        local model  = path .. "/examples/keymatch_model.conf"
+        local policy  = path .. "/examples/keymatch_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.True(e:enforce("alice", "/alice_data/test", "GET"))
+        assert.is.False(e:enforce("alice", "/bob_data/test", "GET"))
+        assert.is.True(e:enforce("cathy", "/cathy_data", "GET"))
+        assert.is.True(e:enforce("cathy", "/cathy_data", "POST"))
+        assert.is.False(e:enforce("cathy", "/cathy_data/12", "POST"))
+    end)
+
+    it("keyMatch2 test", function ()
+        local model  = path .. "/examples/keymatch2_model.conf"
+        local policy  = path .. "/examples/keymatch2_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.True(e:enforce("alice", "/alice_data/resource", "GET"))
+        assert.is.True(e:enforce("alice", "/alice_data2/123/using/456", "GET"))
+    end)
+
+    it("priority test", function ()
+        local model  = path .. "/examples/priority_model.conf"
+        local policy  = path .. "/examples/priority_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.True(e:enforce("alice", "data1", "read"))
+        assert.is.False(e:enforce("alice", "data1", "write"))
+        assert.is.False(e:enforce("alice", "data2", "read"))
+        assert.is.False(e:enforce("alice", "data2", "write"))
+
+        assert.is.False(e:enforce("bob", "data1", "read"))
+        assert.is.False(e:enforce("bob", "data1", "write"))
+        assert.is.True(e:enforce("bob", "data2", "read"))
+        assert.is.False(e:enforce("bob", "data2", "write"))
+    end)
+
+    it("priority indeterminate test", function ()
+        local model  = path .. "/examples/priority_model.conf"
+        local policy  = path .. "/examples/priority_indeterminate_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.False(e:enforce("alice", "data1", "read"))
     end)
 
     it("rbac test", function ()
@@ -38,12 +130,110 @@ describe("Enforcer tests", function ()
         assert.is.False(e:enforce("bogus", "data2", "write")) -- Non-existent subject
     end)
 
-    it("keyMatch test", function ()
-        local model  = path .. "/examples/keymatch_model.conf"
-        local policy  = path .. "/examples/keymatch_policy.csv"
+    it("rbac empty policy test", function ()
+        local model  = path .. "/examples/rbac_model.conf"
+        local policy  = path .. "/examples/empty_policy.csv"
 
         local e = Enforcer:new(model, policy)
-        assert.is.True(e:enforce("cathy", "/cathy_data", "GET"))
+        assert.is.False(e:enforce("alice", "data1", "read"))
+        assert.is.False(e:enforce("bob", "data1", "read"))
+        assert.is.False(e:enforce("bob", "data2", "write"))
+        assert.is.False(e:enforce("alice", "data2", "read"))
+        assert.is.False(e:enforce("alice", "data2", "write"))
+    end)
+
+    it("rbac with deny test", function ()
+        local model  = path .. "/examples/rbac_with_deny_model.conf"
+        local policy  = path .. "/examples/rbac_with_deny_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.True(e:enforce("alice", "data1", "read"))
+        assert.is.True(e:enforce("bob", "data2", "write"))
+        assert.is.True(e:enforce("alice", "data2", "read"))
+        assert.is.False(e:enforce("alice", "data2", "write"))
+    end)
+
+    it("rbac with domains test", function ()
+        local model  = path .. "/examples/rbac_with_domains_model.conf"
+        local policy  = path .. "/examples/rbac_with_domains_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.True(e:enforce("alice", "domain1", "data1", "read"))
+        assert.is.True(e:enforce("alice", "domain1", "data1", "write"))
+        assert.is.False(e:enforce("alice", "domain1", "data2", "read"))
+        assert.is.False(e:enforce("alice", "domain1", "data2", "write"))
+
+        assert.is.False(e:enforce("bob", "domain2", "data1", "read"))
+        assert.is.False(e:enforce("bob", "domain2", "data1", "write"))
+        assert.is.True(e:enforce("bob", "domain2", "data2", "read"))
+        assert.is.True(e:enforce("bob", "domain2", "data2", "write"))
+    end)
+
+    it("rbac with not deny test", function ()
+        local model  = path .. "/examples/rbac_with_not_deny_model.conf"
+        local policy  = path .. "/examples/rbac_with_deny_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.False(e:enforce("alice", "data2", "write"))
+    end)
+
+    it("rbac with resource roles test", function ()
+        local model  = path .. "/examples/rbac_with_resource_roles_model.conf"
+        local policy  = path .. "/examples/rbac_with_resource_roles_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.True(e:enforce("alice", "data1", "read"))
+        assert.is.True(e:enforce("alice", "data1", "write"))
+        assert.is.False(e:enforce("alice", "data2", "read"))
+        assert.is.True(e:enforce("alice", "data2", "write"))
+
+        assert.is.False(e:enforce("bob", "data1", "read"))
+        assert.is.False(e:enforce("bob", "data1", "write"))
+        assert.is.False(e:enforce("bob", "data2", "read"))
+        assert.is.True(e:enforce("bob", "data2", "write"))
+    end)
+
+    it("rbac with pattern test", function ()
+        local model  = path .. "/examples/rbac_with_pattern_model.conf"
+        local policy  = path .. "/examples/rbac_with_pattern_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+
+        -- set matching function to keyMatch2
+        e.rmMap["g2"].matchingFunc = BuiltInFunctions.keyMatch2
+
+        assert.is.True(e:enforce("alice", "/book/1", "GET"))
+        assert.is.True(e:enforce("alice", "/book/2", "GET"))
+        assert.is.True(e:enforce("alice", "/pen/1", "GET"))
+        assert.is.False(e:enforce("alice", "/pen/2", "GET"))
+        assert.is.False(e:enforce("bob", "/book/1", "GET"))
+        assert.is.False(e:enforce("bob", "/book/2", "GET"))
+        assert.is.True(e:enforce("bob", "/pen/1", "GET"))
+        assert.is.True(e:enforce("bob", "/pen/2", "GET"))
+
+        -- replace keyMatch2 with keyMatch3
+        e.rmMap["g2"].matchingFunc = BuiltInFunctions.keyMatch3
+        assert.is.True(e:enforce("alice", "/book2/1", "GET"))
+        assert.is.True(e:enforce("alice", "/book2/2", "GET"))
+        assert.is.True(e:enforce("alice", "/pen2/1", "GET"))
+        assert.is.False(e:enforce("alice", "/pen2/2", "GET"))
+        assert.is.False(e:enforce("bob", "/book2/1", "GET"))
+        assert.is.False(e:enforce("bob", "/book2/2", "GET"))
+        assert.is.True(e:enforce("bob", "/pen2/1", "GET"))
+        assert.is.True(e:enforce("bob", "/pen2/2", "GET"))
+    end)
+
+    it("abac with empty policy test", function ()
+        local model  = path .. "/examples/abac_model.conf"
+        local policy  = path .. "/examples/empty_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        local sub  = "alice"
+        local obj = {
+            Owner = "alice",
+            id = "data1"
+        }
+        assert.is.True(e:enforce(sub, obj, "write"))
     end)
 
     it("abac sub_rule test", function ()
@@ -76,6 +266,49 @@ describe("Enforcer tests", function ()
         assert.is.True(e:enforce(sub3, "/data1", "read"))
         assert.is.False(e:enforce(sub3, "/data2", "read"))
         assert.is.True(e:enforce(sub1, "/data2", "write"))
+    end)
+
+    it("abac with multiple sub_rules test", function ()
+        local model  = path .. "/examples/abac_multiple_rules_model.conf"
+        local policy  = path .. "/examples/abac_multiple_rules_policy.csv"
+        local e = Enforcer:new(model, policy)
+
+        local sub1 = {
+            name = "alice",
+            age = 16
+        }
+        local sub2 = {
+            name = "alice",
+            age = 20
+        }
+        local sub3 = {
+            name = "bob",
+            age = 65
+        }
+        local sub4 = {
+            name = "bob",
+            age = 35
+        }
+
+        assert.is.False(e:enforce(sub1, "/data1", "read"))
+        assert.is.False(e:enforce(sub1, "/data2", "read"))
+        assert.is.False(e:enforce(sub1, "/data1", "write"))
+        assert.is.False(e:enforce(sub1, "/data2", "write"))
+
+        assert.is.True(e:enforce(sub2, "/data1", "read"))
+        assert.is.False(e:enforce(sub2, "/data2", "read"))
+        assert.is.False(e:enforce(sub2, "/data1", "write"))
+        assert.is.False(e:enforce(sub2, "/data2", "write"))
+
+        assert.is.False(e:enforce(sub3, "/data1", "read"))
+        assert.is.False(e:enforce(sub3, "/data2", "read"))
+        assert.is.False(e:enforce(sub3, "/data1", "write"))
+        assert.is.False(e:enforce(sub3, "/data2", "write"))
+
+        assert.is.False(e:enforce(sub4, "/data1", "read"))
+        assert.is.False(e:enforce(sub4, "/data2", "read"))
+        assert.is.False(e:enforce(sub4, "/data1", "write"))
+        assert.is.True(e:enforce(sub4, "/data2", "write"))
     end)
 
     it("in of matcher test", function ()
