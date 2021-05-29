@@ -14,7 +14,7 @@
 
 local config = require("src.config.Config")
 local path = os.getenv("PWD") or io.popen("cd"):read()
-path  = path .. "/spec/config/test.ini"
+path  = path .. "/tests/config/test.ini"
 local config = Config:newConfig(path)
 
 describe("config tests", function()

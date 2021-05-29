@@ -21,7 +21,7 @@ local basic_policy_path = path .. "/examples/basic_policy.csv"
 local rbac_path = path .. "/examples/rbac_model.conf"
 local rbac_policy_path = path .. "/examples/rbac_policy.csv"
 
-local save_policy_path = path .. "/spec/persist/saved_policy.csv"
+local save_policy_path = path .. "/tests/persist/saved_policy.csv"
 
 describe("FileAdapter tests", function() 
     
