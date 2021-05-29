@@ -6,6 +6,8 @@
 
 An authorization library that supports access control models like ACL, RBAC, ABAC in Lua (OpenResty)
 
+Read the setup guide for OpenResty [here](https://github.com/casbin/lua-casbin/blob/master/Setup-OpenResty.md).
+
 **News**: Are you still worried about how to write the correct Casbin policy? ``Casbin online editor`` is coming to help! Try it at: http://casbin.org/editor/
 
 ![casbin Logo](casbin-logo.png)
