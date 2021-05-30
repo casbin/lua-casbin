@@ -69,11 +69,11 @@ jobs:
         done
 
     - name: Run tests
-      run: busted spec -o htest
+      run: busted tests -o htest
       
     - name: Reporting test coverage
       run: |
-        busted -c -v
+        busted tests -c -v
         luacov-coveralls -i src -e .luarocks
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
