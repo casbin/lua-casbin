@@ -157,10 +157,10 @@ describe("model tests", function()
         local rule = {'admin', 'domain1', 'data1', 'read'}
         m:addPolicy("p", "p", rule)
 
-        local res = m:removeFilteredPolicy("p", "p", 1, "domain1", "data1")
+        local res = m:removeFilteredPolicy("p", "p", 1, {"domain1", "data1"})
         assert.is.True(res)
 
-        local res = m:removeFilteredPolicy("p", "p", 1, "domain1", "data1")
+        local res = m:removeFilteredPolicy("p", "p", 1, {"domain1", "data1"})
         assert.is.False(res)
     end)
 
