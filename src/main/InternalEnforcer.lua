@@ -34,8 +34,9 @@ function InternalEnforcer:addPolicy(sec, ptype, rule)
     if self.adapter and self.autoSave then
 
         local status, err = pcall(function () self.adapter:addPolicy(sec, ptype, rule) end)
-        if status == false then
-            Util.logPrintf("method not implemented or "..err)
+        if status == false and string.sub(err, -15) == "not implemented" then
+            -- log, continue
+        elseif status == false then
             return false
         end
     end
@@ -49,7 +50,7 @@ function InternalEnforcer:addPolicy(sec, ptype, rule)
     end
 
     return true
-    --TODO: update watcher
+    --TODO: update watcher, add logger
 end
 
 --[[
@@ -67,8 +68,9 @@ function InternalEnforcer:addPolicies(sec, ptype, rules)
                 self.adapter:addPolicies(sec, ptype, rules)
             end
         end)
-        if status == false then
-            Util.logPrintf("method not implemented or "..err)
+        if status == false and string.sub(err, -15) == "not implemented" then
+            -- log, continue
+        elseif status == false then
             return false
         end
     end
@@ -80,7 +82,7 @@ function InternalEnforcer:addPolicies(sec, ptype, rules)
     end
 
     return true
-    --TODO: update watcher    
+    --TODO: update watcher, add logger
 end
 
 --[[
@@ -90,7 +92,7 @@ end
     * @param rules the rules.
 ]]
 function InternalEnforcer:buildIncrementalRoleLinks(op, ptype, rules)
-    self.model:buildIncrementalRoleLinks(self.rm, op, "g", ptype, rules)
+    self.model:buildIncrementalRoleLinks(self.rmMap[ptype], op, "g", ptype, rules)
 end
 
 --[[
@@ -100,8 +102,9 @@ function InternalEnforcer:removePolicy(sec, ptype, rule)
     if self.adapter and self.autoSave then
 
         local status, err = pcall(function () self.adapter:removePolicy(sec, ptype, rule) end)
-        if status == false then
-            Util.logPrintf("method not implemented or "..err)
+        if status == false and string.sub(err, -15) == "not implemented" then
+            -- log, continue
+        elseif status == false then
             return false
         end
     end
@@ -119,7 +122,7 @@ function InternalEnforcer:removePolicy(sec, ptype, rule)
     end
 
     return true
-    -- TODO: update watcher
+    -- TODO: update watcher, add logger
 end
 
 --[[
@@ -132,12 +135,13 @@ end
 ]]
 function InternalEnforcer:updatePolicy(sec, ptype, oldRule, newRule)
     -- TODO: update dispatcher
-
+    
     if self.adapter and self.autoSave then
 
         local status, err = pcall(function () self.adapter:updatePolicy(sec, ptype, oldRule, newRule) end)
-        if status == false then
-            Util.logPrintf("method not implemented or "..err)
+        if status == false and string.sub(err, -15) == "not implemented" then
+            -- log, continue
+        elseif status == false then
             return false
         end
     end
@@ -154,8 +158,9 @@ function InternalEnforcer:updatePolicy(sec, ptype, oldRule, newRule)
             table.insert(oldRules, oldRule)
             self:buildIncrementalRoleLinks(self.model.PolicyOperations.POLICY_REMOVE, ptype, oldRules)
         end)
-        if status == false then
-            Util.logPrintf(err)
+        if status == false and string.sub(err, -15) == "not implemented" then
+            -- log, continue
+        elseif status == false then
             return false
         end
         
@@ -164,21 +169,22 @@ function InternalEnforcer:updatePolicy(sec, ptype, oldRule, newRule)
             table.insert(newRules, newRule)
             self:buildIncrementalRoleLinks(self.model.PolicyOperations.POLICY_ADD, ptype, newRules)
         end)
-        if status == false then
-            Util.logPrintf(err)
+        if status == false and string.sub(err, -15) == "not implemented" then
+            -- log, continue
+        elseif status == false then
             return false
         end
     end
 
     return true
-    -- TODO: update watcher
+    -- TODO: update watcher, add logger
 end
 
 --[[
     * removePolicies removes rules from the current policy.
 ]]
 function InternalEnforcer:removePolicies(sec, ptype, rules)
-    if self.model:hasPolicies(sec, ptype, rules) then
+    if not self.model:hasPolicies(sec, ptype, rules) then
         return false
     end
 
@@ -189,8 +195,9 @@ function InternalEnforcer:removePolicies(sec, ptype, rules)
                 self.adapter:removePolicies(sec, ptype, rules)
             end
         end)
-        if status == false then
-            Util.logPrintf("method not implemented or "..err)
+        if status == false and string.sub(err, -15) == "not implemented" then
+            -- log, continue
+        elseif status == false then
             return false
         end
     end
@@ -206,7 +213,7 @@ function InternalEnforcer:removePolicies(sec, ptype, rules)
     end
 
     return true
-    -- TODO: update watcher
+    -- TODO: update watcher, add logger
 end
 
 --[[
@@ -214,30 +221,29 @@ end
 ]]
 function InternalEnforcer:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
     if fieldValues == nil or #fieldValues == 0 then
-        Util.logPrintf("Invaild fieldValues parameter")
         return false
     end
 
     if self.adapter and self.autoSave then
         
         local status, err = pcall(function () self.adapter:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues) end)
-        if status == false then
-            Util.logPrintf("method not implemented or "..err)
+        if status == false and string.sub(err, -15) == "not implemented" then
+            -- log, continue
+        elseif status == false then
             return false
         end
     end
 
-    local effects = self.model:removeFilteredPolicyReturnsEffects(sec, ptype, fieldIndex, fieldValues)
-    local ruleRemoved = #effects > 0
+    local isRuleRemoved, effects = self.model:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
 
-    if not ruleRemoved then
+    if not isRuleRemoved then
         return false
     end
 
     if sec == "g" then
-        self:buildIncrementalRoleLinks(self.model.PolicyOperations.POLICY_ADD, ptype, effects)
+        self:buildIncrementalRoleLinks(self.model.PolicyOperations.POLICY_REMOVE, ptype, effects)
     end
 
     return true
-    -- TODO: update watcher
+    -- TODO: update watcher, add logger
 end

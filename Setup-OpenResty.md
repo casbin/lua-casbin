@@ -59,7 +59,7 @@ Since the project isn't a LuaRocks/OPM module yet, you need to clone it to use i
 **NOTE**: You may need to add the `nginx` command to your path by adding `export PATH="/usr/local/openresty/nginx/sbin/:$PATH"` to your `.bashrc` or similar file.
 You can create a lua module for OpenResty applications as shown [here](https://blog.openresty.com/en/or-lua-module/) or add it to your existing lua module by following these steps:
 
-- In your module, clone the Lua Casbin repo at the top level (`/`) of your application (along with the `conf` director) with `git clone https://github.com/casbin/lua-casbin.git`.
+- In your module, clone the Lua Casbin repo at the top level (`/`) of your application (along with the `conf` directory) with `git clone https://github.com/casbin/lua-casbin.git`.
 - In your module's `conf/nginx.conf` file append the `lua_package_path` with `$prefix/lua-casbin/?.lua;` so that it becomes something like this: `lua_package_path "$prefix/lua/?.lua;$prefix/lua-casbin/?.lua;;";`.
 - In the file where you want to use Casbin, use `local Enforcer = require("src/main/Enforcer")` inside the `content_by_lua_block`. Here is a sample describing usage for basic model/policy and ABAC model/policy:
 

@@ -222,6 +222,7 @@ function Policy:updatePolicy(sec, ptype, oldRule, newRule)
         if Util.arrayEquals(oldRule, v) then
             table.remove(self.model[sec][ptype].policy, k)
             table.insert(self.model[sec][ptype].policy, newRule)
+            return true
         end
     end
 end
@@ -305,10 +306,10 @@ end
      *                    means not to match this field.
      * @return succeeds or not.
 ]]
-function Policy:removeFilteredPolicy(sec, ptype, fieldIndex, ...)
+function Policy:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
     local tmp = {}
     local res = false
-    local fieldValues = {...}
+    local effects = {}
 
     if not self.model[sec] then return res end
     if not self.model[sec][ptype] then return res end
@@ -323,6 +324,7 @@ function Policy:removeFilteredPolicy(sec, ptype, fieldIndex, ...)
         end
 
         if matched then
+            table.insert(effects, rule)
             res = true
         else
             table.insert(tmp, rule)
@@ -330,7 +332,7 @@ function Policy:removeFilteredPolicy(sec, ptype, fieldIndex, ...)
     end
 
     self.model[sec][ptype].policy = tmp
-    return res
+    return res, effects
 end
 
 --[[

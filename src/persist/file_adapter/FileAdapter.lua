@@ -98,6 +98,13 @@ function FileAdapter:removePolicy(sec, ptype, rule)
 end
 
 --[[
+    * updatePolicy updates a policy rule from the storage
+]]
+function FileAdapter:updatePolicy(sec, ptype, oldRule, newRule)
+    error("not implemented")
+end
+
+--[[
     * removeFilteredPolicy removes policy rules that match the filter from the storage.
 ]]
 function FileAdapter:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
