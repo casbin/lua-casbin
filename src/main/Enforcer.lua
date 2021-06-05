@@ -12,9 +12,9 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require("src.main.InternalEnforcer")
+require("src.main.ManagementEnforcer")
 
 Enforcer = {}
-setmetatable(Enforcer, InternalEnforcer)
+setmetatable(Enforcer, ManagementEnforcer)
 
 return Enforcer

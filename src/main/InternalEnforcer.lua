@@ -247,3 +247,5 @@ function InternalEnforcer:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValu
     return true
     -- TODO: update watcher, add logger
 end
+
+return InternalEnforcer

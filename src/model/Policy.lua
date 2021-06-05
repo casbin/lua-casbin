@@ -115,7 +115,8 @@ end
      * @return the policy rules of section sec and policy type ptype.
 ]]
 function Policy:getPolicy(sec, ptype)
-    return self.model[sec][ptype].policy
+    local policy = Util.tableDeepCopy(self.model[sec][ptype].policy)
+    return policy
 end
 
 --[[
@@ -351,6 +352,19 @@ function Policy:getValuesForFieldInPolicy(sec, ptype, fieldIndex)
     end
 
     values = Util.arrayRemoveDuplications(values)
+    return values
+end
+
+function Policy:getValuesForFieldInPolicyAllTypes(sec, fieldIndex)
+    local values = {}
+
+    for ptype, _ in pairs(self.model[sec]) do
+        local tvalues = self:getValuesForFieldInPolicy(sec, ptype, fieldIndex)
+        for _, v in pairs(tvalues) do
+            table.insert(values, v)
+        end
+    end
+
     return values
 end
 

@@ -14,16 +14,27 @@
 
 require("src.util.BuiltInFunctions")
 
-FunctionMap = {}
+FunctionMap = {
+    ["keyMatch"] = BuiltInFunctions.keyMatchFunc,
+    ["keyGet"] = BuiltInFunctions.keyGetFunc,
+    ["keyMatch2"] = BuiltInFunctions.keyMatch2Func,
+    ["keyMatch3"] = BuiltInFunctions.keyMatch3Func,
+    ["regexMatch"] = BuiltInFunctions.regexMatchFunc,
+    ["globMatch"] = BuiltInFunctions.globMatch
+}
 
 -- FunctionMap provides a set of built in functions
 function FunctionMap:new()
     local o = {}
-    o["keyMatch"] = BuiltInFunctions.keyMatchFunc
-    o["keyGet"] = BuiltInFunctions.keyGetFunc
-    o["keyMatch2"] = BuiltInFunctions.keyMatch2Func
-    o["keyMatch3"] = BuiltInFunctions.keyMatch3Func
-    o["regexMatch"] = BuiltInFunctions.regexMatchFunc
-    o["globMatch"] = BuiltInFunctions.globMatch
+    for k, v in pairs(FunctionMap) do
+        o[k] = v
+    end
     return o
+end
+
+-- Add new built-in function to FunctionMap
+function FunctionMap:addFunction(key, func)
+    if not self[key] then
+        self[key] = func
+    end
 end
