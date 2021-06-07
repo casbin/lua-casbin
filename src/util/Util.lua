@@ -190,5 +190,17 @@ function Util.replaceInOfMatcher(str)
     return s
 end
 
+-- returns deep (recursive) copy of a table (values only)
+function Util.tableDeepCopy(org)
+    local copy = {}
+    for k, v in pairs(org) do
+        if type(v) == "table" then
+            copy[k] = Util.tableDeepCopy(v)
+        else
+            copy[k] = v
+        end
+    end
+    return copy
+end
 
 return Util
