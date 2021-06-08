@@ -15,3 +15,7 @@
 
 .idea/
 *.iml
+
+# Test generated files and log files
+saved_policy.csv
+*.log
