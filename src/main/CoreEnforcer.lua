@@ -184,7 +184,7 @@ end
      * @param rm the role manager.
 ]]
 function CoreEnforcer:setRoleManager(rm)
-    self.rm = rm
+    self.rmMap["g"] = rm
 end
 
 --[[
@@ -305,6 +305,9 @@ end
 ]]
 function CoreEnforcer:enforce(...)
     local rvals = {...}
+    if type(rvals[1]) == "table" and #rvals == 1 then
+        rvals = rvals[1]
+    end
 
     if not self.enabled then
         return false
@@ -335,7 +338,7 @@ function CoreEnforcer:enforce(...)
     end
 
     local expString = self.model.model["m"]["m"].value
-    -- TODO: hasEval
+
     local policyLen = #self.model.model["p"]["p"].policy
 
     local policyEffects = {}
@@ -428,7 +431,7 @@ function CoreEnforcer:isAutoNotifyWatcher()
     return self.autoNotifyWatcher
 end
 
-function CoreEnforcer:setAutoNotifyWatcher()
+function CoreEnforcer:setAutoNotifyWatcher(autoNotifyWatcher)
     self.autoNotifyWatcher = autoNotifyWatcher
 end
 
@@ -438,6 +441,35 @@ end
 
 function CoreEnforcer:setAutoNotifyDispatcher(autoNotifyDispatcher)
     self.autoNotifyDispatcher = autoNotifyDispatcher
+end
+
+-- BatchEnforce enforce in batches and returns table of results
+function CoreEnforcer:BatchEnforce(requests)
+    local results = {}
+    for _, request in pairs(requests) do
+        local res = self:enforce(request)
+        table.insert(results, res)
+    end
+
+    return results
+end
+
+-- AddNamedMatchingFunc add MatchingFunc by ptype RoleManager
+function CoreEnforcer:AddNamedMatchingFunc(ptype, fn)
+    if self.rmMap[ptype] then
+        self.rmMap[ptype].matchingFunc = fn
+        return true
+    end
+    return false
+end
+
+-- AddNamedDomainMatchingFunc add MatchingFunc by ptype to RoleManager
+function CoreEnforcer:AddNamedDomainMatchingFunc(ptype, fn)
+    if self.rmMap[ptype] then
+        self.rmMap[ptype].domainMatchingFunc = fn
+        return true
+    end
+    return false
 end
 
 return CoreEnforcer
