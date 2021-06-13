@@ -340,4 +340,130 @@ function Enforcer:GetImplicitResourcesForUser(user, ...)
     return res
 end
 
+
+-- RBAC API with domains
+
+-- GetUsersForRoleInDomain gets the users that has a role inside a domain.
+function Enforcer:GetUsersForRoleInDomain(name, domain)
+    local res, _ = self.model.model["g"]["g"].RM:getUsers(name, domain)
+    return res
+end
+
+-- GetRolesForUserInDomain gets the roles that a user has inside a domain.
+function Enforcer:GetRolesForUserInDomain(name, domain)
+    local res, _ = self.model.model["g"]["g"].RM:getRoles(name, domain)
+    return res
+end
+
+-- GetPermissionsForUserInDomain gets permissions for a user or role inside a domain.
+function Enforcer:GetPermissionsForUserInDomain(user, domain)
+    return self:GetFilteredPolicy(0, user, domain)
+end
+
+-- AddRoleForUserInDomain adds a role for a user inside a domain.
+-- Returns false if the user already has the role (aka not affected).
+function Enforcer:AddRoleForUserInDomain(user, role, domain)
+    return self:AddGroupingPolicy(user, role, domain)
+end
+
+-- DeleteRoleForUserInDomain deletes a role for a user inside a domain.
+-- Returns false if the user does not have the role (aka not affected).
+function Enforcer:DeleteRoleForUserInDomain(user, role, domain)
+    return self:RemoveGroupingPolicy(user, role, domain)
+end
+
+-- DeleteRolesForUserInDomain deletes all roles for a user inside a domain.
+-- Returns false if the user does not have any roles (aka not affected).
+function Enforcer:DeleteRolesForUserInDomain(user, domain)
+    local roles = self.model.model["g"]["g"].RM:getRoles(user, domain)
+
+    local rules = {}
+    for _, role in pairs(roles) do
+        table.insert(rules, {user, role, domain})
+    end
+
+    return self:RemoveGroupingPolicies(rules)
+end
+
+-- GetAllUsersByDomain would get all users associated with the domain.
+function Enforcer:GetAllUsersByDomain(domain)
+    local m = {}
+    local g = self.model.model["g"]["g"]
+    local p = self.model.model["p"]["p"]
+
+    local users = {}
+    local inx = self:getDomainIndex("p")
+
+    local function getUser(index, policies, domain, m)
+        if #policies == 0 or #policies[1] < index then
+            return {}
+        end
+
+        local res = {}
+        for _, policy in pairs(policies) do
+            if not m[policy[1]] and policy[index] == domain then
+                table.insert(res, policy[1])
+                m[policy[1]] = {}
+            end
+        end
+        return res
+    end
+
+    local gUsers = getUser(3, g.policy, domain, m)
+    for _, v in pairs(gUsers) do
+        table.insert(users, v)
+    end
+    local pUsers = getUser(inx, p.policy, domain, m)
+    for _, v in pairs(pUsers) do
+        table.insert(users, v)
+    end
+
+    return users
+end
+
+-- DeleteAllUsersByDomain would delete all users associated with the domain.
+function Enforcer:DeleteAllUsersByDomain(domain)
+    local g = self.model.model["g"]["g"]
+    local p = self.model.model["p"]["p"]
+
+    local inx = self:getDomainIndex("p")
+
+    local function getUser(index, policies, domain)
+        if #policies == 0 or #policies[1] < index then
+            return {}
+        end
+
+        local res = {}
+        for _, policy in pairs(policies) do
+            if policy[index] == domain then
+                table.insert(res, policy)
+            end
+        end
+        return res
+    end
+
+    local gUsers = getUser(3, g.policy, domain)
+    self:RemoveGroupingPolicies(gUsers)
+
+    local pUsers = getUser(inx, p.policy, domain)
+    self:RemovePolicies(pUsers)
+
+    return true
+end
+
+-- DeleteDomains would delete all associated users and roles.
+-- It would delete all domains if parameter is not provided.
+function Enforcer:DeleteDomains(...)
+    local domains = {...}
+    if #domains == 0 then
+        self:clearPolicy()
+    end
+
+    for _, domain in pairs(domains) do
+        self:DeleteAllUsersByDomain(domain)
+    end
+
+    return true
+end
+
 return Enforcer
