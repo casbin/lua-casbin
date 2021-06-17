@@ -203,4 +203,27 @@ function Util.tableDeepCopy(org)
     return copy
 end
 
+-- setSubtract returns the elements in `a` that aren't in `b`.
+function Util.setSubtract(a, b)
+    local res = {}
+    for _, v in pairs(a) do
+        res[v] = true
+    end
+    for _, v in pairs(b) do
+        if res[v] then
+            res[v] = nil
+        else
+            res[v] = true
+        end
+    end
+    local diff = {}
+    for v, chk in pairs(res) do
+        if chk == true then
+            table.insert(diff, v)
+        end
+    end
+
+    return diff
+end
+
 return Util

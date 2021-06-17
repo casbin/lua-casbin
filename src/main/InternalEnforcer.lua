@@ -248,4 +248,20 @@ function InternalEnforcer:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValu
     -- TODO: update watcher, add logger
 end
 
+function InternalEnforcer:getDomainIndex(ptype)
+    if not self.model.model["p"] then return end
+    if not self.model.model["p"][ptype] then return end
+
+    local p = self.model.model["p"][ptype]
+    local pattern = ptype .. "_dom"
+    local index = #p.tokens + 1
+	for i, token in pairs(p.tokens) do
+		if token == pattern then
+			index = i
+			break
+        end
+	end
+	return index
+end
+
 return InternalEnforcer

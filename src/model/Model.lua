@@ -146,7 +146,7 @@ end
      * @return the section text.
 ]]
 function Model:saveSectionToText(sec)
-     res = "[" .. self.sectionNameMap[sec] .. "]\n"
+     local res = "[" .. self.sectionNameMap[sec] .. "]\n"
 
      if not self.model[sec] then
           return ""

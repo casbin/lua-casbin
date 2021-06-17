@@ -355,4 +355,21 @@ describe("Enforcer tests", function ()
         assert.is.True(e:enforce("data2_allow_group", "data2", "read"))
         assert.is.True(e:enforce("data2_allow_group", "data2", "write"))
     end)
+
+    it("Batch Enforce test", function ()
+        local model  = path .. "/examples/basic_model.conf"
+        local policy  = path .. "/examples/basic_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+
+        local res = {true, false, false, true}
+        local requests = {
+            {"alice", "data1", "read"},
+            {"alice", "data2", "read"},
+            {"bob", "data1", "write"},
+            {"bob", "data2", "write"}
+        }
+
+        assert.is.Same(e:BatchEnforce(requests), res)
+    end)
 end)

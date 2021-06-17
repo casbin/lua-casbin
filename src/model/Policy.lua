@@ -132,6 +132,9 @@ end
 function Policy:getFilteredPolicy(sec, ptype, fieldIndex, ...)
     local res = {}
     local fieldValues = {...}
+    if type(fieldValues[1]) == "table" then
+        fieldValues = fieldValues[1]
+    end
 
     if not self.model[sec] then return res end
     if not self.model[sec][ptype] then return res end
