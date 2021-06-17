@@ -71,6 +71,7 @@ function CoreEnforcer:initWithModelAndAdapter(m, adapter)
 
     self.adapter = adapter
     self.model = m
+    self.model.logger = self.logger
     self.model:printModel()
 
     self:initialize()
@@ -254,13 +255,42 @@ function CoreEnforcer:enableEnforce(enable)
     self.enable = enable
 end
 
+-- setLogger changes the current enforcer's logger.
+function CoreEnforcer:setLogger(logger)
+    self.logger = logger
+    self.model.logger = logger
+    for _, rm in pairs(self.rmMap) do
+        rm.logger = logger
+    end
+end
+
+--[[
+     * enableFileLogger saves the logs to a specific file
+     *
+     * @param filePath the path of the log file,
+     * if not present it will be created
+]]
+function CoreEnforcer:enableFileLogger(filePath)
+    if not filePath or filePath == "" then
+        return false
+    end
+
+    local logger = Log:getFileLogger(filePath)
+    self:setLogger(logger)
+end
+
 --[[
      * enableLog changes whether to print Casbin log to the standard output.
      *
      * @param enable whether to enable Casbin's log.
 ]]
 function CoreEnforcer:enableLog(enable)
+    self.logger.enabled = enable
+end
 
+-- returns the current logger's enabled status
+function CoreEnforcer:isLogEnabled()
+    return self.logger.enabled
 end
 
 --[[
@@ -424,6 +454,23 @@ function CoreEnforcer:enforce(...)
     end
     
     local finalResult = DefaultEffector:mergeEffects(self.model.model["e"]["e"].value, policyEffects)
+
+    -- Logging request
+    if self.logger.enabled then
+        local req = "Request: "
+        for _, v in pairs(rvals) do
+            if type(v)=="table" then
+                req = req .. Util.printTable(v) .. ", "
+            else
+                req = req .. tostring(v) .. ", "
+            end
+        end
+        req = string.sub(req, 1, -3)
+        req = req .. " ---> " .. tostring(finalResult)
+
+        self.logger:info(req)
+    end
+    
     return finalResult
 end
 

@@ -13,8 +13,9 @@
 --limitations under the License.
 
 local log = require("src.util.Log")
+local Enforcer = require("src.main.Enforcer")
+
 local path = os.getenv("PWD") or io.popen("cd"):read()
-path = path .. "/testLogFile.log"
 
 describe("log tests", function ()
     
@@ -26,10 +27,12 @@ describe("log tests", function ()
     end)
 
     it("test file logger", function ()
-        local logger = Log:getFileLogger(path)
+        local filePath = path .. "/testLogFile.log"
+        local logger = Log:getFileLogger(filePath)
         logger:info("new log started")
         assert.has_no.errors(function ()
-            io.open(path, "r")
+            local f = io.open(filePath, "r")
+            if f == nil then error("file does not exist") end
         end)
     end)
 
@@ -37,5 +40,30 @@ describe("log tests", function ()
         assert.has_error(function ()
             local logger = Log:getFileLogger()
         end)
+    end)
+
+    it("test enableFileLogger", function ()
+        local model  = path .. "/examples/basic_model.conf"
+        local policy  = path .. "/examples/basic_policy.csv"
+        
+        local e = Enforcer:new(model, policy)
+        local filePath = path .. "/testEnableFileLogger.log"
+
+        -- error as log file does not exit
+        assert.has_error(function ()
+            local f = io.open(filePath, "r")
+            if f == nil then error("file does not exist") end
+        end)
+
+        e:enableFileLogger(filePath)
+        e:enforce("alice", "data1", "read")
+
+        -- no error as log file is created
+        assert.has_no.errors(function ()
+            local f = io.open(filePath, "r")
+            if f == nil then error("file does not exist") end
+        end)
+
+        os.remove(filePath)
     end)
 end) 
