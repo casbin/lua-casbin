@@ -372,4 +372,53 @@ describe("Enforcer tests", function ()
 
         assert.is.Same(e:BatchEnforce(requests), res)
     end)
+
+    it("enforceEx test", function ()
+
+        local function test(e, ...)
+            local _, p = e:enforceEx(...)
+            return p
+        end
+
+        local model  = path .. "/examples/basic_model.conf"
+        local policy  = path .. "/examples/basic_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+
+        assert.is.Same(test(e, "alice", "data1", "read"), {"alice", "data1", "read"})
+        assert.is.Same(test(e, "alice", "data1", "write"), {})
+        assert.is.Same(test(e, "alice", "data2", "read"), {})
+        assert.is.Same(test(e, "alice", "data2", "write"), {})
+        assert.is.Same(test(e, "bob", "data1", "read"), {})
+        assert.is.Same(test(e, "bob", "data1", "write"), {})
+        assert.is.Same(test(e, "bob", "data2", "read"), {})
+        assert.is.Same(test(e, "bob", "data2", "write"), {"bob", "data2", "write"})
+
+        model  = path .. "/examples/rbac_model.conf"
+        policy  = path .. "/examples/rbac_policy.csv"
+
+        e = Enforcer:new(model, policy)
+
+        assert.is.Same(test(e, "alice", "data1", "read"), {"alice", "data1", "read"})
+        assert.is.Same(test(e, "alice", "data1", "write"), {})
+        assert.is.Same(test(e, "alice", "data2", "read"), {"data2_admin", "data2", "read"})
+        assert.is.Same(test(e, "alice", "data2", "write"), {"data2_admin", "data2", "write"})
+        assert.is.Same(test(e, "bob", "data1", "read"), {})
+        assert.is.Same(test(e, "bob", "data1", "write"), {})
+        assert.is.Same(test(e, "bob", "data2", "read"), {})
+        assert.is.Same(test(e, "bob", "data2", "write"), {"bob", "data2", "write"})
+
+        model  = path .. "/examples/priority_model.conf"
+        policy  = path .. "/examples/priority_policy.csv"
+
+        e = Enforcer:new(model, policy)
+
+        assert.is.Same(test(e, "alice", "data1", "read"), {"alice", "data1", "read", "allow"})
+        assert.is.Same(test(e, "alice", "data1", "write"), {"data1_deny_group", "data1", "write", "deny"})
+        assert.is.Same(test(e, "alice", "data2", "read"), {})
+        assert.is.Same(test(e, "alice", "data2", "write"), {})
+        assert.is.Same(test(e, "bob", "data1", "write"), {})
+        assert.is.Same(test(e, "bob", "data2", "read"), {"data2_allow_group", "data2", "read", "allow"})
+        assert.is.Same(test(e, "bob", "data2", "write"), {"bob", "data2", "write", "deny"})
+    end)
 end)

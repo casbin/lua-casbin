@@ -333,7 +333,7 @@ end
      *              of strings, can be class instances if ABAC is used.
      * @return whether to allow the request.
 ]]
-function CoreEnforcer:enforce(...)
+function CoreEnforcer:enforceEx(...)
     local rvals = {...}
     if type(rvals[1]) == "table" and #rvals == 1 then
         rvals = rvals[1]
@@ -410,7 +410,7 @@ function CoreEnforcer:enforce(...)
                     c = false
                 end
             else
-                error("matcher result should be boolean or integer")
+                error("matcher result should be boolean or number")
             end
             
             if context["p_eft"] and c then
@@ -453,7 +453,9 @@ function CoreEnforcer:enforce(...)
         end
     end
     
-    local finalResult = DefaultEffector:mergeEffects(self.model.model["e"]["e"].value, policyEffects)
+    local finalResult, explainIndex = DefaultEffector:mergeEffects(self.model.model["e"]["e"].value, policyEffects)
+
+    local explainPolicy = {}
 
     -- Logging request
     if self.logger.enabled then
@@ -466,12 +468,23 @@ function CoreEnforcer:enforce(...)
             end
         end
         req = string.sub(req, 1, -3)
-        req = req .. " ---> " .. tostring(finalResult)
+        req = req .. " ---> " .. tostring(finalResult) .. "\n"
+        if explainIndex~=-1 and #self.model.model["p"]["p"].policy>=explainIndex then
+            req = req .. "Hit Policy: "
+            req = req .. Util.printTable(self.model.model["p"]["p"].policy[explainIndex])
+
+            explainPolicy = Util.tableDeepCopy(self.model.model["p"]["p"].policy[explainIndex])
+        end
 
         self.logger:info(req)
     end
     
-    return finalResult
+    return finalResult, explainPolicy
+end
+
+function CoreEnforcer:enforce(...)
+    local res, _ =  self:enforceEx(...)
+    return res
 end
 
 function CoreEnforcer:isAutoNotifyWatcher()

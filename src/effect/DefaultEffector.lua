@@ -24,45 +24,50 @@ function DefaultEffector:new()
     return o
 end
 
-function DefaultEffector:mergeEffects(expr, effects, results)
+function DefaultEffector:mergeEffects(expr, effects)
 
     local result = true
+    local explainIndex = -1
 
     if expr == "some(where (p_eft == allow))" then
         result = false
-        for _, eft in pairs(effects) do
+        for i, eft in pairs(effects) do
             if eft == self.Effect.ALLOW then
                 result = true
+                explainIndex = i
                 break
             end 
         end
     elseif expr == "!some(where (p_eft == deny))" then
         result = true
-        for _, eft in pairs(effects) do
+        for i, eft in pairs(effects) do
             if eft == self.Effect.DENY then
                 result = false
+                explainIndex = i
                 break
             end 
         end
     elseif expr == "some(where (p_eft == allow)) && !some(where (p_eft == deny))" then
         result = false
-        for _, eft in pairs(effects) do
+        for i, eft in pairs(effects) do
             if eft == self.Effect.ALLOW then
                 result = true
             elseif eft == self.Effect.DENY then
                 result = false
+                explainIndex = i
                 break
             end
         end
     elseif expr == "priority(p_eft) || deny" then
         result = false
-        for _, eft in pairs(effects) do
+        for i, eft in pairs(effects) do
             if eft ~= self.Effect.INDETERMINATE then
                 if eft == self.Effect.ALLOW then
                     result = true
                 else
                     result = false
                 end
+                explainIndex = i
                 break
             end
         end
@@ -70,5 +75,5 @@ function DefaultEffector:mergeEffects(expr, effects, results)
         error("unsupported effect")
     end
 
-    return result
+    return result, explainIndex
 end
