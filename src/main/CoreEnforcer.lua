@@ -242,7 +242,19 @@ end
      * Casbin API) back to file/database.
 ]]
 function CoreEnforcer:savePolicy()
+    if self:isFiltered() then
+        error("cannot save a filtered policy")
+    end
 
+    self.adapter:savePolicy(self.model)
+
+    if self.watcher then
+        if Util.isInstance(self.watcher, WatcherEx) then
+            self.watcher:updateForSavePolicy(self.model)
+        else
+            self.watcher:update()
+        end
+    end
 end
 
 --[[
