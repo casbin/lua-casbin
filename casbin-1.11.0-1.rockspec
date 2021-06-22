@@ -37,6 +37,7 @@ build = {
       ["src.model.Policy"] = "src/model/Policy.lua",
       ["src.model.FunctionMap"] = "src/model/FunctionMap.lua",
       ["src.persist.Adapter"] = "src/persist/Adapter.lua",
+      ["src.persist.BatchAdapter"] = "src/persist/BatchAdapter.lua",
       ["src.persist.FilteredAdapter"] = "src/persist/FilteredAdapter.lua",
       ["src.persist.file_adapter.FileAdapter"] = "src/persist/file_adapter/FileAdapter.lua",
       ["src.persist.file_adapter.FilteredAdapter"] = "src/persist/file_adapter/FilteredAdapter.lua",
@@ -45,6 +46,7 @@ build = {
       ["src.rbac.RoleManager"] = "src/rbac/RoleManager.lua",
       ["src.util.Util"] = "src/util/Util.lua",
       ["src.util.BuiltInFunctions"] = "src/util/BuiltInFunctions.lua",
-      ["src.util.Log"] = "src/util/Log.lua"
+      ["src.util.Log"] = "src/util/Log.lua",
+      ["modules.luaxp"] = "modules/luaxp.lua"
    }
 }
