@@ -277,21 +277,6 @@ function CoreEnforcer:setLogger(logger)
 end
 
 --[[
-     * enableFileLogger saves the logs to a specific file
-     *
-     * @param filePath the path of the log file,
-     * if not present it will be created
-]]
-function CoreEnforcer:enableFileLogger(filePath)
-    if not filePath or filePath == "" then
-        return false
-    end
-
-    local logger = Log:getFileLogger(filePath)
-    self:setLogger(logger)
-end
-
---[[
      * enableLog changes whether to print Casbin log to the standard output.
      *
      * @param enable whether to enable Casbin's log.

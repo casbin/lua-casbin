@@ -41,29 +41,4 @@ describe("log tests", function ()
             local logger = Log:getFileLogger()
         end)
     end)
-
-    it("test enableFileLogger", function ()
-        local model  = path .. "/examples/basic_model.conf"
-        local policy  = path .. "/examples/basic_policy.csv"
-        
-        local e = Enforcer:new(model, policy)
-        local filePath = path .. "/testEnableFileLogger.log"
-
-        -- error as log file does not exit
-        assert.has_error(function ()
-            local f = io.open(filePath, "r")
-            if f == nil then error("file does not exist") end
-        end)
-
-        e:enableFileLogger(filePath)
-        e:enforce("alice", "data1", "read")
-
-        -- no error as log file is created
-        assert.has_no.errors(function ()
-            local f = io.open(filePath, "r")
-            if f == nil then error("file does not exist") end
-        end)
-
-        os.remove(filePath)
-    end)
 end) 

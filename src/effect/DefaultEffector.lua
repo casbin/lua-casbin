@@ -26,7 +26,7 @@ end
 
 function DefaultEffector:mergeEffects(expr, effects)
 
-    local result = true
+    local result = false
     local explainIndex = -1
 
     if expr == "some(where (p_eft == allow))" then
