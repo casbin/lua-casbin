@@ -17,6 +17,7 @@ require("src.main.ManagementEnforcer")
 -- Enforcer = ManagementEnforcer + RBAC API.
 Enforcer = {}
 setmetatable(Enforcer, ManagementEnforcer)
+Enforcer.__index = Enforcer
 
 -- GetRolesForUser gets the roles that a user has.
 function Enforcer:GetRolesForUser(name, ...)
