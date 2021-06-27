@@ -223,7 +223,7 @@ function DefaultRoleManager:getUsers(name, ...)
 end
 
 -- printRoles prints all the roles to log.
-function DefaultRoleManager:printRoles(name, ...)
+function DefaultRoleManager:printRoles()
 
     self.logger:info("Roles: ")
     for _, role in pairs(self.allRoles) do

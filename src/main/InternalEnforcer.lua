@@ -16,6 +16,9 @@ require "src/main/CoreEnforcer"
 require "src/model/Model"
 require "src/persist/BatchAdapter"
 require "src/persist/FilteredAdapter"
+require "src/persist/Watcher"
+require "src/persist/WatcherEx"
+require "src/persist/WatcherUpdatable"
 require "src/util/Util"
 
 -- InternalEnforcer = CoreEnforcer + Internal API.
@@ -49,8 +52,15 @@ function InternalEnforcer:addPolicy(sec, ptype, rule)
         self:buildIncrementalRoleLinks(self.model.PolicyOperations.POLICY_ADD, ptype, rules)
     end
 
+    if self.watcher and self.autoNotifyWatcher then
+        if Util.isInstance(self.watcher, WatcherEx) then
+            self.watcher:updateForAddPolicy(sec, ptype, rule)
+        else
+            self.watcher:update()
+        end
+    end
+
     return true
-    --TODO: update watcher, add logger
 end
 
 --[[
@@ -81,8 +91,11 @@ function InternalEnforcer:addPolicies(sec, ptype, rules)
         self:buildIncrementalRoleLinks(self.model.PolicyOperations.POLICY_ADD, ptype, rules)
     end
 
+    if self.watcher and self.autoNotifyWatcher then
+        self.watcher:update()
+    end
+
     return true
-    --TODO: update watcher, add logger
 end
 
 --[[
@@ -121,8 +134,15 @@ function InternalEnforcer:removePolicy(sec, ptype, rule)
         self:buildIncrementalRoleLinks(self.model.PolicyOperations.POLICY_REMOVE, ptype, rules)
     end
 
+    if self.watcher and self.autoNotifyWatcher then
+        if Util.isInstance(self.watcher, WatcherEx) then
+            self.watcher:updateForRemovePolicy(sec, ptype, rule)
+        else
+            self.watcher:update()
+        end
+    end
+
     return true
-    -- TODO: update watcher, add logger
 end
 
 --[[
@@ -176,8 +196,15 @@ function InternalEnforcer:updatePolicy(sec, ptype, oldRule, newRule)
         end
     end
 
+    if self.watcher and self.autoNotifyWatcher then
+        if Util.isInstance(self.watcher, WatcherUpdatable) then
+            self.watcher:updateForUpdatePolicy(sec, ptype, oldRule, newRule)
+        else
+            self.watcher:update()
+        end
+    end
+
     return true
-    -- TODO: update watcher, add logger
 end
 
 --[[
@@ -212,8 +239,11 @@ function InternalEnforcer:removePolicies(sec, ptype, rules)
         self:buildIncrementalRoleLinks(self.model.PolicyOperations.POLICY_REMOVE, ptype, rules)
     end
 
+    if self.watcher and self.autoNotifyWatcher then
+        self.watcher:update()
+    end
+
     return true
-    -- TODO: update watcher, add logger
 end
 
 --[[
@@ -244,8 +274,15 @@ function InternalEnforcer:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValu
         self:buildIncrementalRoleLinks(self.model.PolicyOperations.POLICY_REMOVE, ptype, effects)
     end
 
+    if self.watcher and self.autoNotifyWatcher then
+        if Util.isInstance(self.watcher, WatcherEx) then
+            self.watcher:updateForRemoveFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
+        else
+            self.watcher:update()
+        end
+    end
+
     return true
-    -- TODO: update watcher, add logger
 end
 
 function InternalEnforcer:getDomainIndex(ptype)

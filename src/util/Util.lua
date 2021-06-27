@@ -226,4 +226,23 @@ function Util.setSubtract(a, b)
     return diff
 end
 
+-- printTable recursively prints a table for logging
+function Util.printTable(t)
+    local s = "{ "
+    for k, v in pairs(t) do
+        if type(v) == "table" then
+            s = s .. Util.printTable(v) .. ", "
+        else
+            if type(k)=="string" then
+                s = s .. k .. " = " .. v .. ", "
+            else
+                s = s .. v .. ", "
+            end
+        end
+    end
+    s = string.sub(s, 1, -3)
+    s = s .. " }"
+    return s
+end
+
 return Util
