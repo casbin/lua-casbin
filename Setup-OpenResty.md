@@ -41,27 +41,20 @@ sudo apt install libpcre3 libpcre3-dev
 
 **NOTE**: If you use `yum` you could use `pcre` and `pcre-devel` for PCRE.
 
-### Install LuaRocks modules
+### Install Casbin
 
-Run these commands to install the LuaRocks modules dependencies:
+Run this command to install the latest released Casbin version(currently v1.11.0):
 ```
-sudo /usr/local/openresty/luajit/bin/luarocks install lualogging
-sudo /usr/local/openresty/luajit/bin/luarocks install lrexlib-pcre
-sudo /usr/local/openresty/luajit/bin/luarocks install luaposix
+sudo /usr/local/openresty/luajit/bin/luarocks install https://raw.githubusercontent.com/casbin/lua-casbin/master/casbin-1.11.0-1.rockspec
 ```
 
 **NOTE**: Here too the LuaRocks has its executable at `/usr/local/openresty/luajit/bin/luarocks`, if you have it installed somewhere else for OpenResty replace with that instead.
 
 ## Using Lua-Casbin
 
-Since the project isn't a LuaRocks/OPM module yet, you need to clone it to use it.
+You can create a lua module for OpenResty applications as shown [here](https://blog.openresty.com/en/or-lua-module/) or add it to your existing lua module:
 
-**NOTE**: You may need to add the `nginx` command to your path by adding `export PATH="/usr/local/openresty/nginx/sbin/:$PATH"` to your `.bashrc` or similar file.
-You can create a lua module for OpenResty applications as shown [here](https://blog.openresty.com/en/or-lua-module/) or add it to your existing lua module by following these steps:
-
-- In your module, clone the Lua Casbin repo at the top level (`/`) of your application (along with the `conf` directory) with `git clone https://github.com/casbin/lua-casbin.git`.
-- In your module's `conf/nginx.conf` file append the `lua_package_path` with `$prefix/lua-casbin/?.lua;` so that it becomes something like this: `lua_package_path "$prefix/lua/?.lua;$prefix/lua-casbin/?.lua;;";`.
-- In the file where you want to use Casbin, use `local Enforcer = require("src/main/Enforcer")` inside the `content_by_lua_block`. Here is a sample describing usage for basic model/policy and ABAC model/policy:
+- In the file where you want to use Casbin, use `local Enforcer = require("casbin")` inside the `content_by_lua_block`. Here is a sample describing usage for basic model/policy and ABAC model/policy:
 
 **Basic model/policy example (nginx.conf file)**
 ```
@@ -72,7 +65,7 @@ events {
 }
 
 http {
-    lua_package_path "$prefix/lua/?.lua;$prefix/lua-casbin/?.lua;;";
+    lua_package_path "$prefix/lua/?.lua;;";
 
     server {
         listen 8080 reuseport;
@@ -80,9 +73,9 @@ http {
         location / {
             default_type text/plain;
             content_by_lua_block {
-                local Enforcer = require("src.main.Enforcer")
-                local model  = "lua-casbin/examples/basic_model.conf" -- The model file path
-                local policy  = "lua-casbin/examples/basic_policy.csv" -- The policy file path
+                local Enforcer = require("casbin")
+                local model  = "examples/basic_model.conf" -- The model file path
+                local policy  = "examples/basic_policy.csv" -- The policy file path
                 
                 local e = Enforcer:new(model, policy) -- The Casbin Enforcer
                 ngx.say("The result is:")
@@ -92,6 +85,9 @@ http {
     }
 }
 ```
+
+**NOTE**: You need to create an `examples` directory at the top level of your application `/` along with the `conf` directory. And then copy the [basic_model.conf](https://raw.githubusercontent.com/casbin/lua-casbin/master/examples/basic_model.conf) and [basic_policy.csv](https://raw.githubusercontent.com/casbin/lua-casbin/master/examples/basic_policy.csv) to that `examples` directory.
+
 **ABAC model/policy example (nginx.conf file)**
 ```
 worker_processes 1;
@@ -101,7 +97,7 @@ events {
 }
 
 http {
-    lua_package_path "$prefix/lua/?.lua;$prefix/lua-casbin/?.lua;;";
+    lua_package_path "$prefix/lua/?.lua;;";
 
     server {
         listen 8080 reuseport;
@@ -109,9 +105,9 @@ http {
         location / {
             default_type text/plain;
             content_by_lua_block {
-                local Enforcer = require("src.main.Enforcer")
-                local model  = "lua-casbin/examples/abac_rule_model.conf"
-    		local policy  = "lua-casbin/examples/abac_rule_policy.csv"
+                local Enforcer = require("casbin")
+                local model  = "examples/abac_rule_model.conf"
+    		local policy  = "examples/abac_rule_policy.csv"
     		local sub1 = {
         		Name = "Alice",
         		Age = 16
@@ -133,7 +129,9 @@ http {
 }
 ```
 
-Then use `nginx -p $PWD/` to start the server and use `curl http://127.0.0.1:8080/` to fetch the page which for the above examples should output in:
+**NOTE**: Similar to the former example, you need to create an `examples` directory at the top level of your application `/` along with the `conf` directory. And then copy the [abac_rule_model.conf](https://raw.githubusercontent.com/casbin/lua-casbin/master/examples/abac_model.conf) and [abac_rule_policy.csv](https://raw.githubusercontent.com/casbin/lua-casbin/master/examples/abac_rule_policy.csv) to that `examples` directory.
+
+Then use `sudo openresty -p $PWD/` to start the server and use `curl http://127.0.0.1:8080/` to fetch the page which for the above examples should output in:
 ```
 The result is:
 true
