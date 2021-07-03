@@ -12,18 +12,14 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
---[[
-    * Effect is the result for a policy rule.
-]]
+require("src.persist.Watcher")
 
+WatcherUpdatable = {}
+setmetatable(WatcherUpdatable, Watcher)
+WatcherUpdatable.__index = WatcherUpdatable
 
-Effect = {
-    ALLOW = 0,
-    INDETERMINATE = 1,
-    DENY = 2
-	--[[
-    * Values for policy effect.
-]]
-}
-Effect.__index = Effect
-
+-- updateForUpdatePolicy calls the update callback of other instances to synchronize their policy.
+-- It is called after Enforcer:UpdatePolicy()
+function WatcherUpdatable:updateForUpdatePolicy(oldRule, newRule)
+    
+end

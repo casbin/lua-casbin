@@ -71,6 +71,7 @@ function CoreEnforcer:initWithModelAndAdapter(m, adapter)
 
     self.adapter = adapter
     self.model = m
+    self.model.logger = self.logger
     self.model:printModel()
 
     self:initialize()
@@ -241,7 +242,19 @@ end
      * Casbin API) back to file/database.
 ]]
 function CoreEnforcer:savePolicy()
+    if self:isFiltered() then
+        error("cannot save a filtered policy")
+    end
 
+    self.adapter:savePolicy(self.model)
+
+    if self.watcher then
+        if Util.isInstance(self.watcher, WatcherEx) then
+            self.watcher:updateForSavePolicy(self.model)
+        else
+            self.watcher:update()
+        end
+    end
 end
 
 --[[
@@ -254,13 +267,27 @@ function CoreEnforcer:enableEnforce(enable)
     self.enable = enable
 end
 
+-- setLogger changes the current enforcer's logger.
+function CoreEnforcer:setLogger(logger)
+    self.logger = logger
+    self.model.logger = logger
+    for _, rm in pairs(self.rmMap) do
+        rm.logger = logger
+    end
+end
+
 --[[
      * enableLog changes whether to print Casbin log to the standard output.
      *
      * @param enable whether to enable Casbin's log.
 ]]
 function CoreEnforcer:enableLog(enable)
+    self.logger.enabled = enable
+end
 
+-- returns the current logger's enabled status
+function CoreEnforcer:isLogEnabled()
+    return self.logger.enabled
 end
 
 --[[
@@ -303,7 +330,7 @@ end
      *              of strings, can be class instances if ABAC is used.
      * @return whether to allow the request.
 ]]
-function CoreEnforcer:enforce(...)
+function CoreEnforcer:enforceEx(...)
     local rvals = {...}
     if type(rvals[1]) == "table" and #rvals == 1 then
         rvals = rvals[1]
@@ -380,7 +407,7 @@ function CoreEnforcer:enforce(...)
                     c = false
                 end
             else
-                error("matcher result should be boolean or integer")
+                error("matcher result should be boolean or number")
             end
             
             if context["p_eft"] and c then
@@ -423,8 +450,38 @@ function CoreEnforcer:enforce(...)
         end
     end
     
-    local finalResult = DefaultEffector:mergeEffects(self.model.model["e"]["e"].value, policyEffects)
-    return finalResult
+    local finalResult, explainIndex = DefaultEffector:mergeEffects(self.model.model["e"]["e"].value, policyEffects)
+
+    local explainPolicy = {}
+
+    -- Logging request
+    if self.logger.enabled then
+        local req = "Request: "
+        for _, v in pairs(rvals) do
+            if type(v)=="table" then
+                req = req .. Util.printTable(v) .. ", "
+            else
+                req = req .. tostring(v) .. ", "
+            end
+        end
+        req = string.sub(req, 1, -3)
+        req = req .. " ---> " .. tostring(finalResult) .. "\n"
+        if explainIndex~=-1 and #self.model.model["p"]["p"].policy>=explainIndex then
+            req = req .. "Hit Policy: "
+            req = req .. Util.printTable(self.model.model["p"]["p"].policy[explainIndex])
+
+            explainPolicy = Util.tableDeepCopy(self.model.model["p"]["p"].policy[explainIndex])
+        end
+
+        self.logger:info(req)
+    end
+    
+    return finalResult, explainPolicy
+end
+
+function CoreEnforcer:enforce(...)
+    local res, _ =  self:enforceEx(...)
+    return res
 end
 
 function CoreEnforcer:isAutoNotifyWatcher()

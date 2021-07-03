@@ -16,15 +16,20 @@ local Logging = require "logging"
 local fileLogging = require "logging.file"
 
 -- The logging module for logging to console or any file
-Log = {}
+Log = {
+    enabled = true
+}
 
 -- returns logger function for logging to console
 function Log:getLogger()
-    local logger = Logging.new(function(self, level, message)
+    local o = {}
+    self.__index = self
+    setmetatable(o, self)
+    o.logger = Logging.new(function(self, level, message)
         print(level, message)
         return true
       end)
-    return logger
+    return o
 end
 
 -- returns logger function for logging to file and @param: filePath = path of the log file
@@ -32,6 +37,16 @@ function Log:getFileLogger(filePath)
     if not filePath then
         error("no filePath for logger provided")
     end
-    local logger = fileLogging(filePath)
-    return logger
+    local o = {}
+    self.__index = self
+    setmetatable(o, self)
+    o.logger = fileLogging(filePath)
+    return o
 end 
+
+-- logs the information passed to it if log is enabled and logger exists
+function Log:info(...)
+    if self.enabled and self.logger then
+        self.logger:info(...)
+    end
+end

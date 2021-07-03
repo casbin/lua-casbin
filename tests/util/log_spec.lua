@@ -13,8 +13,9 @@
 --limitations under the License.
 
 local log = require("src.util.Log")
+local Enforcer = require("src.main.Enforcer")
+
 local path = os.getenv("PWD") or io.popen("cd"):read()
-path = path .. "/testLogFile.log"
 
 describe("log tests", function ()
     
@@ -26,10 +27,12 @@ describe("log tests", function ()
     end)
 
     it("test file logger", function ()
-        local logger = Log:getFileLogger(path)
+        local filePath = path .. "/testLogFile.log"
+        local logger = Log:getFileLogger(filePath)
         logger:info("new log started")
         assert.has_no.errors(function ()
-            io.open(path, "r")
+            local f = io.open(filePath, "r")
+            if f == nil then error("file does not exist") end
         end)
     end)
 
