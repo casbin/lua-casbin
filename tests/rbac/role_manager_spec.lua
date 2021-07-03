@@ -14,6 +14,7 @@
 
 local role_manager_module = require("src.rbac.DefaultRoleManager")
 local util_module = require("src.util.Util")
+local builtInFunctions_module = require("src.util.BuiltInFunctions")
 
 -- test function for testing the matching function functionality in Role Manager
 -- true if n1=n2 or n1 matches the pattern of n2 or n2 matches the pattern of n1
@@ -294,5 +295,46 @@ describe("DefaultRoleManager tests", function ()
         assert.has_no.errors(function ()
             rm:printRoles()
         end)
+    end)
+
+    it("test domain pattern", function ()
+        local rm = DefaultRoleManager:new(10)
+        rm:addDomainMatchingFunc(BuiltInFunctions.keyMatch2)
+
+        rm:addLink("u1", "g1", "domain1")
+        rm:addLink("u2", "g1", "domain2")
+        rm:addLink("u3", "g1", "*")
+        rm:addLink("u4", "g2", "domain3")
+
+        -- Current role inheritance tree after deleting the links:
+        --       domain1:g1    domain2:g1			domain3:g2
+        --		   /      \    /      \					|
+        --	 domain1:u1    *:g1     domain2:u2		domain3:u4
+        -- 					|
+        -- 				   *:u3
+
+        assert.is.True(rm:hasLink("u1", "g1", "domain1"))
+        assert.is.False(rm:hasLink("u2", "g1", "domain1"))
+        assert.is.True(rm:hasLink("u2", "g1", "domain2"))
+        assert.is.True(rm:hasLink("u3", "g1", "domain1"))
+        assert.is.True(rm:hasLink("u3", "g1", "domain2"))
+        assert.is.False(rm:hasLink("u1", "g2", "domain1"))
+        assert.is.True(rm:hasLink("u4", "g2", "domain3"))
+        assert.is.False(rm:hasLink("u3", "g2", "domain3"))
+    end)
+
+    it("test all matching functions", function ()
+        local rm = DefaultRoleManager:new(10)
+        rm:addMatchingFunc(BuiltInFunctions.keyMatch2)
+        rm:addDomainMatchingFunc(BuiltInFunctions.keyMatch2)
+
+        -- Current role inheritance tree after deleting the links:
+        --  		*:book_group
+        --				|
+        -- 			*:/book/:id
+
+        rm:addLink("/book/:id", "book_group", "*")
+        assert.is.True(rm:hasLink("/book/1", "book_group", "domain1"))
+        assert.is.True(rm:hasLink("/book/2", "book_group", "domain1"))
     end)
 end)

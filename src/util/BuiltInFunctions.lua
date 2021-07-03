@@ -77,6 +77,7 @@ end
 -- For example, "/foo/bar" matches "/foo/*", "/resource1" matches "/:resource"
 function BuiltInFunctions.keyMatch2(key1, key2)
     key2 = string.gsub(key2, "/%*", "/.*")
+    if key2 == "*" then key2 = ".*" end
     local key = rex.gsub(key2, ":[^/]+", "[^/]+")
 	return BuiltInFunctions.regexMatch(key1, "^"..key.."$")
 end
