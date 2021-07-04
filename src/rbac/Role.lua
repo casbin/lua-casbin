@@ -15,18 +15,32 @@
 --  * Role represents the data structure for a role in RBAC.
 Role = {}
 
-function Role:new(name)
+function Role:new(name, domain)
     local o = {}
     setmetatable(o, self)
     self.__index = self
+
     o.name = name
+    if not domain then
+        o.domain = ""
+    else
+        o.domain = domain
+    end
     o.roles = {}
+
     return o
+end
+
+function Role:getKey()
+    if self.domain and self.domain ~= "" then
+        return self.domain .. "::" .. self.name
+    end
+    return self.name
 end
 
 function Role:addRole(role)
     for _, r in pairs(self.roles) do
-        if r.name == role.name then
+        if r.name == role.name and r.domain == role.domain then
             return
         end
     end
@@ -36,17 +50,14 @@ end
 
 function Role:deleteRole(role)
     for k, r in pairs(self.roles) do
-        if r.name == role.name then
+        if r.name == role.name and r.domain == role.domain then
             table.remove(self.roles, k)
         end
     end
 end
 
-function Role:hasRole(name, hierarchyLevel, matchingFunc)
-    if self.name == name then
-        return true
-    end
-    if self:hasDirectRole(name, matchingFunc) then
+function Role:hasRole(role, hierarchyLevel, matchingFunc, domainMatchingFunc)
+    if self:hasDirectRole(role, matchingFunc, domainMatchingFunc) then
         return true
     end
 
@@ -55,7 +66,7 @@ function Role:hasRole(name, hierarchyLevel, matchingFunc)
     end
 
     for _, r in pairs(self.roles) do
-        if r:hasRole(name, hierarchyLevel - 1, matchingFunc) then
+        if r:hasRole(role, hierarchyLevel - 1, matchingFunc, domainMatchingFunc) then
             return true
         end
     end
@@ -63,18 +74,32 @@ function Role:hasRole(name, hierarchyLevel, matchingFunc)
     return false
 end
 
-function Role:hasDirectRole(name, matchingFunc)
-    if matchingFunc then
-        for _, r in pairs(self.roles) do
-            if matchingFunc(name, r.name) then
-                return true
+function Role:hasDirectRole(role, matchingFunc, domainMatchingFunc)
+
+    for _, r in pairs(self.roles) do
+        local flag = true
+        if matchingFunc then
+            if not matchingFunc(role.name, r.name) then
+                flag = false
+            end
+        else
+            if role.name ~= r.name then
+                flag = false
             end
         end
-    else
-        for _, r in pairs(self.roles) do
-            if r.name == name then
-                return true
+
+        if domainMatchingFunc then
+            if not domainMatchingFunc(role.domain, r.domain) then
+                flag = false
             end
+        else
+            if role.domain ~= r.domain then
+                flag = false
+            end
+        end
+
+        if flag then
+            return true
         end
     end
 

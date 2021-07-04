@@ -223,6 +223,39 @@ describe("Enforcer tests", function ()
         assert.is.True(e:enforce("bob", "/pen2/2", "GET"))
     end)
 
+    it("rbac domain pattern test", function ()
+        local model  = path .. "/examples/rbac_with_domain_pattern_model.conf"
+        local policy  = path .. "/examples/rbac_with_domain_pattern_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        e:AddNamedDomainMatchingFunc("g", BuiltInFunctions.keyMatch2)
+
+        assert.is.True(e:enforce("alice", "domain1", "data1", "read"))
+        assert.is.True(e:enforce("alice", "domain1", "data1", "write"))
+        assert.is.False(e:enforce("alice", "domain1", "data2", "read"))
+        assert.is.False(e:enforce("alice", "domain1", "data2", "write"))
+        assert.is.True(e:enforce("alice", "domain2", "data2", "read"))
+        assert.is.True(e:enforce("alice", "domain2", "data2", "write"))
+        assert.is.False(e:enforce("bob", "domain2", "data1", "read"))
+        assert.is.False(e:enforce("bob", "domain2", "data1", "write"))
+        assert.is.True(e:enforce("bob", "domain2", "data2", "read"))
+        assert.is.True(e:enforce("bob", "domain2", "data2", "write"))
+    end)
+
+    it("rbac all pattern test", function ()
+        local model  = path .. "/examples/rbac_with_all_pattern_model.conf"
+        local policy  = path .. "/examples/rbac_with_all_pattern_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        e:AddNamedMatchingFunc("g", BuiltInFunctions.keyMatch2)
+        e:AddNamedDomainMatchingFunc("g", BuiltInFunctions.keyMatch2)
+
+        assert.is.True(e:enforce("alice", "domain1", "/book/1", "read"))
+        assert.is.False(e:enforce("alice", "domain1", "/book/1", "write"))
+        assert.is.False(e:enforce("alice", "domain2", "/book/1", "read"))
+        assert.is.True(e:enforce("alice", "domain2", "/book/1", "write"))
+    end)
+
     it("abac with empty policy test", function ()
         local model  = path .. "/examples/abac_model.conf"
         local policy  = path .. "/examples/empty_policy.csv"

@@ -47,28 +47,70 @@ function DefaultRoleManager:new(maxHierarchyLevel, matchingFunc, domainMatchingF
     return o
 end
 
-function DefaultRoleManager:hasRole(name)
-    if self.matchingFunc then
-        for key, _ in pairs(self.allRoles) do
-            if self.matchingFunc(name, key) then
-                return true
+--[[
+    * addMatchingFunc adds a Matching Function to the RM
+    * if nil is passed in, it removes the function
+]]
+function DefaultRoleManager:addMatchingFunc(matchingFunc)
+    self.matchingFunc = matchingFunc
+end
+
+--[[
+    * addDomainMatchingFunc adds a Domain Matching Function to the RM
+    * if nil is passed in, it removes the function
+]]
+function DefaultRoleManager:addDomainMatchingFunc(domainMatchingFunc)
+    self.domainMatchingFunc = domainMatchingFunc
+end
+
+function DefaultRoleManager:hasRole(role)
+    
+    if not self.matchingFunc and not self.domainMatchingFunc then
+        return self.allRoles[role:getKey()]
+    end
+
+    for _, r in pairs(self.allRoles) do
+        local flag = true
+        if self.matchingFunc then
+            if not self.matchingFunc(role.name, r.name) then
+                flag = false
+            end
+        else
+            if role.name ~= r.name then
+                flag = false
             end
         end
-    else
-        if self.allRoles[name] then
+
+        if self.domainMatchingFunc then
+            if not self.domainMatchingFunc(role.domain, r.domain) then
+                flag = false
+            end
+        else
+            if role.domain ~= r.domain then
+                flag = false
+            end
+        end
+        
+        if flag then
             return true
         end
     end
-
-    return false
 end
 
-function DefaultRoleManager:createRole(name)
-    if not self.allRoles[name] then
-        self.allRoles[name] = Role:new(name)
+function DefaultRoleManager:createRole(name, domain)
+    local role = Role:new(name, domain)
+    local key
+    if domain and domain ~= "" then
+        key = domain .. "::" .. name
+    else
+        key = name
+    end
+    
+    if not self.allRoles[key] then
+        self.allRoles[key] = role
     end
 
-    return self.allRoles[name]
+    return self.allRoles[key]
 end
 
 --  * clear clears all stored data and resets the role manager to the initial state.
@@ -82,32 +124,44 @@ end
 ]]
 function DefaultRoleManager:addLink(name1, name2, ...)
     local domain = {...}
-    if #domain == 1 then
-        name1 = domain[1] .. "::" .. name1
-        name2 = domain[1] .. "::" .. name2
-    elseif #domain > 1 then
+    if #domain > 1 then
         error("domain should be only 1 parameter")
+    elseif #domain == 1 then
+        domain = domain[1]
     else
-        domain = nil
+        domain = ""
     end
 
-    local role1 = self:createRole(name1)
-    local role2 = self:createRole(name2)
+    local role1 = self:createRole(name1, domain)
+    local role2 = self:createRole(name2, domain)
     role1:addRole(role2)
 
     if self.matchingFunc then
-        for key, role in pairs(self.allRoles) do
-            if self.matchingFunc(key, name1) and name1 ~= key then
-                self.allRoles[key]:addRole(role1)
+        for _, role in pairs(self.allRoles) do
+            local flag = true
+            if self.domainMatchingFunc then
+                if not self.domainMatchingFunc(domain, role.domain) then
+                    flag = false
+                end
+            else
+                if domain ~= role.domain then
+                    flag = false
+                end
             end
-            if self.matchingFunc(key, name2) and name2 ~= key then
-                self.allRoles[name2]:addRole(role)
-            end
-            if self.matchingFunc(name1, key) and name1 ~= key then
-                self.allRoles[key]:addRole(role1)
-            end
-            if self.matchingFunc(name2, key) and name2 ~= key then
-                self.allRoles[name2]:addRole(role)
+            
+            if flag then
+                if self.matchingFunc(role.name, role1.name) and role1.name ~= role.name then
+                    self.allRoles[role:getKey()]:addRole(role1)
+                end
+                if self.matchingFunc(role.name, role2.name) and role2.name ~= role.name then
+                    self.allRoles[role2:getKey()]:addRole(role)
+                end
+                if self.matchingFunc(role1.name, role.name) and role1.name ~= role.name then
+                    self.allRoles[role:getKey()]:addRole(role1)
+                end
+                if self.matchingFunc(role2.name, role.name) and role2.name ~= role.name then
+                    self.allRoles[role2:getKey()]:addRole(role)
+                end
             end
         end
     end
@@ -119,80 +173,94 @@ end
 ]]
 function DefaultRoleManager:deleteLink(name1, name2, ...)
     local domain = {...}
-    if #domain == 1 then
-        name1 = domain[1] .. "::" .. name1
-        name2 = domain[1] .. "::" .. name2
-    elseif #domain > 1 then
+    if #domain > 1 then
         error("domain should be only 1 parameter")
+    elseif #domain == 1 then
+        domain = domain[1]
     else
-        domain = nil
+        domain = ""
     end
 
-    if not (self:hasRole(name1)) or not (self:hasRole(name2)) then
+    local role1, role2 = self:twoRoleDomainWrapper(name1, name2, domain)
+
+    if not (self:hasRole(role1)) or not (self:hasRole(role2)) then
         error("name1 or name2 does not exist")
     end
 
-    local role1 = self:createRole(name1)
-    local role2 = self:createRole(name2)
     role1:deleteRole(role2)
 end
 
 -- hasLink determines whether role: name1 inherits role: name2. domain is a prefix to the roles.
 function DefaultRoleManager:hasLink(name1, name2, ...)
     local domain = {...}
-    if #domain == 1 then
-        name1 = domain[1] .. "::" .. name1
-        name2 = domain[1] .. "::" .. name2
-    elseif #domain > 1 then
+    if #domain > 1 then
         error("domain should be only 1 parameter")
+    elseif #domain == 1 then
+        domain = domain[1]
     else
-        domain = nil
+        domain = ""
     end
 
-    if name1 == name2 then
+    local role1, role2 = self:twoRoleDomainWrapper(name1, name2, domain)
+
+    if role1.name == role2.name then
         return true
     end
 
-    if not (self:hasRole(name1)) or not (self:hasRole(name2)) then
+    if not (self:hasRole(role1)) or not (self:hasRole(role2)) then
         return false
     end
 
-    if self.matchingFunc then
-        for key, role in pairs(self.allRoles) do
-            if self.matchingFunc(name1, key) and (role:hasRole(name2, self.maxHierarchyLevel, self.matchingFunc)) then
-                return true
+    if not self.matchingFunc and not self.domainMatchingFunc then
+        return role1:hasRole(role2, self.maxHierarchyLevel)
+    end
+
+    for _, role in pairs(self.allRoles) do
+        local flag = true
+        if self.domainMatchingFunc then
+            if not self.domainMatchingFunc(domain, role.domain) then
+                flag = false
+            end
+        else
+            if domain ~= role.domain then
+                flag = false
             end
         end
 
-        return false
-    else
-        local role1 = self:createRole(name1)
-        return role1:hasRole(name2, self.maxHierarchyLevel)
+        if flag then
+            if self.matchingFunc then
+                if self.matchingFunc(role1.name, role.name) and role:hasRole(role2, self.maxHierarchyLevel, self.matchingFunc, self.domainMatchingFunc) then
+                    return true
+                end
+            else
+                if role1.name == role.name and role:hasRole(role2, self.maxHierarchyLevel, self.matchingFunc, self.domainMatchingFunc) then
+                    return true
+                end
+            end
+        end
     end
+    
+    return false
 end
 
 --  * getRoles gets the roles that a subject inherits. domain is a prefix to the roles.
 function DefaultRoleManager:getRoles(name, ...)
     local domain = {...}
-    if #domain == 1 then
-        name = domain[1] .. "::" .. name
-    elseif #domain > 1 then
+    if #domain > 1 then
         error("domain should be only 1 parameter")
+    elseif #domain == 1 then
+        domain = domain[1]
     else
-        domain = nil
+        domain = ""
     end
 
-    if not self:hasRole(name) then
+    local role = self:roleDomainWrapper(name, domain)
+
+    if not self:hasRole(role) then
         return {}
     end
 
-    local roles = self:createRole(name):getRoles()
-
-    if domain then
-        for key, value in pairs(roles) do
-            roles[key] = string.sub(value, #domain[1]+3)
-        end
-    end
+    local roles = self:createRole(name, domain):getRoles()
 
     return roles
 end
@@ -200,22 +268,20 @@ end
 -- getUsers gets the users that inherits a subject.
 function DefaultRoleManager:getUsers(name, ...)
     local domain = {...}
-    if #domain == 1 then
-        name = domain[1] .. "::" .. name
-    elseif #domain > 1 then
+    if #domain > 1 then
         error("domain should be only 1 parameter")
+    elseif #domain == 1 then
+        domain = domain[1]
     else
-        domain = nil
+        domain = ""
     end
+
+    local targetRole = self:roleDomainWrapper(name, domain)
 
     local names = {}
     for _, role in pairs(self.allRoles) do
-        if role:hasDirectRole(name) then
-            if domain then
-                table.insert(names, string.sub(role.name, #domain[1]+3))
-            else
-                table.insert(names, role.name)
-            end
+        if role:hasDirectRole(targetRole) then
+            table.insert(names, role.name)
         end
     end
 
@@ -233,6 +299,28 @@ function DefaultRoleManager:printRoles()
         end
     end
 
+end
+
+function DefaultRoleManager:roleDomainWrapper(name, domain)
+    if type(domain) ~= "string" then
+        if not domain or #domain==0 then
+            domain = ""
+        elseif #domain == 1 then
+            domain = domain[1]
+        else
+            error("domain should be only 1 parameter")
+        end
+    end
+
+    local role = Role:new(name, domain)
+    if not self:hasRole(role) then
+        return role
+    end
+    return self:createRole(name, domain)
+end
+
+function DefaultRoleManager:twoRoleDomainWrapper(name1, name2, domain)
+    return self:roleDomainWrapper(name1, domain), self:roleDomainWrapper(name2, domain)
 end
 
 return DefaultRoleManager
