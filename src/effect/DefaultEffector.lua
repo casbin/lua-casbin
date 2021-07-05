@@ -13,17 +13,23 @@
 --limitations under the License.
 
 require "src/effect/Effector"
-
+--[[
+    * DefaultEffector is default effector for Casbin.
+]]
 DefaultEffector = {}
 setmetatable(DefaultEffector,Effector)
-
+--[[
+	* DefaultEffector:new is the constructor for DefaultEffector.
+]]
 function DefaultEffector:new()
     local o = {}
     setmetatable(o,self)
     self.__index = self
     return o
 end
-
+--[[
+    * DefaultEffector:mergeEffects merges all matching results collected by the enforcer into a single decision.
+]]
 function DefaultEffector:mergeEffects(expr, effects)
 
     local result = false
