@@ -370,6 +370,9 @@ function CoreEnforcer:enforceEx(...)
 
     local policyEffects = {}
 
+    expString = Util.replaceInOfMatcher(expString)
+    local compiledExpression = luaxp.compile(expString)
+
     if policyLen ~=0 then
         for i, pvals in pairs(self.model.model["p"]["p"].policy) do
             if #pTokens ~= #pvals then
@@ -388,9 +391,13 @@ function CoreEnforcer:enforceEx(...)
             end
 
             local tExpString = Util.findAndReplaceEval(expString, context)
-            tExpString = Util.replaceInOfMatcher(tExpString)
             
-            local res, err = luaxp.evaluate(tExpString, context)
+            local res, err
+            if tExpString == expString then
+                res, err = luaxp.run(compiledExpression, context)
+            else
+                res, err = luaxp.evaluate(tExpString, context)
+            end
             if err then
                 error("evaluation error: " .. err.message)
             end
@@ -434,11 +441,8 @@ function CoreEnforcer:enforceEx(...)
         for k, v in pairs(pTokens) do
             context[v] = ""
         end
-
-        local tExpString = expString
-        tExpString = Util.replaceInOfMatcher(tExpString)
             
-        local res, err = luaxp.evaluate(tExpString, context)
+        local res, err = luaxp.run(compiledExpression, context)
         if err then
             error("evaluation error: " .. err.message)
         end

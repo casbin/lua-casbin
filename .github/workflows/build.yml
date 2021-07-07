@@ -77,3 +77,40 @@ jobs:
         luacov-coveralls -i src -e .luarocks
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  benchmark:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    
+    name: Benchmark
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up LuaJIT
+      uses: leafo/gh-actions-lua@v8.0.0
+      with:
+        luaVersion: "luajit"
+
+    - name: Set up luarocks
+      uses: leafo/gh-actions-luarocks@v4.0.0
+
+    - name: Install PCRE
+      run: |
+        sudo apt-get update
+        sudo apt-get install libpcre3 libpcre3-dev
+
+    - name: Install dependencies
+      run: |
+        luarocks install lualogging
+        luarocks install lrexlib-pcre
+        luarocks install luaposix
+        luarocks install luasocket
+        luarocks install busted
+        luarocks install busted-htest
+      
+    - name: Run Benchmark
+      run: |
+        busted bench.lua -o htest
