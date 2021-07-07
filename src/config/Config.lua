@@ -42,7 +42,14 @@ end
     * @return the constructor of Config.
 ]]
 function Config:newConfigFromText(text)
-    
+   	local c = {}
+	setmetatable(c,self)
+	self.__index = self
+	c.data = {}
+	local lines = {}
+	string.gsub(text, '[^'.."\r\n"..']+', function(w) table.insert(lines, w) end )
+	c:parseBuffer(lines)
+	return c
 end
 
 -- addConfig adds a new section->key:value to the configuration.
@@ -76,7 +83,7 @@ function Config:parseBuffer(lines)
     local lineNum = 0
     local canWrite = false
 	local line = ""
-	
+
     while true do
         if canWrite then
             if self:write(section, lineNum, buf) == true then
@@ -109,7 +116,7 @@ function Config:parseBuffer(lines)
             end
 
             section = string.sub(line, 2, -2)
-        else 
+        else
             local p = ""
 
             if self.DEFAULT_MULTI_LINE_SEPARATOR == string.sub(line, -2, -1) then
@@ -216,7 +223,7 @@ function Config:get(key)
     else
         option = keys[1]
     end
-    
+
     if self.data[section] == nil then
         return ""
     elseif self.data[section][option] == nil then
@@ -224,4 +231,4 @@ function Config:get(key)
     else
         return self.data[section][option]
     end
-end 
+end
