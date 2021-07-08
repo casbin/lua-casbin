@@ -91,6 +91,12 @@ function FileAdapter:addPolicy(sec, ptype, rule)
 end
 
 --[[
+    * addPolicies adds policy rules to the storage.
+]]
+function FileAdapter:addPolicies(sec, ptype, rules)
+	error("not implemented")
+end
+--[[
     * removePolicy removes a policy rule from the storage.
 ]]
 function FileAdapter:removePolicy(sec, ptype, rule)
@@ -109,4 +115,4 @@ end
 ]]
 function FileAdapter:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
     error("not implemented")
-end 
+end
