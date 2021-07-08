@@ -18,22 +18,22 @@ function loadPolicyLine(line, model)
      if line == "" then
          return
      end
- 
+
      if line:sub(1,1) == "#" then
          return
      end
- 
+
      local tokens = Util.split(line, ",")
      local key = tokens[1]
      local sec = key:sub(1,1)
- 
+
      if model.model[sec] == nil then
          return
      end
      if model.model[sec][key] == nil then
          return
      end
- 
+
      model.model[sec][key].policy = model.model[sec][key].policy or {}
      local rules = {}
      for i = 2, #tokens do
@@ -52,7 +52,7 @@ Adapter.__index = Adapter
         *
         * @param model the model.
 ]]
-function Adapter:loadPolicy()
+function Adapter:loadPolicy(model)
 
 end
 
@@ -61,7 +61,7 @@ end
      *
      * @param model the model.
 ]]
-function Adapter:savePolicy()
+function Adapter:savePolicy(model)
 
 end
 
@@ -73,7 +73,7 @@ end
      * @param ptype the policy type, "p", "p2", .. or "g", "g2", ..
      * @param rule the rule, like (sub, obj, act).
 ]]
-function Adapter:addPolicy()
+function Adapter:addPolicy(sec,ptype,rule)
 
 end
 
@@ -85,7 +85,7 @@ end
      * @param ptype the policy type, "p", "p2", .. or "g", "g2", ..
      * @param rule the rule, like (sub, obj, act).
 ]]
-function Adapter:removePolicy()
+function Adapter:removePolicy(sec,ptype,rule)
 
 end
 
@@ -99,7 +99,7 @@ end
      * @param fieldValues the field values to be matched, value ""
      *                    means not to match this field.
 ]]
-function Adapter:removeFilteredPolicy()
+function Adapter:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
 
 end
 
