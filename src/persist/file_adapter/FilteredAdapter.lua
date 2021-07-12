@@ -33,10 +33,7 @@ Filter.__index = Filter
     * supports loading of filtered policies.
 ]]
 FilteredAdapter = {
-    adapter,
-    isFiltered = true,
-    filePath,
-    filter = {}
+    isFiltered = true
 }
 setmetatable(FilteredAdapter, Adapter)
 
@@ -46,6 +43,7 @@ function FilteredAdapter:new(filePath)
     self.__index = self
     o.filePath = filePath
     o.adapter = FileAdapter:new(filePath)
+    o.filter = {}
     o.filter = setmetatable(o.filter, Filter)
     return o
 end
@@ -132,7 +130,7 @@ function FilteredAdapter:filterWords(line, filter)
     local i = 1
     for _, v in pairs(filter) do
         i = i + 1
-        if #v>0 and Util.trim(v) == Util.trim(line[i]) then
+        if #v>0 and Util.trim(v) ~= Util.trim(line[i]) then
             skipLine = true
             break
         end
