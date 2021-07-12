@@ -30,7 +30,7 @@ function Model:new()
          ["g"] = "role_definition",
          ["e"] = "policy_effect",
          ["m"] = "matchers"
-    }     
+    }
 
     self.requiredSections = {"r", "p", "e", "m"} -- Minimal required sections for a model to be valid
     self.modCount = 0   -- used by CoreEnforcer to detect changes to Model
@@ -84,7 +84,7 @@ function Model:addDef(sec, key, value)
      else
           self.model[sec][key].value = Util.removeComments(Util.escapeAssertion(self.model[sec][key].value))
      end
-     
+
      self.modCount = self.modCount + 1
      return true
 end
@@ -163,12 +163,38 @@ function Model:saveSectionToText(sec)
 end
 
 --[[
-     * saveModelToText saves the model to the text.
+     * toText saves the model to the text.
      *
      * @return the model text.
 ]]
-function Model:saveModelToText()
-
+function Model:toText()
+    local tokenPatterns={}
+    for _,ptype in pairs({"r","p"}) do
+        for _,token in pairs(self.model[ptype][ptype].tokens) do
+            tokenPatterns[token]=string.gsub (string.gsub (token,"^p_","p."),"^r_","r.")
+        end
+    end
+    local s=""
+    local writeString=function(sec)
+        local result=""
+		for ptype,_ in pairs(self.model[sec]) do
+            local value=self.model[sec][ptype].value
+            for tokenPattern,newToken in pairs(tokenPatterns) do
+                value=string.gsub(value,tokenPattern,newToken)
+            end
+            result=result..sec.."="..value.."\n"
+        end
+		return result
+    end
+    s=s.."[request_definition]\n"..writeString("r").."[policy_definition]\n"..writeString("p")
+    if self.model["g"] then
+        s=s.."[role_definition]\n"
+        for ptype,_ in pairs(self.model["g"]) do
+            s=s..ptype.."="..self.model["g"][ptype].value.."\n"
+        end
+	end
+    s=s.."[policy_effect]\n"..writeString("e").."[matchers]\n"..writeString("m")
+    return s
 end
 
 --      * printModel prints the model to the log.
