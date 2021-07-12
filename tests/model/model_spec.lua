@@ -19,8 +19,8 @@ local basic_path  = path .. "/examples/basic_model.conf"
 local rbac_path = path .. "/examples/rbac_model.conf"
 local rbac_with_domains_path = path .. "/examples/rbac_with_domains_model.conf"
 
-describe("model tests", function() 
-    
+describe("model tests", function()
+
     it("test getPolicy", function ()
         local m = Model:new()
         m:loadModel(basic_path)
@@ -30,7 +30,7 @@ describe("model tests", function()
 
         assert.are.same(m:getPolicy("p", "p"), {rule})
     end)
-    
+
     it("test hasPolicy", function ()
         local m = Model:new()
         m:loadModel(basic_path)
@@ -181,6 +181,15 @@ describe("model tests", function()
             {'admin', 'domain1', 'data2', 'read'}
         }
         assert.are.same(res, filteredRules)
+
+    end)
+
+	it("test toText", function ()
+        local m = Model:new()
+        m:loadModel(basic_path)
+        local res = m:toText()
+        local saveText="[request_definition]\nr=sub, obj, act\n[policy_definition]\np=sub, obj, act\n[policy_effect]\ne=some(where (p_eft == allow))\n[matchers]\nm=r.sub == p.sub && r.obj == p.obj && r.act == p.act\n"
+        assert.are.same(res, saveText)
 
     end)
 
