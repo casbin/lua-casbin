@@ -225,7 +225,18 @@ end
      * @param filter the filter used to specify which type of policy should be loaded.
 ]]
 function CoreEnforcer:loadFilteredPolicy(filter)
+    self.model:clearPolicy()
+    if not Util.isInstance(self.adapter, FilteredAdapter) then
+        error("Filtered policies are not supported by this adapter.")
+    end
 
+    self.adapter:loadFilteredPolicy(self.model, filter)
+
+    self:initBuildRoleLinks()
+    self.model:printPolicy()
+    if self.autoBuildRoleLinks then
+        self:buildRoleLinks()
+    end
 end
 
 --[[
