@@ -41,6 +41,19 @@ describe("model tests", function()
         assert.is.True(m:hasPolicy("p", "p", rule))
     end)
 
+    it("test hasPolicies", function ()
+        local m = Model:new()
+        m:loadModel(basic_path)
+        local rule = {'admin', 'domain1', 'data1', 'read'}
+        m:addPolicy("p", "p", rule)
+        local rule1={'admin', 'domain2', 'data2', 'read'}
+        m:addPolicy("p", "p", rule1)
+        local rule2={'admin', 'domain3', 'data3', 'read'}
+        m:addPolicy("p", "p", rule2)
+        local rules={rule,rule1,rule2}
+        assert.is.True(m:hasPolicies("p", "p", rules))
+    end)
+
     it("test addPolicy", function ()
         local m = Model:new()
         m:loadModel(basic_path)

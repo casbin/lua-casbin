@@ -138,7 +138,7 @@ function Policy:getFilteredPolicy(sec, ptype, fieldIndex, ...)
 
     if not self.model[sec] then return res end
     if not self.model[sec][ptype] then return res end
-    
+
     for _, rule in pairs(self.model[sec][ptype].policy) do
         local matched = true
         for i, v in ipairs(fieldValues) do
@@ -173,6 +173,24 @@ function Policy:hasPolicy(sec, ptype, rule)
 end
 
 --[[
+     * hasPolicies determines whether a model has any of the specified policies.
+     *
+     * @param sec the section, "p" or "g".
+     * @param ptype the policy type, "p", "p2", .. or "g", "g2", ..
+     * @param rules the policies rules.
+     * @return whether one is found.
+]]
+function Policy:hasPolicies(sec, ptype, rules)
+    for i = 1, #rules do
+        if self:hasPolicy(sec, ptype, rules[i]) then
+            return true
+        end
+    end
+    return false
+end
+
+
+--[[
      * addPolicy adds a policy rule to the model.
      *
      * @param sec the section, "p" or "g".
@@ -205,7 +223,7 @@ function Policy:addPolicies(sec, ptype, rules)
 
     if size < #self.model[sec][ptype].policy then
         return true
-    else 
+    else
         return false
     end
 end
@@ -281,7 +299,7 @@ function Policy:removePolicies(sec, ptype, rules)
 
     if size > #self.model[sec][ptype].policy then
         return true
-    else 
+    else
         return false
     end
 end
