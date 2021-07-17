@@ -12,25 +12,15 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local Adapter = require("src/persist/Adapter")
+--[[
+    * the filter class.
+    * Enforcer only accepts this filter currently.
+]]
+local Filter = {
+    -- P, G are {} of strings
+    P = {},
+    G = {}
+}
+Filter.__index = Filter
 
--- BatchAdapter is an interface for Casbin adapters with add/remove multiple policies functions.
-local BatchAdapter = {}
-setmetatable(BatchAdapter, Adapter)
-
-function BatchAdapter:new()
-    local o = {}
-    setmetatable(o, BatchAdapter)
-    self.__index = self
-    return o
-end
-
-function BatchAdapter:addPolicies(sec, ptype, rules)
-    
-end
-
-function BatchAdapter:removePolicies(sec, ptype, rules)
-    
-end
-
-return BatchAdapter
+return Filter

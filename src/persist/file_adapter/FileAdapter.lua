@@ -12,18 +12,17 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/util/Util"
-require "src/persist/Adapter"
+local Util = require("src/util/Util")
+local Adapter = require("src/persist/Adapter")
 
 --[[
     * FileAdapter is the file adapter for Casbin.
     * It can load policy from file or save policy to file.
 ]]
-FileAdapter = {
-    filePath,
+local FileAdapter = {
     readOnly = false
 }
-FileAdapter = setmetatable(FileAdapter,Adapter)
+setmetatable(FileAdapter, Adapter)
 
 --[[
     * FileAdapter:new(filePath) returns a new FileAdapter
@@ -46,7 +45,7 @@ function FileAdapter:loadPolicy(model)
 
     if f then
         for line in f:lines() do
-            loadPolicyLine(line, model)
+            Util.loadPolicyLine(line, model)
         end
     end
 
@@ -116,3 +115,5 @@ end
 function FileAdapter:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
     error("not implemented")
 end
+
+return FileAdapter

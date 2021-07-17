@@ -13,7 +13,7 @@
 --limitations under the License.
 
 -- Dispatcher is the interface for Casbin dispatcher
-Dispatcher = {}
+local Dispatcher = {}
 Dispatcher.__index = Dispatcher
 
 -- addPolicies adds policies rule to all instances.
@@ -40,3 +40,5 @@ end
 function Dispatcher:updatePolicy(sec, ptype, oldRule, newRule)
 
 end
+
+return Dispatcher

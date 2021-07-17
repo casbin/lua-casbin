@@ -12,7 +12,7 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local util = require("src.util.Util")
+local Util = require("src.util.Util")
 
 describe("util tests", function()
 

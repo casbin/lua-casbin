@@ -12,10 +12,11 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require("src.main.ManagementEnforcer")
+local ManagementEnforcer = require("src.main.ManagementEnforcer")
+local Util = require("src.util.Util")
 
 -- Enforcer = ManagementEnforcer + RBAC API.
-Enforcer = {}
+local Enforcer = {}
 setmetatable(Enforcer, ManagementEnforcer)
 Enforcer.__index = Enforcer
 
@@ -175,11 +176,11 @@ function Enforcer:GetImplicitRolesForUser(name, ...)
 	table.insert(q, name)
 
 	while #q>0 do
-        local name = q[1]
+        local n = q[1]
         table.remove(q, 1)
 
         for _, rm in pairs(self.rmMap) do
-            local roles = rm:getRoles(name, ...)
+            local roles = rm:getRoles(n, ...)
 
             for _, r in pairs(roles) do
                 if not roleSet[r] then
@@ -204,11 +205,11 @@ function Enforcer:GetImplicitUsersForRole(name, ...)
 	table.insert(q, name)
 
 	while #q>0 do
-        local name = q[1]
+        local n = q[1]
         table.remove(q, 1)
 
         for _, rm in pairs(self.rmMap) do
-            local roles = rm:getUsers(name, ...)
+            local roles = rm:getUsers(n, ...)
 
             for _, r in pairs(roles) do
                 if not roleSet[r] then
@@ -239,7 +240,7 @@ function Enforcer:GetImplicitPermissionsForUser(user, ...)
     table.insert(roles, 1, user)
 
     local res = {}
-    local permissions = {}
+    local permissions
     for _, role in pairs(roles) do
         permissions = self:GetPermissionsForUser(role, ...)
         for _, v in pairs(permissions) do
@@ -321,12 +322,12 @@ function Enforcer:GetImplicitResourcesForUser(user, ...)
                 local n = {}
                 for _, tokens in pairs(t[i]) do
                     for _, policy in pairs(resLocal) do
-                        local t = {}
+                        local tks = {}
                         for _, p in pairs(policy) do
-                            table.insert(t, p)
+                            table.insert(tks, p)
                         end
-                        table.insert(t, tokens)
-                        table.insert(n, t)
+                        table.insert(tks, tokens)
+                        table.insert(n, tks)
                     end
                 end
                 resLocal = n
@@ -395,16 +396,16 @@ function Enforcer:GetAllUsersByDomain(domain)
     local users = {}
     local inx = self:getDomainIndex("p")
 
-    local function getUser(index, policies, domain, m)
+    local function getUser(index, policies, dom, x)
         if #policies == 0 or #policies[1] < index then
             return {}
         end
 
         local res = {}
         for _, policy in pairs(policies) do
-            if not m[policy[1]] and policy[index] == domain then
+            if not x[policy[1]] and policy[index] == dom then
                 table.insert(res, policy[1])
-                m[policy[1]] = {}
+                x[policy[1]] = {}
             end
         end
         return res
@@ -429,14 +430,14 @@ function Enforcer:DeleteAllUsersByDomain(domain)
 
     local inx = self:getDomainIndex("p")
 
-    local function getUser(index, policies, domain)
+    local function getUser(index, policies, dom)
         if #policies == 0 or #policies[1] < index then
             return {}
         end
 
         local res = {}
         for _, policy in pairs(policies) do
-            if policy[index] == domain then
+            if policy[index] == dom then
                 table.insert(res, policy)
             end
         end

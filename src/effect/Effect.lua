@@ -17,7 +17,7 @@
     * Effect is the result for a policy rule.
 ]]
 
-Effect = {
+local Effect = {
     ALLOW = 0,
     INDETERMINATE = 1,
     DENY = 2
@@ -26,3 +26,5 @@ Effect = {
 ]]
 }
 Effect.__index = Effect
+
+return Effect

@@ -12,7 +12,7 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local cached_enforcer_module = require("src.main.CachedEnforcer")
+local CachedEnforcer = require("src.main.CachedEnforcer")
 local path = os.getenv("PWD") or io.popen("cd"):read()
 
 describe("Cached Enforcer tests", function ()

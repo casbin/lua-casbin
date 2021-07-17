@@ -67,6 +67,10 @@ jobs:
         do
           sleep 1
         done
+        if [ ! -f lua_install/bin/luacheck ]; then luarocks install luacheck; fi
+        
+    - name: Lint with Luacheck
+      run: luacheck .
 
     - name: Run tests
       run: busted tests -o htest

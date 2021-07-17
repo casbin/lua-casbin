@@ -16,15 +16,15 @@ local Logging = require "logging"
 local fileLogging = require "logging.file"
 
 -- The logging module for logging to console or any file
-Log = {
+local Log = {
     enabled = true
 }
+Log.__index = Log
 
 -- returns logger function for logging to console
-function Log:getLogger()
+function Log.getLogger()
     local o = {}
-    self.__index = self
-    setmetatable(o, self)
+    setmetatable(o, Log)
     o.logger = Logging.new(function(self, level, message)
         print(level, message)
         return true
@@ -50,3 +50,5 @@ function Log:info(...)
         self.logger:info(...)
     end
 end
+
+return Log

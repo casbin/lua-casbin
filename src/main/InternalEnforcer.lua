@@ -12,17 +12,10 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/main/CoreEnforcer"
-require "src/model/Model"
-require "src/persist/BatchAdapter"
-require "src/persist/FilteredAdapter"
-require "src/persist/Watcher"
-require "src/persist/WatcherEx"
-require "src/persist/WatcherUpdatable"
-require "src/util/Util"
+local CoreEnforcer = require("src/main/CoreEnforcer")
 
 -- InternalEnforcer = CoreEnforcer + Internal API.
-InternalEnforcer = {}
+local InternalEnforcer = {}
 setmetatable(InternalEnforcer, CoreEnforcer)
 InternalEnforcer.__index = InternalEnforcer
 
@@ -53,7 +46,7 @@ function InternalEnforcer:addPolicy(sec, ptype, rule)
     end
 
     if self.watcher and self.autoNotifyWatcher then
-        if Util.isInstance(self.watcher, WatcherEx) then
+        if self.watcher.updateForAddPolicy then
             self.watcher:updateForAddPolicy(sec, ptype, rule)
         else
             self.watcher:update()
@@ -73,8 +66,8 @@ function InternalEnforcer:addPolicies(sec, ptype, rules)
 
     if self.adapter and self.autoSave then
 
-        local status, err = pcall(function () 
-            if Util.isInstance(self.adapter, BatchAdapter) then
+        local status, err = pcall(function ()
+            if self.adapter.addPolicies then
                 self.adapter:addPolicies(sec, ptype, rules)
             end
         end)
@@ -135,7 +128,7 @@ function InternalEnforcer:removePolicy(sec, ptype, rule)
     end
 
     if self.watcher and self.autoNotifyWatcher then
-        if Util.isInstance(self.watcher, WatcherEx) then
+        if self.watcher.updateForRemovePolicy then
             self.watcher:updateForRemovePolicy(sec, ptype, rule)
         else
             self.watcher:update()
@@ -197,7 +190,7 @@ function InternalEnforcer:updatePolicy(sec, ptype, oldRule, newRule)
     end
 
     if self.watcher and self.autoNotifyWatcher then
-        if Util.isInstance(self.watcher, WatcherUpdatable) then
+        if self.watcher.updateForUpdatePolicy then
             self.watcher:updateForUpdatePolicy(sec, ptype, oldRule, newRule)
         else
             self.watcher:update()
@@ -217,8 +210,8 @@ function InternalEnforcer:removePolicies(sec, ptype, rules)
 
     if self.adapter and self.autoSave then
 
-        local status, err = pcall(function () 
-            if Util.isInstance(self.adapter, BatchAdapter) then
+        local status, err = pcall(function ()
+            if self.adapter.removePolicies then
                 self.adapter:removePolicies(sec, ptype, rules)
             end
         end)
@@ -275,7 +268,7 @@ function InternalEnforcer:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValu
     end
 
     if self.watcher and self.autoNotifyWatcher then
-        if Util.isInstance(self.watcher, WatcherEx) then
+        if self.watcher.updateForRemoveFilteredPolicy then
             self.watcher:updateForRemoveFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
         else
             self.watcher:update()
