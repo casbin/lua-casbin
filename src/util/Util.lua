@@ -13,10 +13,11 @@
 --limitations under the License.
 
 -- Utility Functions for lua-casbin
-Util = {}
+
+_G.Util = {}
 
 -- arrayToString convert table of strings to one string
-function Util.arrayToString(rule)
+function _G.Util.arrayToString(rule)
     local str = ""
     if #rule>0 then str = rule[1] end
     for i = 2, #rule do
@@ -33,17 +34,17 @@ end
     * @param str the comma-delimited string.
     * @return the array with the string tokens.
 ]]
-function Util.splitCommaDelimited(str)
+function _G.Util.splitCommaDelimited(str)
     str = str .. ","
     local t ={}
     for word in str:gmatch("([^,]+),%s*") do
-         table.insert(t,Util.trim(word))
+         table.insert(t,_G.Util.trim(word))
     end
     return t
 end
 
 --Escapes the dots in the assertion, because the expression evaluation doesn't support such variable names.
-function Util.escapeAssertion(str)
+function _G.Util.escapeAssertion(str)
     if string.sub(str, 1, 1) == "r" or string.sub(str, 1, 1) == "p" then
         str = str:gsub("%.","_", 1)
     end
@@ -57,14 +58,14 @@ function Util.escapeAssertion(str)
 end
 
 --Removes the comments starting with # in the text.
-function Util.removeComments(str)
+function _G.Util.removeComments(str)
     local i, _ = string.find(str, "#")
     if i then str = str:sub(1,i-1) end
 
-    return Util.trim(str)
+    return _G.Util.trim(str)
 end
 
-function Util.arrayEquals(a, b)
+function _G.Util.arrayEquals(a, b)
     if #a ~= #b then
         return false
     end
@@ -76,19 +77,19 @@ function Util.arrayEquals(a, b)
     return true
 end
 
-function Util.array2DEquals(a, b)
+function _G.Util.array2DEquals(a, b)
     if #a ~= #b then
         return false
     end
     for i = 1, #a do
-        if not Util.arrayEquals(a[i], b[i]) then
+        if not _G.Util.arrayEquals(a[i], b[i]) then
             return false
         end
     end
     return true
 end
 
-function Util.arrayRemoveDuplications(s)
+function _G.Util.arrayRemoveDuplications(s)
     local hash = {}
     local res = {}
     for _, v in pairs(s) do
@@ -101,7 +102,7 @@ function Util.arrayRemoveDuplications(s)
 end
 
 -- Trims the leading and trailing whitespaces from a string
-function Util.trim(s)
+function _G.Util.trim(s)
     return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
 
@@ -109,18 +110,18 @@ end
     * Splits string "str" with any "delimiter" and returns a table
     * (optional) 'x' is the maximum no. of times the string should be split
 ]]
-function Util.split(str, delimiter, x)
+function _G.Util.split(str, delimiter, x)
     local result = {}
     local from  = 1
     local delim_from, delim_to = string.find(str, delimiter, from)
     while delim_from do
-        table.insert(result, Util.trim(string.sub(str, from, delim_from-1)))
+        table.insert(result, _G.Util.trim(string.sub(str, from, delim_from-1)))
         from = delim_to + 1
         delim_from, delim_to = string.find(str, delimiter, from)
         if x~=nil then x = x - 1 end
         if x == 0 then break end
     end
-    table.insert(result, Util.trim(string.sub(str, from)))
+    table.insert(result, _G.Util.trim(string.sub(str, from)))
     return result
 end
 
@@ -129,7 +130,7 @@ end
     * @param base table, parent table
     * @returns true/false
 ]]
-function Util.isInstance(o, parent)
+function _G.Util.isInstance(o, parent)
     while o do
         o = getmetatable(o)
         if parent == o then return true end
@@ -138,7 +139,7 @@ function Util.isInstance(o, parent)
 end
 
 -- Searches if all values in a table are present in the other table regardless of order
-function Util.areTablesSame(a, b)
+function _G.Util.areTablesSame(a, b)
     local c = {}
     for _, v in pairs(a) do
         if c[v] then
@@ -159,24 +160,26 @@ function Util.areTablesSame(a, b)
         end
     end
     for _, v in pairs(c) do
-        return false
+        if c[v]~=0 then
+            return false
+        end
     end
     return true
 end
 
 -- finds if string has eval and replaces eval(...) with its value so that it can be evaluated by luaxp
-function Util.findAndReplaceEval(str, context)
+function _G.Util.findAndReplaceEval(str, context)
     local m = string.gsub(str, "eval%((.-)%)", function (s)
-        return Util.escapeAssertion(context[Util.trim(s)])
+        return _G.Util.escapeAssertion(context[_G.Util.trim(s)])
     end)
     return m
 end
 
 -- replaces [obj] in (obj1, obj2, ...) to obj == obj1 || obj == obj2 || ...
-function Util.replaceInOfMatcher(str)
+function _G.Util.replaceInOfMatcher(str)
     local s = string.gsub(str, "([^%s]+)(%s+)in(%s+)%((.*)%)", function (a, _, _ , b)
         local t = ""
-        local vals = Util.splitCommaDelimited(b)
+        local vals = _G.Util.splitCommaDelimited(b)
         for k, v in pairs(vals) do
             t = t .. a .. " == " .. v
             if k<#vals then
@@ -191,11 +194,11 @@ function Util.replaceInOfMatcher(str)
 end
 
 -- returns deep (recursive) copy of a table (values only)
-function Util.tableDeepCopy(org)
+function _G.Util.tableDeepCopy(org)
     local copy = {}
     for k, v in pairs(org) do
         if type(v) == "table" then
-            copy[k] = Util.tableDeepCopy(v)
+            copy[k] = _G.Util.tableDeepCopy(v)
         else
             copy[k] = v
         end
@@ -204,7 +207,7 @@ function Util.tableDeepCopy(org)
 end
 
 -- setSubtract returns the elements in `a` that aren't in `b`.
-function Util.setSubtract(a, b)
+function _G.Util.setSubtract(a, b)
     local res = {}
     for _, v in pairs(a) do
         res[v] = true
@@ -227,11 +230,11 @@ function Util.setSubtract(a, b)
 end
 
 -- printTable recursively prints a table for logging
-function Util.printTable(t)
+function _G.Util.printTable(t)
     local s = "{ "
     for k, v in pairs(t) do
         if type(v) == "table" then
-            s = s .. Util.printTable(v) .. ", "
+            s = s .. _G.Util.printTable(v) .. ", "
         else
             if type(k)=="string" then
                 s = s .. k .. " = " .. v .. ", "
@@ -245,4 +248,4 @@ function Util.printTable(t)
     return s
 end
 
-return Util
+return _G.Util

@@ -12,8 +12,9 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local enforcer_module = require("src.main.Enforcer")
+local Enforcer = require("src.main.Enforcer")
 local path = os.getenv("PWD") or io.popen("cd"):read()
+local BuiltInFunctions = require("src.util.BuiltInFunctions")
 
 local function sort(t)
     table.sort(t, function (x, y)
@@ -41,7 +42,7 @@ describe("RBAC API tests", function ()
         assert.is.True(e:HasRoleForUser("alice", "data2_admin"))
 
         e:AddRoleForUser("alice", "data1_admin")
-        
+
         assert.is.Same(e:GetRolesForUser("alice"), {"data2_admin", "data1_admin"})
         assert.is.Same(e:GetRolesForUser("bob"), {})
         assert.is.Same(e:GetRolesForUser("data2_admin"), {})
@@ -104,7 +105,7 @@ describe("RBAC API tests", function ()
         assert.is.Same(e:GetRolesForUser("bob", "domain2"), {"admin"})
         assert.is.Same(e:GetRolesForUser("admin", "domain2"), {})
         assert.is.Same(e:GetRolesForUser("non_exist", "domain2"), {})
-        
+
         e:DeleteRoleForUser("alice", "admin", "domain1")
         e:AddRoleForUser("bob", "admin", "domain1")
 
@@ -116,7 +117,7 @@ describe("RBAC API tests", function ()
         assert.is.Same(e:GetRolesForUser("bob", "domain2"), {"admin"})
         assert.is.Same(e:GetRolesForUser("admin", "domain2"), {})
         assert.is.Same(e:GetRolesForUser("non_exist", "domain2"), {})
-        
+
         e:AddRoleForUser("alice", "admin", "domain1")
         e:DeleteRolesForUser("bob", "domain1")
 
@@ -150,7 +151,7 @@ describe("RBAC API tests", function ()
 
         e:AddRolesForUser("alice", {"data1_admin", "data2_admin", "data3_admin"})
         assert.is.Same(e:GetRolesForUser("alice"), {"data1_admin", "data2_admin", "data3_admin"})
-        
+
         assert.is.True(e:enforce("alice", "data1", "read"))
         assert.is.True(e:enforce("alice", "data2", "read"))
         assert.is.True(e:enforce("alice", "data2", "write"))
@@ -359,7 +360,7 @@ describe("RBAC API with domains tests", function ()
 
         assert.is.Same(e:GetUsersForRole("non_exist", "domain2"), {})
         assert.is.Same(e:GetUsersForRoleInDomain("non_exist", "domain2"), {})
-        
+
     end)
 
     it("Role API with Domains test", function ()
@@ -370,10 +371,10 @@ describe("RBAC API with domains tests", function ()
 
         assert.is.Same(e:GetRolesForUser("alice", "domain1"), {"admin"})
         assert.is.Same(e:GetRolesForUserInDomain("alice", "domain1"), {"admin"})
-        
+
         assert.is.Same(e:GetRolesForUser("bob", "domain1"), {})
         assert.is.Same(e:GetRolesForUserInDomain("bob", "domain1"), {})
-        
+
         assert.is.Same(e:GetRolesForUser("admin", "domain1"), {})
         assert.is.Same(e:GetRolesForUserInDomain("admin", "domain1"), {})
 
@@ -397,10 +398,10 @@ describe("RBAC API with domains tests", function ()
 
         assert.is.Same(e:GetRolesForUser("alice", "domain1"), {})
         assert.is.Same(e:GetRolesForUserInDomain("alice", "domain1"), {})
-        
+
         assert.is.Same(e:GetRolesForUser("bob", "domain1"), {"admin"})
         assert.is.Same(e:GetRolesForUserInDomain("bob", "domain1"), {"admin"})
-        
+
         assert.is.Same(e:GetRolesForUser("admin", "domain1"), {})
         assert.is.Same(e:GetRolesForUserInDomain("admin", "domain1"), {})
 
@@ -424,10 +425,10 @@ describe("RBAC API with domains tests", function ()
 
         assert.is.Same(e:GetRolesForUser("alice", "domain1"), {"admin"})
         assert.is.Same(e:GetRolesForUserInDomain("alice", "domain1"), {"admin"})
-        
+
         assert.is.Same(e:GetRolesForUser("bob", "domain1"), {})
         assert.is.Same(e:GetRolesForUserInDomain("bob", "domain1"), {})
-        
+
         assert.is.Same(e:GetRolesForUser("admin", "domain1"), {})
         assert.is.Same(e:GetRolesForUserInDomain("admin", "domain1"), {})
 

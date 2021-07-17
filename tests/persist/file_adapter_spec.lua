@@ -12,8 +12,8 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local file_adapter_module = require("src.persist.file_adapter.FileAdapter")
-local model_module = require("src.model.Model")
+local FileAdapter = require("src.persist.file_adapter.FileAdapter")
+local Model = require("src.model.Model")
 
 local path = os.getenv("PWD") or io.popen("cd"):read()
 local basic_path  = path .. "/examples/basic_model.conf"
@@ -23,8 +23,8 @@ local rbac_policy_path = path .. "/examples/rbac_policy.csv"
 
 local save_policy_path = path .. "/tests/persist/saved_policy.csv"
 
-describe("FileAdapter tests", function() 
-    
+describe("FileAdapter tests", function()
+
     it("test initialize", function ()
         local f = FileAdapter:new(basic_policy_path)
         assert.are.same(f.filePath, basic_policy_path)

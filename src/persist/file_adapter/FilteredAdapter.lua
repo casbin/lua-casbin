@@ -181,3 +181,4 @@ end
 function FilteredAdapter:removeFilteredPolicyPolicy(sec, ptype, fieldIndex, fieldValues)
     self.adapter:removeFilteredPolicyPolicy(sec, ptype, fieldIndex, fieldValues)
 end
+return Filter,FilteredAdapter

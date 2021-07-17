@@ -12,11 +12,11 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require("src.persist.Watcher")
-require("src.persist.WatcherEx")
-require("src.persist.WatcherUpdatable")
+local Watcher=require("src.persist.Watcher")
+local WatcherEx=require("src.persist.WatcherEx")
+local WatcherUpdatable=require("src.persist.WatcherUpdatable")
 
-local enforcer_module = require("src.main.Enforcer")
+local Enforcer = require("src.main.Enforcer")
 local path = os.getenv("PWD") or io.popen("cd"):read()
 
 describe("Watcher test", function ()

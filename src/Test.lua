@@ -12,12 +12,12 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-Shape = {
+local Shape = {
     area=0
 }
 
 function Shape:new(side)
-    o = {}
+    local o = {}
     setmetatable(o, self)
     self.__index = self
     side = side or 0

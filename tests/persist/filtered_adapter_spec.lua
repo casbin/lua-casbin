@@ -12,8 +12,8 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local filtered_adapter_module = require("src.persist.file_adapter.FilteredAdapter")
-local enforcer_module = require("src.main.Enforcer")
+local Filter,FilteredAdapter = require("src.persist.file_adapter.FilteredAdapter")
+local Enforcer = require("src.main.Enforcer")
 local path = os.getenv("PWD") or io.popen("cd"):read()
 
 describe("FilteredAdapter tests", function ()

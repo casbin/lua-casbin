@@ -12,8 +12,9 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local enforcer_module = require("src.main.Enforcer")
+local Enforcer = require("src.main.Enforcer")
 local path = os.getenv("PWD") or io.popen("cd"):read()
+local Util = require("src.util.Util")
 
 describe("Management API tests", function ()
     it("Get Subjects, Objects, Actions, Roles test", function ()
@@ -250,7 +251,7 @@ describe("Management API tests", function ()
             {"bob", "data1_admin"},
         }
         assert.is.Same(e:GetFilteredGroupingPolicy(1, "data1_admin"), res)
-        
+
         e:RemoveFilteredGroupingPolicy(1, "data1_admin")
 
         res = {

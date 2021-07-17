@@ -12,13 +12,12 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local log = require("src.util.Log")
-local Enforcer = require("src.main.Enforcer")
+local Log = require("src.util.Log")
 
 local path = os.getenv("PWD") or io.popen("cd"):read()
 
 describe("log tests", function ()
-    
+
     it("test console logger", function ()
         local logger = Log:getLogger()
         assert.has_no.errors(function ()
@@ -38,7 +37,7 @@ describe("log tests", function ()
 
     it("test filePath error", function ()
         assert.has_error(function ()
-            local logger = Log:getFileLogger()
+            Log:getFileLogger()
         end)
     end)
-end) 
+end)
