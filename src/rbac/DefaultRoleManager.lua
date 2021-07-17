@@ -12,10 +12,10 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/rbac/Role"
-require "src/util/Log"
+local Role = require("src/rbac/Role")
+local Log = require("src/util/Log")
 
-DefaultRoleManager = {
+local DefaultRoleManager = {
     maxHierarchyLevel = 0
 }
 
@@ -39,7 +39,7 @@ function DefaultRoleManager:new(maxHierarchyLevel, matchingFunc, domainMatchingF
     local o = {}
     setmetatable(o, self)
     self.__index = self
-    o.logger = Log:getLogger()
+    o.logger = Log.getLogger()
     o.allRoles = {}
     o.maxHierarchyLevel = maxHierarchyLevel
     o.matchingFunc = matchingFunc

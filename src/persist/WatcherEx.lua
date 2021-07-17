@@ -12,9 +12,9 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require("src.persist.Watcher")
+local Watcher = require("src.persist.Watcher")
 
-WatcherEx = {}
+local WatcherEx = {}
 setmetatable(WatcherEx, Watcher)
 WatcherEx.__index = WatcherEx
 
@@ -41,3 +41,5 @@ end
 function WatcherEx:updateForSavePolicy(model)
     
 end
+
+return WatcherEx

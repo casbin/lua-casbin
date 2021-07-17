@@ -12,10 +12,10 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require("src.main.Enforcer")
+local Enforcer = require("src.main.Enforcer")
 
 -- CachedEnforcer wraps Enforcer and provides decision cache
-CachedEnforcer = {}
+local CachedEnforcer = {}
 setmetatable(CachedEnforcer, Enforcer)
 
 -- Creates a cached enforcer via file or DB.
@@ -80,3 +80,5 @@ end
 function CachedEnforcer:invalidateCache()
     self.m = {}
 end
+
+return CachedEnforcer

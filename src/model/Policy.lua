@@ -12,16 +12,15 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/model/Assertion"
-require "src/util/Util"
-require "src/util/Log"
+local Util = require("src/util/Util")
+local Log = require("src/util/Log")
 
 -- model's struct is map<string, map<string, Assertion>>
-Policy = {}
+local Policy = {}
 
 function Policy:new()
     local o = {}
-    o.logger = Log:getLogger()
+    o.logger = Log.getLogger()
     setmetatable(o, self)
     self.__index = self
     return o
@@ -393,15 +392,6 @@ function Policy:buildIncrementalRoleLinks(rm, op, sec, ptype, rules)
     if sec == "g" then
         self.model[sec][ptype]:buildIncrementalRoleLinks(rm, op, rules)
     end
-end
-
-function Policy:hasPolicies(sec, ptype, rules)
-    for _, rule in pairs(rules) do
-        if self:hasPolicy(sec, ptype, rule) then
-            return true
-        end
-    end
-    return false
 end
 
 return Policy

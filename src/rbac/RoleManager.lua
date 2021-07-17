@@ -13,7 +13,7 @@
 --limitations under the License.
 
 -- RoleManager provides interface to define the operations for managing roles.
-RoleManager = {}
+local RoleManager = {}
 
 --[[
      * Clear clears all stored data and resets the role manager to the initial state.
@@ -87,3 +87,5 @@ end
 function RoleManager:printRoles()
 
 end
+
+return RoleManager

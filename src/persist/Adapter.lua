@@ -12,40 +12,8 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-function loadPolicyLine(line, model)
-     -- Loads a text line as a policy rule to model.
-
-     if line == "" then
-         return
-     end
-
-     if line:sub(1,1) == "#" then
-         return
-     end
-
-     local tokens = Util.split(line, ",")
-     local key = tokens[1]
-     local sec = key:sub(1,1)
-
-     if model.model[sec] == nil then
-         return
-     end
-     if model.model[sec][key] == nil then
-         return
-     end
-
-     model.model[sec][key].policy = model.model[sec][key].policy or {}
-     local rules = {}
-     for i = 2, #tokens do
-         table.insert(rules, tokens[i])
-     end
-     table.insert(model.model[sec][key].policy, rules)
- end
-
 --Adapter is the interface for Casbin adapters.
-Adapter = {
-
-}
+local Adapter = {}
 Adapter.__index = Adapter
 --[[
         * loadPolicy loads all policy rules from the storage.

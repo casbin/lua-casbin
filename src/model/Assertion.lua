@@ -12,13 +12,12 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/rbac/RoleManager"
 --[[
     * Assertion represents an expression in a section of the model.
     * For example: r = sub, obj, act
     policy = {{}}
 ]]
-Assertion = {}
+local Assertion = {}
 
 function Assertion:new()
     local o = {}
@@ -98,3 +97,5 @@ function Assertion:buildIncrementalRoleLinks(rm, op, rules)
         end
     end
 end
+
+return Assertion

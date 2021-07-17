@@ -15,7 +15,7 @@
 local rex = require ("rex_pcre")
 local posix = require("posix.fnmatch")
 
-BuiltInFunctions = {}
+local BuiltInFunctions = {}
 
 -- Wrapper for keyMatch
 function BuiltInFunctions.keyMatchFunc(args)
@@ -151,3 +151,5 @@ function BuiltInFunctions.generateGFunction(rm)
 
     return f
 end
+
+return BuiltInFunctions

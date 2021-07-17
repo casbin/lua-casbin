@@ -12,12 +12,12 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/effect/Effect"
+local Effect = require("src/effect/Effect")
 
 --[[
     * Effector is the interface for Casbin effectors.
 ]]
-Effector = {}
+local Effector = {}
 Effector.__index = Effector
 Effector.Effect = {}
 setmetatable(Effector.Effect, Effect)
@@ -33,3 +33,5 @@ setmetatable(Effector.Effect, Effect)
 function Effector:mergeEffects(expr, effects, results)
     
 end
+
+return Effector

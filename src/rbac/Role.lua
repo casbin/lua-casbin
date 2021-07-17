@@ -13,7 +13,7 @@
 --limitations under the License.
 
 --  * Role represents the data structure for a role in RBAC.
-Role = {}
+local Role = {}
 
 function Role:new(name, domain)
     local o = {}
@@ -107,9 +107,9 @@ function Role:hasDirectRole(role, matchingFunc, domainMatchingFunc)
 end
 
 function Role:toString()
-    local names = ""
+    local names
     names = self.name .. " < "
-    
+
     for k, r in pairs(self.roles) do
         if k==1 then 
             names = names .. r.name

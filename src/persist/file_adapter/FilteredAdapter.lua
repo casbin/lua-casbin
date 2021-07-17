@@ -12,27 +12,17 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/persist/Adapter"
-require "src/persist/file_adapter/FileAdapter"
-require "src/util/Util"
-
---[[
-    * the filter class.
-    * Enforcer only accepts this filter currently.
-]]
-Filter = {
-    -- P, G are {} of strings
-    P = {},
-    G = {}
-}
-Filter.__index = Filter
+local Adapter = require("src/persist/Adapter")
+local FileAdapter = require("src/persist/file_adapter/FileAdapter")
+local Util = require("src/util/Util")
+local Filter = require("src/persist/file_adapter/Filter")
 
 --[[
     * FilteredAdapter is the filtered file adapter for Casbin.
     * It can load policy from file or save policy to file and
     * supports loading of filtered policies.
 ]]
-FilteredAdapter = {
+local FilteredAdapter = {
     isFiltered = true
 }
 setmetatable(FilteredAdapter, Adapter)
@@ -64,7 +54,7 @@ function FilteredAdapter:loadFilteredPolicy(model, filter)
         return
     end
 
-    if Util.isInstance(filter, Filter) == false then
+    if not filter.G or not filter.P then
         error("Invalid filter type.")
     else
         self:loadFilteredPolicyFile(model, filter)
@@ -82,7 +72,7 @@ function FilteredAdapter:loadFilteredPolicyFile(model, filter)
         for line in f:lines() do
             line = Util.trim(line)
             if self:filterLine(line, filter) == false then
-                loadPolicyLine(line, model)
+                Util.loadPolicyLine(line, model)
             end
         end
     end
@@ -181,3 +171,5 @@ end
 function FilteredAdapter:removeFilteredPolicyPolicy(sec, ptype, fieldIndex, fieldValues)
     self.adapter:removeFilteredPolicyPolicy(sec, ptype, fieldIndex, fieldValues)
 end
+
+return FilteredAdapter

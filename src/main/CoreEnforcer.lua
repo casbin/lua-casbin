@@ -12,17 +12,19 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require("src.effect.DefaultEffector")
-require("src.effect.Effector")
-require("src.model.FunctionMap")
-require("src.model.Model")
-require("src.persist.file_adapter.FileAdapter")
-require("src.rbac.DefaultRoleManager")
-require("src.util.BuiltInFunctions")
+local DefaultEffector = require("src.effect.DefaultEffector")
+local Effect = require("src.effect.Effect")
+local FunctionMap = require("src.model.FunctionMap")
+local Model = require("src.model.Model")
+local FileAdapter = require("src.persist.file_adapter.FileAdapter")
+local DefaultRoleManager = require("src.rbac.DefaultRoleManager")
+local BuiltInFunctions = require("src.util.BuiltInFunctions")
+local Log = require("src.util.Log")
+local Util = require("src.util.Util")
 
 local luaxp = require("modules.luaxp")
 
-CoreEnforcer = {
+local CoreEnforcer = {
     enabled = false,
     autoSave = false,
     autoBuildRoleLinks = false,
@@ -35,7 +37,7 @@ function CoreEnforcer:new(model, adapter)
     local o = {}
     setmetatable(o, self)
     self.__index = self
-    self.logger = Log:getLogger()
+    self.logger = Log.getLogger()
 
     if type(model) == "string" then
         if type(adapter) == "string" then
@@ -65,10 +67,6 @@ function CoreEnforcer:initWithAdapter(modelPath, adapter)
 end
 
 function CoreEnforcer:initWithModelAndAdapter(m, adapter)
-    if not Util.isInstance(m, Model) or not Util.isInstance(adapter, Adapter) then
-        error("Invalid parameters for Enforcer.")
-    end
-
     self.adapter = adapter
     self.model = m
     self.model.logger = self.logger
@@ -226,9 +224,6 @@ end
 ]]
 function CoreEnforcer:loadFilteredPolicy(filter)
     self.model:clearPolicy()
-    if not Util.isInstance(self.adapter, FilteredAdapter) then
-        error("Filtered policies are not supported by this adapter.")
-    end
 
     self.adapter:loadFilteredPolicy(self.model, filter)
 
@@ -260,7 +255,7 @@ function CoreEnforcer:savePolicy()
     self.adapter:savePolicy(self.model)
 
     if self.watcher then
-        if Util.isInstance(self.watcher, WatcherEx) then
+        if self.watcher.updateForSavePolicy then
             self.watcher:updateForSavePolicy(self.model)
         else
             self.watcher:update()

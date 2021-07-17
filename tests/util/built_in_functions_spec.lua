@@ -12,7 +12,7 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local builtInFunctions = require("src.util.BuiltInFunctions")
+local BuiltInFunctions = require("src.util.BuiltInFunctions")
 
 describe("BuiltInFunctions tests", function ()
     it("keyMatch tests", function ()

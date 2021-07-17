@@ -1,5 +1,5 @@
 local socket = require("socket")
-require("src.main.Enforcer")
+local Enforcer = require("src.main.Enforcer")
 local path = os.getenv("PWD") or io.popen("cd"):read()
 
 local function rawEnforce(sub, obj, act)

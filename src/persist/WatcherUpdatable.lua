@@ -12,9 +12,9 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require("src.persist.Watcher")
+local Watcher = require("src.persist.Watcher")
 
-WatcherUpdatable = {}
+local WatcherUpdatable = {}
 setmetatable(WatcherUpdatable, Watcher)
 WatcherUpdatable.__index = WatcherUpdatable
 
@@ -23,3 +23,5 @@ WatcherUpdatable.__index = WatcherUpdatable
 function WatcherUpdatable:updateForUpdatePolicy(oldRule, newRule)
     
 end
+
+return WatcherUpdatable

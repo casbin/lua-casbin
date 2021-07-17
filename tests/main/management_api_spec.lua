@@ -12,7 +12,8 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local enforcer_module = require("src.main.Enforcer")
+local Enforcer = require("src.main.Enforcer")
+local Util = require("src.util.Util")
 local path = os.getenv("PWD") or io.popen("cd"):read()
 
 describe("Management API tests", function ()

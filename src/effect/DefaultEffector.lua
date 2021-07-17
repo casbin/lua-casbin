@@ -12,11 +12,11 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/effect/Effector"
+local Effector = require("src/effect/Effector")
 --[[
     * DefaultEffector is default effector for Casbin.
 ]]
-DefaultEffector = {}
+local DefaultEffector = {}
 setmetatable(DefaultEffector,Effector)
 --[[
 	* DefaultEffector:new is the constructor for DefaultEffector.
@@ -83,3 +83,5 @@ function DefaultEffector:mergeEffects(expr, effects)
 
     return result, explainIndex
 end
+
+return DefaultEffector

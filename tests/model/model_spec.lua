@@ -12,7 +12,7 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local model_module = require("src.model.Model")
+local Model = require("src.model.Model")
 local path = os.getenv("PWD") or io.popen("cd"):read()
 
 local basic_path  = path .. "/examples/basic_model.conf"
@@ -179,7 +179,7 @@ describe("model tests", function()
         local res = m:removeFilteredPolicy("p", "p", 1, {"domain1", "data1"})
         assert.is.True(res)
 
-        local res = m:removeFilteredPolicy("p", "p", 1, {"domain1", "data1"})
+        res = m:removeFilteredPolicy("p", "p", 1, {"domain1", "data1"})
         assert.is.False(res)
     end)
 

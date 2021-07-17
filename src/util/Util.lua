@@ -13,7 +13,7 @@
 --limitations under the License.
 
 -- Utility Functions for lua-casbin
-Util = {}
+local Util = {}
 
 -- arrayToString convert table of strings to one string
 function Util.arrayToString(rule)
@@ -159,7 +159,9 @@ function Util.areTablesSame(a, b)
         end
     end
     for _, v in pairs(c) do
-        return false
+        if v then
+            return false
+        end
     end
     return true
 end
@@ -244,5 +246,36 @@ function Util.printTable(t)
     s = s .. " }"
     return s
 end
+
+function Util.loadPolicyLine(line, model)
+    -- Loads a text line as a policy rule to model.
+
+    if line == "" then
+        return
+    end
+
+    if line:sub(1,1) == "#" then
+        return
+    end
+
+    local tokens = Util.split(line, ",")
+    local key = tokens[1]
+    local sec = key:sub(1,1)
+
+    if model.model[sec] == nil then
+        return
+    end
+    if model.model[sec][key] == nil then
+        return
+    end
+
+    model.model[sec][key].policy = model.model[sec][key].policy or {}
+    local rules = {}
+    for i = 2, #tokens do
+        table.insert(rules, tokens[i])
+    end
+    table.insert(model.model[sec][key].policy, rules)
+end
+
 
 return Util

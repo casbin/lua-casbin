@@ -12,10 +12,11 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require("src.main.InternalEnforcer")
+local InternalEnforcer = require("src.main.InternalEnforcer")
+local FunctionMap = require("src.model.FunctionMap")
 
 -- ManagementEnforcer = InternalEnforcer + Management API.
-ManagementEnforcer = {}
+local ManagementEnforcer = {}
 setmetatable(ManagementEnforcer, InternalEnforcer)
 ManagementEnforcer.__index = ManagementEnforcer
 

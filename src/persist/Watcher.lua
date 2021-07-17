@@ -12,7 +12,7 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-Watcher = {}
+local Watcher = {}
 Watcher.__index = Watcher
 
 -- setUpdateCallback sets the callback function that the watcher will call
@@ -33,3 +33,5 @@ end
 function Watcher:close()
 
 end
+
+return Watcher
