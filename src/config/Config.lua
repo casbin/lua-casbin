@@ -11,9 +11,9 @@
 --WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 --See the License for the specific language governing permissions and
 --limitations under the License.
-require "src/util/Util"
+local Util = require("src/util/Util")
 
-Config = {
+local Config = {
     DEFAULT_SECTION = "default",
     DEFAULT_COMMENT = "#",
     DEFAULT_COMMENT_SEM = ";",
@@ -82,7 +82,7 @@ function Config:parseBuffer(lines)
     local buf = {}
     local lineNum = 0
     local canWrite = false
-	local line = ""
+	local line
 
     while true do
         if canWrite then
@@ -97,9 +97,7 @@ function Config:parseBuffer(lines)
 
         if lineNum>#lines then
             if #buf>0 then
-                if self:write(section, lineNum, buf) == true then
-                    buf = {}
-                end
+                self:write(section, lineNum, buf)
             end
             break
         end
@@ -117,7 +115,7 @@ function Config:parseBuffer(lines)
 
             section = string.sub(line, 2, -2)
         else
-            local p = ""
+            local p
 
             if self.DEFAULT_MULTI_LINE_SEPARATOR == string.sub(line, -2, -1) then
                 p = Util.trim(string.sub(line, 1, -3))
@@ -198,7 +196,7 @@ function Config:set(key, value)
     end
 
     local section = ""
-    local option  = ""
+    local option
 
     local keys = Util.split(string.lower(key), "::")
     if #keys >= 2 then
@@ -214,7 +212,7 @@ end
 -- section.key or key
 function Config:get(key)
     local section = self.DEFAULT_SECTION
-    local option  = ""
+    local option
 
     local keys = Util.split(string.lower(key), "::")
     if #keys >= 2 then
@@ -232,3 +230,5 @@ function Config:get(key)
         return self.data[section][option]
     end
 end
+
+return Config

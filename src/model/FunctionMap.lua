@@ -12,9 +12,9 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require("src.util.BuiltInFunctions")
+local BuiltInFunctions = require("src.util.BuiltInFunctions")
 
-FunctionMap = {
+local FunctionMap = {
     ["keyMatch"] = BuiltInFunctions.keyMatchFunc,
     ["keyGet"] = BuiltInFunctions.keyGetFunc,
     ["keyMatch2"] = BuiltInFunctions.keyMatch2Func,
@@ -38,3 +38,5 @@ function FunctionMap:addFunction(key, func)
         self[key] = func
     end
 end
+
+return FunctionMap

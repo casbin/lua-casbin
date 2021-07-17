@@ -30,4 +30,9 @@ include_files = {
    "tests",
 }
 
+exclude_files = {
+   "tests/config/test.ini",
+   "tests/persist/saved_policy.csv",
+}
+
 unused_secondaries = false

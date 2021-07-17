@@ -12,12 +12,12 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/persist/Adapter"
+local Adapter = require("src/persist/Adapter")
 
 --[[
     * FilteredAdapter is the interface for Casbin adapters supporting filtered policies.
 ]]
-FilteredAdapter = {}
+local FilteredAdapter = {}
 setmetatable(FilteredAdapter, Adapter)
 
 --[[
@@ -36,3 +36,5 @@ end
 function FilteredAdapter:isFiltered()
     
 end
+
+return FilteredAdapter

@@ -12,14 +12,14 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local role_manager_module = require("src.rbac.DefaultRoleManager")
-local util_module = require("src.util.Util")
-local builtInFunctions_module = require("src.util.BuiltInFunctions")
+local DefaultRoleManager = require("src.rbac.DefaultRoleManager")
+local Util = require("src.util.Util")
+local BuiltInFunctions = require("src.util.BuiltInFunctions")
 
 -- test function for testing the matching function functionality in Role Manager
 -- true if n1=n2 or n1 matches the pattern of n2 or n2 matches the pattern of n1
 -- "?" character needed before any pattern
-function testMatchingFunc(...)
+local function testMatchingFunc(...)
     local args = {...}
     local n1 = args[1]
     local n2 = args[2]

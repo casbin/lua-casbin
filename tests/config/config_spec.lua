@@ -12,7 +12,7 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local config = require("src.config.Config")
+local Config = require("src.config.Config")
 local path = os.getenv("PWD") or io.popen("cd"):read()
 path  = path .. "/tests/config/test.ini"
 local config = Config:newConfig(path)

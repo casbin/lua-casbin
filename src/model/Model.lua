@@ -12,12 +12,12 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-require "src/config/Config"
-require "src/model/Policy"
-require "src/model/Assertion"
-require "src/util/Util"
+local Config = require("src/config/Config")
+local Policy = require("src/model/Policy")
+local Assertion = require("src/model/Assertion")
+local Util = require("src/util/Util")
 
-Model = Policy:new()
+local Model = Policy:new()
 
 function Model:new()
     local o = {}
