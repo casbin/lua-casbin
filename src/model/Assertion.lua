@@ -26,7 +26,8 @@ function Assertion:new()
     o.tokens = {}
     o.policy = {}
     o.RM = {}
-    
+    o.policyMap={}
+    o.priorituIndex=0
     setmetatable(o,self)
     self.__index = self
     return o
@@ -50,13 +51,13 @@ function Assertion:buildRoleLinks(rm)
         if #rule < count then
             error("grouping policy elements do not meet role definition")
         end
-        
+
         if rule[3] then
             self.RM:addLink(rule[1], rule[2], rule[3])
         else
             self.RM:addLink(rule[1], rule[2])
         end
-        
+
     end
 
 end

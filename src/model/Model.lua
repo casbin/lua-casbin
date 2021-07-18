@@ -25,11 +25,11 @@ function Model:new()
     self.__index = self
     self.model = {}
     self.sectionNameMap = {
-         ["r"] = "request_definition",
-         ["p"] = "policy_definition",
-         ["g"] = "role_definition",
-         ["e"] = "policy_effect",
-         ["m"] = "matchers"
+        ["r"] = "request_definition",
+        ["p"] = "policy_definition",
+        ["g"] = "role_definition",
+        ["e"] = "policy_effect",
+        ["m"] = "matchers"
     }
 
     self.requiredSections = {"r", "p", "e", "m"} -- Minimal required sections for a model to be valid
@@ -37,14 +37,14 @@ function Model:new()
 
     -- PolicyOperations: [key] = POLICY_ADD/POLICY_REMOVE and value = string(key)
     self.PolicyOperations = {
-         POLICY_ADD = "POLICY_ADD",
-         POLICY_REMOVE = "POLICY_REMOVE"
+        POLICY_ADD = "POLICY_ADD",
+        POLICY_REMOVE = "POLICY_REMOVE"
     }
     return o
 end
 
 function Model:getModCount()
-     return self.modCount
+    return self.modCount
 end
 
 function Model:loadAssertion(model, cfg, sec, key)
@@ -53,48 +53,48 @@ function Model:loadAssertion(model, cfg, sec, key)
 end
 
 --[[
-     * addDef adds an assertion to the model.
-     *
-     * @param sec the section, "p" or "g".
-     * @param key the policy type, "p", "p2", .. or "g", "g2", ..
-     * @param value the policy rule, separated by ", ".
-     * @return succeeds or not.
+    * addDef adds an assertion to the model.
+    *
+    * @param sec the section, "p" or "g".
+    * @param key the policy type, "p", "p2", .. or "g", "g2", ..
+    * @param value the policy rule, separated by ", ".
+    * @return succeeds or not.
 ]]
 function Model:addDef(sec, key, value)
 
-     if value == "" then return false end
+    if value == "" then return false end
 
-     if self.model[sec] == nil then
-          self.model[sec] = {}
-     end
+    if self.model[sec] == nil then
+        self.model[sec] = {}
+    end
 
-     if self.model[sec][key] == nil then
-          self.model[sec][key] = {}
-     end
+    if self.model[sec][key] == nil then
+        self.model[sec][key] = {}
+    end
 
-     self.model[sec][key] = Assertion:new()
-     self.model[sec][key].key = key
-     self.model[sec][key].value = value
+    self.model[sec][key] = Assertion:new()
+    self.model[sec][key].key = key
+    self.model[sec][key].value = value
+    self.model[sec][key]={}
+    if sec == "r" or sec == "p" then
+        self.model[sec][key].tokens = Util.splitCommaDelimited(self.model[sec][key].value)
+        for k, v in pairs(self.model[sec][key].tokens) do
+            self.model[sec][key].tokens[k] = key .. "_" .. self.model[sec][key].tokens[k]
+        end
+    else
+        self.model[sec][key].value = Util.removeComments(Util.escapeAssertion(self.model[sec][key].value))
+    end
 
-     if sec == "r" or sec == "p" then
-          self.model[sec][key].tokens = Util.splitCommaDelimited(self.model[sec][key].value)
-          for k, v in pairs(self.model[sec][key].tokens) do
-               self.model[sec][key].tokens[k] = key .. "_" .. self.model[sec][key].tokens[k]
-          end
-     else
-          self.model[sec][key].value = Util.removeComments(Util.escapeAssertion(self.model[sec][key].value))
-     end
-
-     self.modCount = self.modCount + 1
-     return true
+    self.modCount = self.modCount + 1
+    return true
 end
 
 function Model:getKeySuffix(i)
-     if i == 1 then
-          return ""
-     end
+    if i == 1 then
+        return ""
+    end
 
-     return ""..i
+    return ""..i
 end
 
 function Model:loadSection(model, cfg, sec)
@@ -109,9 +109,9 @@ function Model:loadSection(model, cfg, sec)
 end
 
 --[[
-     * loadModel loads the model from model CONF file.
-     *
-     * @param path the path of the model file.
+    * loadModel loads the model from model CONF file.
+    *
+    * @param path the path of the model file.
 ]]
 function Model:loadModel(path)
     local cfg = Config:newConfig(path)
@@ -125,9 +125,9 @@ function Model:loadModel(path)
 end
 
 --[[
-     * loadModelFromText loads the model from the text.
-     *
-     * @param text the model text.
+    * loadModelFromText loads the model from the text.
+    *
+    * @param text the model text.
 ]]
 function Model:loadModelFromText(text)
     local cfg = Config:newConfigFromText(text)
@@ -141,31 +141,31 @@ function Model:loadModelFromText(text)
 end
 
 --[[
-     * saveSectionToText saves the section to the text.
-     *
-     * @return the section text.
+    * saveSectionToText saves the section to the text.
+    *
+    * @return the section text.
 ]]
 function Model:saveSectionToText(sec)
-     local res = "[" .. self.sectionNameMap[sec] .. "]\n"
+    local res = "[" .. self.sectionNameMap[sec] .. "]\n"
 
-     if not self.model[sec] then
-          return ""
-     end
+    if not self.model[sec] then
+        return ""
+    end
 
-     for key, ast in pairs(self.model[sec]) do
-          local val = ast.value:gsub("%_", ".")
-          local x = string.format("%s = %s\n", key, val)
+    for key, ast in pairs(self.model[sec]) do
+        local val = ast.value:gsub("%_", ".")
+        local x = string.format("%s = %s\n", key, val)
 
-          res = res .. x
-     end
+        res = res .. x
+    end
 
-     return res
+    return res
 end
 
 --[[
-     * toText saves the model to the text.
-     *
-     * @return the model text.
+    * toText saves the model to the text.
+    *
+    * @return the model text.
 ]]
 function Model:toText()
     local tokenPatterns={}
@@ -177,14 +177,14 @@ function Model:toText()
     local s=""
     local writeString=function(sec)
         local result=""
-		for ptype,_ in pairs(self.model[sec]) do
+        for ptype,_ in pairs(self.model[sec]) do
             local value=self.model[sec][ptype].value
             for tokenPattern,newToken in pairs(tokenPatterns) do
                 value=string.gsub(value,tokenPattern,newToken)
             end
             result=result..sec.."="..value.."\n"
         end
-		return result
+        return result
     end
     s=s.."[request_definition]\n"..writeString("r").."[policy_definition]\n"..writeString("p")
     if self.model["g"] then
@@ -192,7 +192,7 @@ function Model:toText()
         for ptype,_ in pairs(self.model["g"]) do
             s=s..ptype.."="..self.model["g"][ptype].value.."\n"
         end
-	end
+    end
     s=s.."[policy_effect]\n"..writeString("e").."[matchers]\n"..writeString("m")
     return s
 end
@@ -210,24 +210,27 @@ end
 
 -- sortPoliciesByPriority sorts policies by their priorities if 'priority' token exists
 function Model:sortPoliciesByPriority()
-     if not self.model["p"] then return end
+    if not self.model["p"] then return end
 
-     for ptype, ast in pairs(self.model["p"]) do
-          local priorityIndex = 0
-          for inx, token in pairs(ast.tokens) do
-               if token == ptype .. "_priority" then
-                    priorityIndex = inx
-                    break
-               end
-          end
-          if priorityIndex == 0 then
-               return
-          end
+    for ptype, ast in pairs(self.model["p"]) do
+        local priorityIndex = 0
+        for inx, token in pairs(ast.tokens) do
+            if token == ptype .. "_priority" then
+                priorityIndex = inx
+                break
+            end
+        end
+        if priorityIndex == 0 then
+            return
+        end
 
-          table.sort(ast.policy, function (a, b)
-               return a[priorityIndex] < b[priorityIndex]
-          end)
-     end
+    table.sort(ast.policy, function (a, b)
+            return a[priorityIndex] < b[priorityIndex]
+        end)
+        for i,policy in pairs(ast.policy) do
+            ast.policyMap[table.concat(policy,",")]=i
+        end
+    end
 end
 
 return Model
