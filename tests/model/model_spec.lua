@@ -87,6 +87,21 @@ describe("model tests", function()
         assert.is.False(m:removePolicy("p", "p", rule))
     end)
 
+    it("test removePoliciesWithEffected", function ()
+        local m = Model:new()
+        m:loadModel(basic_path)
+
+        local rules = {{'admin', 'domain1', 'data1', 'read'},{'admin', 'domain2', 'data2', 'read'},{'admin', 'domain1', 'data1', 'write'}}
+        assert.is.False(m:hasPolicies("p", "p", rules))
+
+        m:addPolicies("p", "p", rules)
+        assert.is.True(m:hasPolicies("p", "p", rules))
+
+        assert.are.same(m:removePoliciesWithEffected("p", "p", rules),rules)
+        assert.is.False(m:hasPolicies("p", "p", rules))
+        assert.is.False(m:removePolicy("p", "p", rules))
+    end)
+
     it("test addRolePolicy", function ()
         local m = Model:new()
         m:loadModel(rbac_path)
