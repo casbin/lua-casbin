@@ -286,35 +286,30 @@ end
     * @return succeeds or not.
 ]]
 function Policy:removePolicies(sec, ptype, rules)
-    local size = #self.model[sec][ptype].policy
-    for _, rule in pairs(rules) do
+    return #self:removePoliciesWithEffected(sec, ptype, rules)~=0
+end
+
+--[[
+    * removePoliciesWithEffected removes policy rules from the model, and returns effected rules.
+    *
+    * @param sec the section, "p" or "g".
+    * @param ptype the policy type, "p", "p2", .. or "g", "g2", ..
+    * @param rules the policy rules.
+    *
+    * @return effected.
+]]
+function Policy:removePoliciesWithEffected(sec, ptype, rules)
+    local effected={}
+    for _,rule in pairs(rules) do
         for k, v in pairs(self.model[sec][ptype].policy) do
             if Util.arrayEquals(rule, v) then
+                table.insert(effected,rule)
                 table.remove(self.model[sec][ptype].policy, k)
                 break
             end
         end
     end
-
-    if size > #self.model[sec][ptype].policy then
-        return true
-    else
-        return false
-    end
-end
-
---[[
-    * removeFilteredPolicyReturnsEffects removes policy rules based on field filters from the model.
-    *
-    * @param sec the section, "p" or "g".
-    * @param ptype the policy type, "p", "p2", .. or "g", "g2", ..
-    * @param fieldIndex the policy rule's start index to be matched.
-    * @param ... fieldValues the field values to be matched, value ""
-    *                    means not to match this field.
-    * @return succeeds(effects.size() &gt; 0) or not.
-]]
-function Policy:removeFilteredPolicyReturnsEffects(sec, ptype, fieldIndex, ...)
-    return {}
+    return effected
 end
 
 --[[
