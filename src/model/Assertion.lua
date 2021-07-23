@@ -26,7 +26,7 @@ function Assertion:new()
     o.tokens = {}
     o.policy = {}
     o.RM = {}
-    
+    o.policyMap={}
     setmetatable(o,self)
     self.__index = self
     return o
