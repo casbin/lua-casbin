@@ -1,4 +1,4 @@
---Copyright 2021 The casbin Authors. All Rights Reserved.
+         --Copyright 2021 The casbin Authors. All Rights Reserved.
 --
 --Licensed under the Apache License, Version 2.0 (the "License");
 --you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ describe("model tests", function()
 
         assert.are.same(m:removePoliciesWithEffected("p", "p", rules),rules)
         assert.is.False(m:hasPolicies("p", "p", rules))
-        assert.is.False(m:removePolicy("p", "p", rules))
+        assert.is.False(m:removePolicy("p", "p", rules[1]))
     end)
 
     it("test addRolePolicy", function ()

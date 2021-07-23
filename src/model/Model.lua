@@ -75,7 +75,7 @@ function Model:addDef(sec, key, value)
     self.model[sec][key] = Assertion:new()
     self.model[sec][key].key = key
     self.model[sec][key].value = value
-
+    self.model[sec][key].policyMap={}
     if sec == "r" or sec == "p" then
         self.model[sec][key].tokens = Util.splitCommaDelimited(self.model[sec][key].value)
         for k, v in pairs(self.model[sec][key].tokens) do
@@ -227,6 +227,9 @@ function Model:sortPoliciesByPriority()
         table.sort(ast.policy, function (a, b)
         return a[priorityIndex] < b[priorityIndex]
         end)
+        for i,policy in pairs(ast.policy) do
+            ast.policyMap[table.concat(policy,",")]=i
+        end
      end
 end
 
