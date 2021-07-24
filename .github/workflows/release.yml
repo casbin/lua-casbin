@@ -30,7 +30,11 @@ jobs:
           luaVersion: 5.1
 
       - name: Set up luarocks
-        uses: leafo/gh-actions-luarocks@v4.0.0    
+        uses: leafo/gh-actions-luarocks@v4.0.0
+
+      - name: Set up CJSON
+        run: |
+          luarocks install lua-cjson
       
       - name: Upload
         if: github.repository == 'casbin/lua-casbin' && github.event_name == 'push'
@@ -41,7 +45,7 @@ jobs:
           sed -i "2iversion = \"${rv}-1\"" ./casbin-${rv}-1.rockspec
           sed -i "5i\ \ \ tag = \"v${rv}\"" ./casbin-${rv}-1.rockspec
           cat casbin-${rv}-1.rockspec
-          sudo luarocks upload casbin-${rv}-1.rockspec --force --api-key=${{ secrets.LUAROCKS_API_KEY }}
+          luarocks upload casbin-${rv}-1.rockspec --force --skip-pack --api-key=${{ secrets.LUAROCKS_API_KEY }}
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
