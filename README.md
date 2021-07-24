@@ -4,6 +4,14 @@
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/casbin/lobby)
 
+[![LuaRocks](https://img.shields.io/luarocks/v/hsluoyz/casbin.svg)](https://luarocks.org/modules/hsluoyz/casbin)
+[![Generic badge](https://img.shields.io/badge/Lua-5.1-44cc11.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/Lua-5.2-44cc11.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/Lua-5.3-44cc11.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/Lua-5.4-44cc11.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/LuaJIT-2.0-44cc11.svg)](https://shields.io/)
+
+
 An authorization library that supports access control models like ACL, RBAC, ABAC in Lua (OpenResty)
 
 Read the setup guide for OpenResty [here](https://github.com/casbin/lua-casbin/blob/master/Setup-OpenResty.md).
