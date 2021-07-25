@@ -28,7 +28,7 @@ describe("model tests", function()
         local rule = {'admin', 'domain1', 'data1', 'read'}
         m:addPolicy("p", "p", rule)
 
-        assert.are.same(m:getPolicy("p", "p"), {rule})
+        assert.are.same({rule}, m:getPolicy("p", "p"))
     end)
 
     it("test hasPolicy", function ()
@@ -97,7 +97,7 @@ describe("model tests", function()
         m:addPolicies("p", "p", rules)
         assert.is.True(m:hasPolicies("p", "p", rules))
 
-        assert.are.same(m:removePoliciesWithEffected("p", "p", rules),rules)
+        assert.are.same(rules,m:removePoliciesWithEffected("p", "p", rules))
         assert.is.False(m:hasPolicies("p", "p", rules))
         assert.is.False(m:removePolicy("p", "p", rules[1]))
     end)
@@ -118,8 +118,8 @@ describe("model tests", function()
         m:addPolicy("g", "g", g_rule)
         assert.is.True(m:hasPolicy("g", "g", g_rule))
 
-        assert.are.same(m:getPolicy("p", "p"), {p_rule1, p_rule2})
-        assert.are.same(m:getPolicy("g", "g"), {g_rule})
+        assert.are.same({p_rule1, p_rule2}, m:getPolicy("p", "p"))
+        assert.are.same({g_rule}, m:getPolicy("g", "g"))
     end)
 
     it("test updatePolicy", function ()
@@ -178,10 +178,10 @@ describe("model tests", function()
             {'admin', 'domain1', 'data2', 'read'}
         }
         m:addPolicies("p", "p", rule)
-        assert.are.same(m:getPolicy("p", "p"), rule)
+        assert.are.same(rule, m:getPolicy("p", "p"))
 
         m:clearPolicy()
-        assert.are.same(m:getPolicy("p", "p"), {})
+        assert.are.same({}, m:getPolicy("p", "p"))
     end)
 
     it("test removeFilteredPolicy", function ()
@@ -214,7 +214,7 @@ describe("model tests", function()
             {'admin', 'domain1', 'data1', 'read'},
             {'admin', 'domain1', 'data2', 'read'}
         }
-        assert.are.same(res, filteredRules)
+        assert.are.same(filteredRules, res)
 
     end)
 
@@ -223,7 +223,7 @@ describe("model tests", function()
         m:loadModel(basic_path)
         local res = m:toText()
         local saveText="[request_definition]\nr=sub, obj, act\n[policy_definition]\np=sub, obj, act\n[policy_effect]\ne=some(where (p_eft == allow))\n[matchers]\nm=r.sub == p.sub && r.obj == p.obj && r.act == p.act\n"
-        assert.are.same(res, saveText)
+        assert.are.same(saveText, res)
 
     end)
 

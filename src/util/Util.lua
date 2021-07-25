@@ -247,43 +247,4 @@ function Util.printTable(t)
     return s
 end
 
-function Util.loadPolicyLine(line, model)
-    -- Loads a text line as a policy rule to model.
-
-    if line == "" then
-        return
-    end
-
-    if line:sub(1,1) == "#" then
-        return
-    end
-
-    local tokens = Util.split(line, ",")
-    local key = tokens[1]
-    local sec = key:sub(1,1)
-
-    if model.model[sec] == nil then
-        return
-    end
-    if model.model[sec][key] == nil then
-        return
-    end
-
-    model.model[sec][key].policy = model.model[sec][key].policy or {}
-    model.model[sec][key].policyMap={}
-    for i,policy in pairs(model.model[sec][key].policy) do
-        model.model[sec][key].policyMap[table.concat(policy,",")]=i
-    end
-    local rules = {}
-    for i = 2, #tokens do
-        table.insert(rules, tokens[i])
-    end
-    table.insert(model.model[sec][key].policy, rules)
-    model.model[sec][key].policyMap={}
-    for i,policy in pairs(model.model[sec][key].policy) do
-        model.model[sec][key].policyMap[table.concat(policy,",")]=i
-    end
-end
-
-
 return Util

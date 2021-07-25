@@ -72,7 +72,7 @@ function FilteredAdapter:loadFilteredPolicyFile(model, filter)
         for line in f:lines() do
             line = Util.trim(line)
             if self:filterLine(line, filter) == false then
-                Util.loadPolicyLine(line, model)
+                Adapter.loadPolicyLine(line, model)
             end
         end
     end

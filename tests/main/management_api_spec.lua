@@ -23,15 +23,15 @@ describe("Management API tests", function ()
 
         local e = Enforcer:new(model, policy)
 
-        assert.is.Same(e:GetAllSubjects(), {"alice", "bob", "data2_admin"})
-        assert.is.Same(e:GetAllObjects(), {"data1", "data2"})
-        assert.is.Same(e:GetAllActions(), {"read", "write"})
-        assert.is.Same(e:GetAllRoles(), {"data2_admin"})
+        assert.is.Same({"alice", "bob", "data2_admin"}, e:GetAllSubjects())
+        assert.is.Same({"data1", "data2"}, e:GetAllObjects())
+        assert.is.Same({"read", "write"}, e:GetAllActions())
+        assert.is.Same({"data2_admin"}, e:GetAllRoles())
 
-        assert.is.Same(e:GetAllNamedSubjects("p"), {"alice", "bob", "data2_admin"})
-        assert.is.Same(e:GetAllNamedObjects("p"), {"data1", "data2"})
-        assert.is.Same(e:GetAllNamedActions("p"), {"read", "write"})
-        assert.is.Same(e:GetAllNamedRoles("g"), {"data2_admin"})
+        assert.is.Same({"alice", "bob", "data2_admin"}, e:GetAllNamedSubjects("p"))
+        assert.is.Same({"data1", "data2"}, e:GetAllNamedObjects("p"))
+        assert.is.Same({"read", "write"}, e:GetAllNamedActions("p"))
+        assert.is.Same({"data2_admin"}, e:GetAllNamedRoles("g"))
     end)
 
     it("Get Policy test", function ()
@@ -57,7 +57,7 @@ describe("Management API tests", function ()
         local res = {
             {"bob", "data2", "write"}
         }
-        assert.is.Same(e:GetFilteredPolicy(0, "bob"), res)
+        assert.is.Same(res, e:GetFilteredPolicy(0, "bob"))
 
         res = {
             {"bob", "data2", "write"},
@@ -65,7 +65,7 @@ describe("Management API tests", function ()
             {"data2_admin", "data2", "write"}
         }
 
-        assert.is.Same(e:GetFilteredPolicy(1, "data2"), res)
+        assert.is.Same(res, e:GetFilteredPolicy(1, "data2"))
     end)
 
     it("Get Grouping Policy test", function ()
@@ -78,7 +78,7 @@ describe("Management API tests", function ()
             {"alice", "data2_admin"}
         }
 
-        assert.is.Same(e:GetGroupingPolicy(), res)
+        assert.is.Same(res, e:GetGroupingPolicy())
     end)
 
     it("Get Filtered Grouping Policy test", function ()
@@ -91,7 +91,7 @@ describe("Management API tests", function ()
             {"alice", "data2_admin"}
         }
 
-        assert.is.Same(e:GetFilteredGroupingPolicy(0, "alice"), res)
+        assert.is.Same(res, e:GetFilteredGroupingPolicy(0, "alice"))
     end)
 
     it("Has Policy test", function ()
@@ -128,7 +128,7 @@ describe("Management API tests", function ()
 		    {"data2_admin", "data2", "write"}
         }
 
-        assert.is.Same(e:GetPolicy(), res)
+        assert.is.Same(res, e:GetPolicy())
 
         e:RemovePolicy("alice", "data1", "read")
 	    e:RemovePolicy("bob", "data2", "write")
@@ -160,7 +160,7 @@ describe("Management API tests", function ()
             {"ham", "data4", "write"}
         }
 
-        assert.is.Same(e:GetPolicy(), res)
+        assert.is.Same(res, e:GetPolicy())
 
         e:RemovePolicies(rules)
         e:RemovePolicies(rules)
@@ -175,13 +175,13 @@ describe("Management API tests", function ()
             {"eve", "data3", "read"}
         }
 
-        assert.is.Same(e:GetPolicy(), res)
+        assert.is.Same(res, e:GetPolicy())
 
         e:RemoveFilteredPolicy(1, "data2")
-        assert.is.Same(e:GetPolicy(), {{"eve", "data3", "read"}})
+        assert.is.Same({{"eve", "data3", "read"}}, e:GetPolicy())
 
         e:UpdatePolicy({"eve", "data3", "read"}, {"eve", "data3", "write"})
-        assert.is.Same(e:GetPolicy(), {{"eve", "data3", "write"}})
+        assert.is.Same({{"eve", "data3", "write"}}, e:GetPolicy())
 
         e:AddPolicies(rules)
         e:RemovePolicies({{"eve", "data3", "write"}, {"leyo", "data4", "read"}, {"katy", "data4", "write"}})
@@ -205,14 +205,14 @@ describe("Management API tests", function ()
         local res = {
             {"alice", "data2_admin"}
         }
-        assert.is.Same(e:GetGroupingPolicy(), res)
+        assert.is.Same(res, e:GetGroupingPolicy())
 
         e:AddGroupingPolicy("bob", "data2_admin")
         res = {
             {"alice", "data2_admin"},
             {"bob", "data2_admin"}
         }
-        assert.is.Same(e:GetGroupingPolicy(), res)
+        assert.is.Same(res, e:GetGroupingPolicy())
 
         e:RemoveGroupingPolicy("bob", "data2_admin")
 
@@ -228,13 +228,13 @@ describe("Management API tests", function ()
             {"cathy", "data2_admin"},
             {"eve", "data2_admin"}
         }
-        assert.is.Same(e:GetGroupingPolicy(), res)
+        assert.is.Same(res, e:GetGroupingPolicy())
 
         e:RemoveGroupingPolicies(rules)
-        assert.is.Same(e:GetGroupingPolicy(), {{"alice", "data2_admin"}})
+        assert.is.Same({{"alice", "data2_admin"}}, e:GetGroupingPolicy())
 
         e:UpdateGroupingPolicy({"alice", "data2_admin"}, {"bob", "data2_admin"})
-        assert.is.Same(e:GetGroupingPolicy(), {{"bob", "data2_admin"}})
+        assert.is.Same({{"bob", "data2_admin"}}, e:GetGroupingPolicy())
 
         e:UpdateGroupingPolicy({"bob", "data2_admin"}, {"alice", "data2_admin"})
 
@@ -250,7 +250,7 @@ describe("Management API tests", function ()
             {"alice", "data1_admin"},
             {"bob", "data1_admin"},
         }
-        assert.is.Same(e:GetFilteredGroupingPolicy(1, "data1_admin"), res)
+        assert.is.Same(res, e:GetFilteredGroupingPolicy(1, "data1_admin"))
         
         e:RemoveFilteredGroupingPolicy(1, "data1_admin")
 
@@ -258,6 +258,6 @@ describe("Management API tests", function ()
             {"alice", "data2_admin"},
             {"eve", "data2_admin"}
         }
-        assert.is.Same(e:GetGroupingPolicy(), res)
+        assert.is.Same(res, e:GetGroupingPolicy())
     end)
 end)
