@@ -30,41 +30,41 @@ describe("RBAC API tests", function ()
 
         local e = Enforcer:new(model, policy)
 
-        assert.is.Same(e:GetRolesForUser("alice"), {"data2_admin"})
-        assert.is.Same(e:GetRolesForUser("bob"), {})
-        assert.is.Same(e:GetRolesForUser("data2_admin"), {})
-        assert.is.Same(e:GetRolesForUser("non_existing_user"), {})
+        assert.is.Same({"data2_admin"}, e:GetRolesForUser("alice"))
+        assert.is.Same({}, e:GetRolesForUser("bob"))
+        assert.is.Same({}, e:GetRolesForUser("data2_admin"))
+        assert.is.Same({}, e:GetRolesForUser("non_existing_user"))
 
-        assert.is.Same(e:GetUsersForRole("data2_admin"), {"alice"})
-        assert.is.Same(e:GetUsersForRole("data1_admin"), {})
+        assert.is.Same({"alice"}, e:GetUsersForRole("data2_admin"))
+        assert.is.Same({}, e:GetUsersForRole("data1_admin"))
 
         assert.is.False(e:HasRoleForUser("alice", "data1_admin"))
         assert.is.True(e:HasRoleForUser("alice", "data2_admin"))
 
         e:AddRoleForUser("alice", "data1_admin")
         
-        assert.is.Same(e:GetRolesForUser("alice"), {"data2_admin", "data1_admin"})
-        assert.is.Same(e:GetRolesForUser("bob"), {})
-        assert.is.Same(e:GetRolesForUser("data2_admin"), {})
+        assert.is.Same({"data2_admin", "data1_admin"}, e:GetRolesForUser("alice"))
+        assert.is.Same({}, e:GetRolesForUser("bob"))
+        assert.is.Same({}, e:GetRolesForUser("data2_admin"))
 
         e:DeleteRoleForUser("alice", "data1_admin")
 
-        assert.is.Same(e:GetRolesForUser("alice"), {"data2_admin"})
-        assert.is.Same(e:GetRolesForUser("bob"), {})
-        assert.is.Same(e:GetRolesForUser("data2_admin"), {})
+        assert.is.Same({"data2_admin"}, e:GetRolesForUser("alice"))
+        assert.is.Same({}, e:GetRolesForUser("bob"))
+        assert.is.Same({}, e:GetRolesForUser("data2_admin"))
 
         e:DeleteRolesForUser("alice")
 
-        assert.is.Same(e:GetRolesForUser("alice"), {})
-        assert.is.Same(e:GetRolesForUser("bob"), {})
-        assert.is.Same(e:GetRolesForUser("data2_admin"), {})
+        assert.is.Same({}, e:GetRolesForUser("alice"))
+        assert.is.Same({}, e:GetRolesForUser("bob"))
+        assert.is.Same({}, e:GetRolesForUser("data2_admin"))
 
         e:AddRoleForUser("alice", "data1_admin")
         e:DeleteUser("alice")
 
-        assert.is.Same(e:GetRolesForUser("alice"), {})
-        assert.is.Same(e:GetRolesForUser("bob"), {})
-        assert.is.Same(e:GetRolesForUser("data2_admin"), {})
+        assert.is.Same({}, e:GetRolesForUser("alice"))
+        assert.is.Same({}, e:GetRolesForUser("bob"))
+        assert.is.Same({}, e:GetRolesForUser("data2_admin"))
 
         e:AddRoleForUser("alice", "data2_admin")
 
@@ -97,44 +97,44 @@ describe("RBAC API tests", function ()
 
         assert.is.True(e:HasRoleForUser("alice", "admin", "domain1"))
         assert.is.False(e:HasRoleForUser("alice", "admin", "domain2"))
-        assert.is.Same(e:GetRolesForUser("alice", "domain1"), {"admin"})
-        assert.is.Same(e:GetRolesForUser("bob", "domain1"), {})
-        assert.is.Same(e:GetRolesForUser("admin", "domain1"), {})
-        assert.is.Same(e:GetRolesForUser("non_exist", "domain1"), {})
-        assert.is.Same(e:GetRolesForUser("alice", "domain2"), {})
-        assert.is.Same(e:GetRolesForUser("bob", "domain2"), {"admin"})
-        assert.is.Same(e:GetRolesForUser("admin", "domain2"), {})
-        assert.is.Same(e:GetRolesForUser("non_exist", "domain2"), {})
+        assert.is.Same({"admin"}, e:GetRolesForUser("alice", "domain1"))
+        assert.is.Same({}, e:GetRolesForUser("bob", "domain1"))
+        assert.is.Same({}, e:GetRolesForUser("admin", "domain1"))
+        assert.is.Same({}, e:GetRolesForUser("non_exist", "domain1"))
+        assert.is.Same({}, e:GetRolesForUser("alice", "domain2"))
+        assert.is.Same({"admin"}, e:GetRolesForUser("bob", "domain2"))
+        assert.is.Same({}, e:GetRolesForUser("admin", "domain2"))
+        assert.is.Same({}, e:GetRolesForUser("non_exist", "domain2"))
         
         e:DeleteRoleForUser("alice", "admin", "domain1")
         e:AddRoleForUser("bob", "admin", "domain1")
 
-        assert.is.Same(e:GetRolesForUser("alice", "domain1"), {})
-        assert.is.Same(e:GetRolesForUser("bob", "domain1"), {"admin"})
-        assert.is.Same(e:GetRolesForUser("admin", "domain1"), {})
-        assert.is.Same(e:GetRolesForUser("non_exist", "domain1"), {})
-        assert.is.Same(e:GetRolesForUser("alice", "domain2"), {})
-        assert.is.Same(e:GetRolesForUser("bob", "domain2"), {"admin"})
-        assert.is.Same(e:GetRolesForUser("admin", "domain2"), {})
-        assert.is.Same(e:GetRolesForUser("non_exist", "domain2"), {})
+        assert.is.Same({}, e:GetRolesForUser("alice", "domain1"))
+        assert.is.Same({"admin"}, e:GetRolesForUser("bob", "domain1"))
+        assert.is.Same({}, e:GetRolesForUser("admin", "domain1"))
+        assert.is.Same({}, e:GetRolesForUser("non_exist", "domain1"))
+        assert.is.Same({}, e:GetRolesForUser("alice", "domain2"))
+        assert.is.Same({"admin"}, e:GetRolesForUser("bob", "domain2"))
+        assert.is.Same({}, e:GetRolesForUser("admin", "domain2"))
+        assert.is.Same({}, e:GetRolesForUser("non_exist", "domain2"))
         
         e:AddRoleForUser("alice", "admin", "domain1")
         e:DeleteRolesForUser("bob", "domain1")
 
         assert.is.Same(e:GetRolesForUser("alice", "domain1"), {"admin"})
-        assert.is.Same(e:GetRolesForUser("bob", "domain1"), {})
-        assert.is.Same(e:GetRolesForUser("admin", "domain1"), {})
-        assert.is.Same(e:GetRolesForUser("non_exist", "domain1"), {})
-        assert.is.Same(e:GetRolesForUser("alice", "domain2"), {})
-        assert.is.Same(e:GetRolesForUser("bob", "domain2"), {"admin"})
-        assert.is.Same(e:GetRolesForUser("admin", "domain2"), {})
-        assert.is.Same(e:GetRolesForUser("non_exist", "domain2"), {})
+        assert.is.Same({}, e:GetRolesForUser("bob", "domain1"))
+        assert.is.Same({}, e:GetRolesForUser("admin", "domain1"))
+        assert.is.Same({}, e:GetRolesForUser("non_exist", "domain1"))
+        assert.is.Same({}, e:GetRolesForUser("alice", "domain2"))
+        assert.is.Same({"admin"}, e:GetRolesForUser("bob", "domain2"))
+        assert.is.Same({}, e:GetRolesForUser("admin", "domain2"))
+        assert.is.Same({}, e:GetRolesForUser("non_exist", "domain2"))
 
         e:AddRolesForUser("bob", {"admin", "admin1", "admin2"}, "domain1")
-        assert.is.Same(e:GetRolesForUser("bob", "domain1"), {"admin", "admin1", "admin2"})
+        assert.is.Same({"admin", "admin1", "admin2"}, e:GetRolesForUser("bob", "domain1"))
 
-        assert.is.Same(e:GetPermissionsForUser("admin", "domain1"), {{"admin", "domain1", "data1", "read"}, {"admin", "domain1", "data1", "write"}})
-        assert.is.Same(e:GetPermissionsForUser("admin", "domain2"), {{"admin", "domain2", "data2", "read"}, {"admin", "domain2", "data2", "write"}})
+        assert.is.Same({{"admin", "domain1", "data1", "read"}, {"admin", "domain1", "data1", "write"}}, e:GetPermissionsForUser("admin", "domain1"))
+        assert.is.Same({{"admin", "domain2", "data2", "read"}, {"admin", "domain2", "data2", "write"}}, e:GetPermissionsForUser("admin", "domain2"))
     end)
 
     it("AddRoles test", function ()
@@ -145,12 +145,12 @@ describe("RBAC API tests", function ()
 
         e:AddRolesForUser("alice", {"data1_admin", "data2_admin", "data3_admin"})
         -- The "alice" already has "data2_admin" , it will be return false. So "alice" just has "data2_admin".
-        assert.is.Same(e:GetRolesForUser("alice"), {"data2_admin"})
+        assert.is.Same({"data2_admin"}, e:GetRolesForUser("alice"))
         --delete role
         e:DeleteRoleForUser("alice", "data2_admin")
 
         e:AddRolesForUser("alice", {"data1_admin", "data2_admin", "data3_admin"})
-        assert.is.Same(e:GetRolesForUser("alice"), {"data1_admin", "data2_admin", "data3_admin"})
+        assert.is.Same({"data1_admin", "data2_admin", "data3_admin"}, e:GetRolesForUser("alice"))
         
         assert.is.True(e:enforce("alice", "data1", "read"))
         assert.is.True(e:enforce("alice", "data2", "read"))
@@ -168,8 +168,8 @@ describe("RBAC API tests", function ()
         assert.is.False(e:enforce("bob", "read"))
         assert.is.True(e:enforce( "bob", "write"))
 
-        assert.is.Same(e:GetPermissionsForUser("alice"), {{"alice", "read"}})
-        assert.is.Same(e:GetPermissionsForUser("bob"), {{"bob", "write"}})
+        assert.is.Same({{"alice", "read"}}, e:GetPermissionsForUser("alice"))
+        assert.is.Same({{"bob", "write"}}, e:GetPermissionsForUser("bob"))
 
         assert.is.True(e:HasPermissionForUser("alice", "read"))
         assert.is.False(e:HasPermissionForUser("alice", "write"))
@@ -211,8 +211,8 @@ describe("RBAC API tests", function ()
 
         local e = Enforcer:new(model, policy)
 
-        assert.is.Same(e:GetPermissionsForUser("alice"), {{"alice", "data1", "read"}})
-        assert.is.Same(e:GetPermissionsForUser("bob"), {{"bob", "data2", "write"}})
+        assert.is.Same({{"alice", "data1", "read"}}, e:GetPermissionsForUser("alice"))
+        assert.is.Same({{"bob", "data2", "write"}}, e:GetPermissionsForUser("bob"))
 
         assert.is.Same(e:GetImplicitRolesForUser("alice"), {"admin", "data1_admin", "data2_admin"})
         assert.is.Same(e:GetImplicitRolesForUser("bob"), {})
@@ -224,8 +224,8 @@ describe("RBAC API tests", function ()
 
         e:AddNamedMatchingFunc("g2", BuiltInFunctions.keyMatch)
 
-        assert.is.Same(e:GetImplicitRolesForUser("cathy"), {"/book/1/2/3/4/5", "pen_admin"})
-        assert.is.Same(e:GetRolesForUser("cathy"), {"/book/1/2/3/4/5", "pen_admin"})
+        assert.is.Same({"/book/1/2/3/4/5", "pen_admin"}, e:GetImplicitRolesForUser("cathy"))
+        assert.is.Same({"/book/1/2/3/4/5", "pen_admin"}, e:GetRolesForUser("cathy"))
     end)
 
     it("Implicit Permission API test", function ()
@@ -234,11 +234,11 @@ describe("RBAC API tests", function ()
 
         local e = Enforcer:new(model, policy)
 
-        assert.is.Same(e:GetPermissionsForUser("alice"), {{"alice", "data1", "read"}})
-        assert.is.Same(e:GetPermissionsForUser("bob"), {{"bob", "data2", "write"}})
+        assert.is.Same({{"alice", "data1", "read"}}, e:GetPermissionsForUser("alice"))
+        assert.is.Same({{"bob", "data2", "write"}}, e:GetPermissionsForUser("bob"))
 
-        assert.is.Same(e:GetImplicitPermissionsForUser("alice"), {{"alice", "data1", "read"}, {"data1_admin", "data1", "read"}, {"data1_admin", "data1", "write"}, {"data2_admin", "data2", "read"}, {"data2_admin", "data2", "write"}})
-        assert.is.Same(e:GetImplicitPermissionsForUser("bob"), {{"bob", "data2", "write"}})
+        assert.is.Same({{"alice", "data1", "read"}, {"data1_admin", "data1", "read"}, {"data1_admin", "data1", "write"}, {"data2_admin", "data2", "read"}, {"data2_admin", "data2", "write"}}, e:GetImplicitPermissionsForUser("alice"))
+        assert.is.Same({{"bob", "data2", "write"}}, e:GetImplicitPermissionsForUser("bob"))
     end)
 
     it("Implicit Permission API with domain test", function ()
@@ -247,7 +247,7 @@ describe("RBAC API tests", function ()
 
         local e = Enforcer:new(model, policy)
 
-        assert.is.Same(e:GetImplicitPermissionsForUser("alice", "domain1"), {{"alice", "domain1", "data2", "read"}, {"role:reader", "domain1", "data1", "read"}, {"role:writer", "domain1", "data1", "write"}})
+        assert.is.Same({{"alice", "domain1", "data2", "read"}, {"role:reader", "domain1", "data1", "read"}, {"role:writer", "domain1", "data1", "write"}}, e:GetImplicitPermissionsForUser("alice", "domain1"))
     end)
 
     it("Implicit Users API test", function ()
@@ -256,10 +256,10 @@ describe("RBAC API tests", function ()
 
         local e = Enforcer:new(model, policy)
 
-        assert.is.Same(e:GetImplicitUsersForPermission("data1", "read"), {"alice"})
-        assert.is.Same(e:GetImplicitUsersForPermission("data1", "write"), {"alice"})
-        assert.is.Same(e:GetImplicitUsersForPermission("data2", "read"), {"alice"})
-        assert.is.Same(sort(e:GetImplicitUsersForPermission("data2", "write")), sort({"alice", "bob"}))
+        assert.is.Same({"alice"}, e:GetImplicitUsersForPermission("data1", "read"))
+        assert.is.Same({"alice"}, e:GetImplicitUsersForPermission("data1", "write"))
+        assert.is.Same({"alice"}, e:GetImplicitUsersForPermission("data2", "read"))
+        assert.is.Same(sort({"alice", "bob"}), sort(e:GetImplicitUsersForPermission("data2", "write")))
 
         e:clearPolicy()
 
@@ -267,7 +267,7 @@ describe("RBAC API tests", function ()
         e:AddPolicy("bob", "data1", "read")
         e:AddGroupingPolicy("alice", "admin")
 
-        assert.is.Same(sort(e:GetImplicitUsersForPermission("data1", "read")), sort({"alice", "bob"}))
+        assert.is.Same(sort({"alice", "bob"}), sort(e:GetImplicitUsersForPermission("data1", "read")))
     end)
 
     it("Get Implicit Resources for User test", function ()
@@ -283,24 +283,24 @@ describe("RBAC API tests", function ()
             return t
         end
 
-        assert.is.Same(sort2D(e:GetImplicitResourcesForUser("alice")), sort2D({
+        assert.is.Same(sort2D({
             {"alice", "/pen/1", "GET"},
             {"alice", "/pen2/1", "GET"},
             {"alice", "/book/:id", "GET"},
             {"alice", "/book2/{id}", "GET"},
             {"alice", "/book/*", "GET"},
             {"alice", "book_group", "GET"}
-        }))
-        assert.is.Same(sort2D(e:GetImplicitResourcesForUser("bob")), sort2D({
+        }), sort2D(e:GetImplicitResourcesForUser("alice")))
+        assert.is.Same(sort2D({
             {"bob", "/pen2/{id}", "GET"},
 		    {"bob", "/pen/:id", "GET"},
 		    {"bob", "pen_group", "GET"}
-        }))
-        assert.is.Same(sort2D(e:GetImplicitResourcesForUser("cathy")), sort2D({
+        }), sort2D(e:GetImplicitResourcesForUser("bob")))
+        assert.is.Same(sort2D({
             {"cathy", "/pen2/{id}", "GET"},
             {"cathy", "/pen/:id", "GET"},
             {"cathy", "pen_group", "GET"}
-        }))
+        }), sort2D(e:GetImplicitResourcesForUser("cathy")))
     end)
 
     it("Get Implicit Users For Role", function ()
@@ -309,10 +309,10 @@ describe("RBAC API tests", function ()
 
         local e = Enforcer:new(model, policy)
 
-        assert.is.Same(sort(e:GetImplicitUsersForRole("book_admin")), sort({"alice"}))
-        assert.is.Same(sort(e:GetImplicitUsersForRole("pen_admin")), sort({"cathy", "bob"}))
-        assert.is.Same(sort(e:GetImplicitUsersForRole("book_group")), sort({"/book/:id", "/book2/{id}", "/book/*"}))
-        assert.is.Same(sort(e:GetImplicitUsersForRole("pen_group")), sort({"/pen2/{id}", "/pen/:id"}))
+        assert.is.Same(sort({"alice"}), sort(e:GetImplicitUsersForRole("book_admin")))
+        assert.is.Same(sort({"cathy", "bob"}), sort(e:GetImplicitUsersForRole("pen_admin")))
+        assert.is.Same(sort({"/book/:id", "/book2/{id}", "/book/*"}), sort(e:GetImplicitUsersForRole("book_group")))
+        assert.is.Same(sort({"/pen2/{id}", "/pen/:id"}), sort(e:GetImplicitUsersForRole("pen_group")))
     end)
 end)
 
@@ -323,9 +323,9 @@ describe("RBAC API with domains tests", function ()
 
         local e = Enforcer:new(model, policy)
 
-        assert.is.Same(e:GetRolesForUserInDomain("alice", "domain1"), {"role:global_admin"})
+        assert.is.Same({"role:global_admin"}, e:GetRolesForUserInDomain("alice", "domain1"))
 
-        assert.is.Same(e:GetImplicitRolesForUser("alice", "domain1"), {"role:global_admin", "role:reader", "role:writer"})
+        assert.is.Same({"role:global_admin", "role:reader", "role:writer"}, e:GetImplicitRolesForUser("alice", "domain1"))
     end)
 
     it("User API with Domains test", function ()
@@ -334,32 +334,32 @@ describe("RBAC API with domains tests", function ()
 
         local e = Enforcer:new(model, policy)
 
-        assert.is.Same(e:GetUsersForRole("admin", "domain1"), {"alice"})
-        assert.is.Same(e:GetUsersForRoleInDomain("admin", "domain1"), {"alice"})
+        assert.is.Same({"alice"}, e:GetUsersForRole("admin", "domain1"))
+        assert.is.Same({"alice"}, e:GetUsersForRoleInDomain("admin", "domain1"))
 
-        assert.is.Same(e:GetUsersForRole("non_exist", "domain1"), {})
-        assert.is.Same(e:GetUsersForRoleInDomain("non_exist", "domain1"), {})
+        assert.is.Same({}, e:GetUsersForRole("non_exist", "domain1"))
+        assert.is.Same({}, e:GetUsersForRoleInDomain("non_exist", "domain1"))
 
-        assert.is.Same(e:GetUsersForRole("admin", "domain2"), {"bob"})
-        assert.is.Same(e:GetUsersForRoleInDomain("admin", "domain2"), {"bob"})
+        assert.is.Same({"bob"}, e:GetUsersForRole("admin", "domain2"))
+        assert.is.Same({"bob"}, e:GetUsersForRoleInDomain("admin", "domain2"))
 
-        assert.is.Same(e:GetUsersForRole("non_exist", "domain2"), {})
-        assert.is.Same(e:GetUsersForRoleInDomain("non_exist", "domain2"), {})
+        assert.is.Same({}, e:GetUsersForRole("non_exist", "domain2"))
+        assert.is.Same({}, e:GetUsersForRoleInDomain("non_exist", "domain2"))
 
         e:DeleteRoleForUserInDomain("alice", "admin", "domain1")
         e:AddRoleForUserInDomain("bob", "admin", "domain1")
 
-        assert.is.Same(e:GetUsersForRole("admin", "domain1"), {"bob"})
-        assert.is.Same(e:GetUsersForRoleInDomain("admin", "domain1"), {"bob"})
+        assert.is.Same({"bob"}, e:GetUsersForRole("admin", "domain1"))
+        assert.is.Same({"bob"}, e:GetUsersForRoleInDomain("admin", "domain1"))
 
-        assert.is.Same(e:GetUsersForRole("non_exist", "domain1"), {})
-        assert.is.Same(e:GetUsersForRoleInDomain("non_exist", "domain1"), {})
+        assert.is.Same({}, e:GetUsersForRole("non_exist", "domain1"))
+        assert.is.Same({}, e:GetUsersForRoleInDomain("non_exist", "domain1"))
 
-        assert.is.Same(e:GetUsersForRole("admin", "domain2"), {"bob"})
-        assert.is.Same(e:GetUsersForRoleInDomain("admin", "domain2"), {"bob"})
+        assert.is.Same({"bob"}, e:GetUsersForRole("admin", "domain2"))
+        assert.is.Same({"bob"}, e:GetUsersForRoleInDomain("admin", "domain2"))
 
-        assert.is.Same(e:GetUsersForRole("non_exist", "domain2"), {})
-        assert.is.Same(e:GetUsersForRoleInDomain("non_exist", "domain2"), {})
+        assert.is.Same({}, e:GetUsersForRole("non_exist", "domain2"))
+        assert.is.Same({}, e:GetUsersForRoleInDomain("non_exist", "domain2"))
         
     end)
 
@@ -369,83 +369,83 @@ describe("RBAC API with domains tests", function ()
 
         local e = Enforcer:new(model, policy)
 
-        assert.is.Same(e:GetRolesForUser("alice", "domain1"), {"admin"})
-        assert.is.Same(e:GetRolesForUserInDomain("alice", "domain1"), {"admin"})
+        assert.is.Same({"admin"}, e:GetRolesForUser("alice", "domain1"))
+        assert.is.Same({"admin"}, e:GetRolesForUserInDomain("alice", "domain1"))
         
-        assert.is.Same(e:GetRolesForUser("bob", "domain1"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("bob", "domain1"), {})
+        assert.is.Same({}, e:GetRolesForUser("bob", "domain1"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("bob", "domain1"))
         
-        assert.is.Same(e:GetRolesForUser("admin", "domain1"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("admin", "domain1"), {})
+        assert.is.Same({}, e:GetRolesForUser("admin", "domain1"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("admin", "domain1"))
 
-        assert.is.Same(e:GetRolesForUser("non_exist", "domain1"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("non_exist", "domain1"), {})
+        assert.is.Same({}, e:GetRolesForUser("non_exist", "domain1"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("non_exist", "domain1"))
 
-        assert.is.Same(e:GetRolesForUser("alice", "domain2"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("alice", "domain2"), {})
+        assert.is.Same({}, e:GetRolesForUser("alice", "domain2"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("alice", "domain2"))
 
-        assert.is.Same(e:GetRolesForUser("bob", "domain2"), {"admin"})
-        assert.is.Same(e:GetRolesForUserInDomain("bob", "domain2"), {"admin"})
+        assert.is.Same({"admin"}, e:GetRolesForUser("bob", "domain2"))
+        assert.is.Same({"admin"}, e:GetRolesForUserInDomain("bob", "domain2"))
 
-        assert.is.Same(e:GetRolesForUser("admin", "domain2"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("admin", "domain2"), {})
+        assert.is.Same({}, e:GetRolesForUser("admin", "domain2"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("admin", "domain2"))
 
-        assert.is.Same(e:GetRolesForUser("non_exist", "domain2"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("non_exist", "domain2"), {})
+        assert.is.Same({}, e:GetRolesForUser("non_exist", "domain2"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("non_exist", "domain2"))
 
         e:DeleteRoleForUserInDomain("alice", "admin", "domain1")
         e:AddRoleForUserInDomain("bob", "admin", "domain1")
 
-        assert.is.Same(e:GetRolesForUser("alice", "domain1"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("alice", "domain1"), {})
+        assert.is.Same({}, e:GetRolesForUser("alice", "domain1"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("alice", "domain1"))
         
-        assert.is.Same(e:GetRolesForUser("bob", "domain1"), {"admin"})
-        assert.is.Same(e:GetRolesForUserInDomain("bob", "domain1"), {"admin"})
+        assert.is.Same({"admin"}, e:GetRolesForUser("bob", "domain1"))
+        assert.is.Same({"admin"}, e:GetRolesForUserInDomain("bob", "domain1"))
         
-        assert.is.Same(e:GetRolesForUser("admin", "domain1"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("admin", "domain1"), {})
+        assert.is.Same({}, e:GetRolesForUser("admin", "domain1"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("admin", "domain1"))
 
-        assert.is.Same(e:GetRolesForUser("non_exist", "domain1"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("non_exist", "domain1"), {})
+        assert.is.Same({}, e:GetRolesForUser("non_exist", "domain1"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("non_exist", "domain1"))
 
-        assert.is.Same(e:GetRolesForUser("alice", "domain2"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("alice", "domain2"), {})
+        assert.is.Same({}, e:GetRolesForUser("alice", "domain2"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("alice", "domain2"))
 
-        assert.is.Same(e:GetRolesForUser("bob", "domain2"), {"admin"})
-        assert.is.Same(e:GetRolesForUserInDomain("bob", "domain2"), {"admin"})
+        assert.is.Same({"admin"}, e:GetRolesForUser("bob", "domain2"))
+        assert.is.Same({"admin"}, e:GetRolesForUserInDomain("bob", "domain2"))
 
-        assert.is.Same(e:GetRolesForUser("admin", "domain2"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("admin", "domain2"), {})
+        assert.is.Same({}, e:GetRolesForUser("admin", "domain2"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("admin", "domain2"))
 
-        assert.is.Same(e:GetRolesForUser("non_exist", "domain2"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("non_exist", "domain2"), {})
+        assert.is.Same({}, e:GetRolesForUser("non_exist", "domain2"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("non_exist", "domain2"))
 
         e:AddRoleForUserInDomain("alice", "admin", "domain1")
         e:DeleteRolesForUser("bob", "domain1")
 
-        assert.is.Same(e:GetRolesForUser("alice", "domain1"), {"admin"})
-        assert.is.Same(e:GetRolesForUserInDomain("alice", "domain1"), {"admin"})
+        assert.is.Same({"admin"}, e:GetRolesForUser("alice", "domain1"))
+        assert.is.Same({"admin"}, e:GetRolesForUserInDomain("alice", "domain1"))
         
-        assert.is.Same(e:GetRolesForUser("bob", "domain1"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("bob", "domain1"), {})
+        assert.is.Same({}, e:GetRolesForUser("bob", "domain1"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("bob", "domain1"))
         
-        assert.is.Same(e:GetRolesForUser("admin", "domain1"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("admin", "domain1"), {})
+        assert.is.Same({}, e:GetRolesForUser("admin", "domain1"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("admin", "domain1"))
 
-        assert.is.Same(e:GetRolesForUser("non_exist", "domain1"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("non_exist", "domain1"), {})
+        assert.is.Same({}, e:GetRolesForUser("non_exist", "domain1"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("non_exist", "domain1"))
 
-        assert.is.Same(e:GetRolesForUser("alice", "domain2"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("alice", "domain2"), {})
+        assert.is.Same({}, e:GetRolesForUser("alice", "domain2"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("alice", "domain2"))
 
-        assert.is.Same(e:GetRolesForUser("bob", "domain2"), {"admin"})
-        assert.is.Same(e:GetRolesForUserInDomain("bob", "domain2"), {"admin"})
+        assert.is.Same({"admin"}, e:GetRolesForUser("bob", "domain2"))
+        assert.is.Same({"admin"}, e:GetRolesForUserInDomain("bob", "domain2"))
 
-        assert.is.Same(e:GetRolesForUser("admin", "domain2"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("admin", "domain2"), {})
+        assert.is.Same({}, e:GetRolesForUser("admin", "domain2"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("admin", "domain2"))
 
-        assert.is.Same(e:GetRolesForUser("non_exist", "domain2"), {})
-        assert.is.Same(e:GetRolesForUserInDomain("non_exist", "domain2"), {})
+        assert.is.Same({}, e:GetRolesForUser("non_exist", "domain2"))
+        assert.is.Same({}, e:GetRolesForUserInDomain("non_exist", "domain2"))
     end)
 
     it("Permission API in Domain test", function ()
@@ -454,15 +454,15 @@ describe("RBAC API with domains tests", function ()
 
         local e = Enforcer:new(model, policy)
 
-        assert.is.Same(e:GetPermissionsForUserInDomain("alice", "domain1"), {})
-        assert.is.Same(e:GetPermissionsForUserInDomain("bob", "domain1"), {})
-        assert.is.Same(e:GetPermissionsForUserInDomain("admin", "domain1"), {{"admin", "domain1", "data1", "read"}, {"admin", "domain1", "data1", "write"}})
-        assert.is.Same(e:GetPermissionsForUserInDomain("non_exist", "domain1"), {})
+        assert.is.Same({}, e:GetPermissionsForUserInDomain("alice", "domain1"))
+        assert.is.Same({}, e:GetPermissionsForUserInDomain("bob", "domain1"))
+        assert.is.Same({{"admin", "domain1", "data1", "read"}, {"admin", "domain1", "data1", "write"}}, e:GetPermissionsForUserInDomain("admin", "domain1"))
+        assert.is.Same({}, e:GetPermissionsForUserInDomain("non_exist", "domain1"))
 
-        assert.is.Same(e:GetPermissionsForUserInDomain("alice", "domain2"), {})
-        assert.is.Same(e:GetPermissionsForUserInDomain("bob", "domain2"), {})
-        assert.is.Same(e:GetPermissionsForUserInDomain("admin", "domain2"), {{"admin", "domain2", "data2", "read"}, {"admin", "domain2", "data2", "write"}})
-        assert.is.Same(e:GetPermissionsForUserInDomain("non_exist", "domain2"), {})
+        assert.is.Same({}, e:GetPermissionsForUserInDomain("alice", "domain2"))
+        assert.is.Same({}, e:GetPermissionsForUserInDomain("bob", "domain2"))
+        assert.is.Same({{"admin", "domain2", "data2", "read"}, {"admin", "domain2", "data2", "write"}}, e:GetPermissionsForUserInDomain("admin", "domain2"))
+        assert.is.Same({}, e:GetPermissionsForUserInDomain("non_exist", "domain2"))
     end)
 
     it("Get All Users by Domain test", function ()
@@ -471,8 +471,8 @@ describe("RBAC API with domains tests", function ()
 
         local e = Enforcer:new(model, policy)
 
-        assert.is.Same(e:GetAllUsersByDomain("domain1"), {"alice", "admin"})
-        assert.is.Same(e:GetAllUsersByDomain("domain2"), {"bob", "admin"})
+        assert.is.Same({"alice", "admin"}, e:GetAllUsersByDomain("domain1"))
+        assert.is.Same({"bob", "admin"}, e:GetAllUsersByDomain("domain2"))
     end)
 
     it("Delete All Users by Domain test", function ()
@@ -483,8 +483,8 @@ describe("RBAC API with domains tests", function ()
             local e = Enforcer:new(model, policy)
 
             e:DeleteAllUsersByDomain(domain)
-            assert.is.Same(e:GetPolicy(), expectedPolicy)
-            assert.is.Same(e:GetGroupingPolicy(), expectedGroupingPolicy)
+            assert.is.Same(expectedPolicy, e:GetPolicy())
+            assert.is.Same(expectedGroupingPolicy, e:GetGroupingPolicy())
         end
 
         testDeleteAllUsersByDomain("domain1", {
@@ -510,7 +510,7 @@ describe("RBAC API with domains tests", function ()
             local e = Enforcer:new(model, policy)
 
             e:DeleteDomains(...)
-            assert.is.Same(e:GetPolicy(), expectedPolicy)
+            assert.is.Same(expectedPolicy, e:GetPolicy())
         end
 
         testDeleteDomains({
