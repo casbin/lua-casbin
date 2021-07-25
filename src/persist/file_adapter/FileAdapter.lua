@@ -45,7 +45,8 @@ function FileAdapter:loadPolicy(model)
 
     if f then
         for line in f:lines() do
-            Util.loadPolicyLine(line, model)
+            line = Util.trim(line)
+            Adapter.loadPolicyLine(line, model)
         end
     end
 

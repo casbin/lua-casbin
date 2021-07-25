@@ -27,7 +27,7 @@ describe("FileAdapter tests", function()
     
     it("test initialize", function ()
         local f = FileAdapter:new(basic_policy_path)
-        assert.are.same(f.filePath, basic_policy_path)
+        assert.are.same(basic_policy_path, f.filePath)
     end)
 
     it("test loadPolicy: basic_policy", function ()
@@ -40,7 +40,7 @@ describe("FileAdapter tests", function()
                       {"bob", "data2", "write"}}
 
         assert.is.True(m:hasPolicy("p", "p", rule[1]))
-        assert.are.same(m:getPolicy("p","p"), rule)
+        assert.are.same(rule, m:getPolicy("p","p"))
     end)
 
     it("test loadPolicy: rbac_policy", function ()
@@ -68,8 +68,8 @@ describe("FileAdapter tests", function()
         new_model:loadModel(rbac_path)
         new_file_adapter:loadPolicy(new_model)
 
-        assert.are.same(m:getPolicy("p", "p"),new_model:getPolicy("p", "p"))
-        assert.are.same(m:getPolicy("g", "g"),new_model:getPolicy("g", "g"))
+        assert.are.same(new_model:getPolicy("p", "p"),m:getPolicy("p", "p"))
+        assert.are.same(new_model:getPolicy("g", "g"),m:getPolicy("g", "g"))
     end)
 
     it("test not implemented functions", function ()
