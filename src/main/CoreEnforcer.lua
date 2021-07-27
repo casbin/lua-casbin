@@ -16,6 +16,7 @@ local DefaultEffector = require("src.effect.DefaultEffector")
 local Effect = require("src.effect.Effect")
 local FunctionMap = require("src.model.FunctionMap")
 local Model = require("src.model.Model")
+local Adapter = require("src.persist.Adapter")
 local FileAdapter = require("src.persist.file_adapter.FileAdapter")
 local DefaultRoleManager = require("src.rbac.DefaultRoleManager")
 local BuiltInFunctions = require("src.util.BuiltInFunctions")
@@ -52,6 +53,38 @@ function CoreEnforcer:new(model, adapter)
             o:initWithModelAndAdapter(model, adapter)
         end
     end
+    return o
+end
+
+function CoreEnforcer:newEnforcerFromText(modelText, policyText)
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    o.logger = Log.getLogger()
+
+    local m = o:newModel("", modelText)
+    m.logger =  o.logger
+
+    local a = {}
+    setmetatable(a, Adapter)
+    o.model = m
+    o.adapter = a
+
+    o.model:printModel()
+    o:initialize()
+
+    o.model:clearPolicy()
+	string.gsub(policyText, "[^\r\n]+", function(line)
+        o.adapter.loadPolicyLine(Util.trim(line), o.model)
+    end)
+
+    o.model:sortPoliciesByPriority()
+    o.model:printPolicy()
+
+    if o.autoBuildRoleLinks then
+        o:buildRoleLinks()
+    end
+
     return o
 end
 

@@ -174,6 +174,8 @@ function Model:toText()
             tokenPatterns[token]=string.gsub (string.gsub (token,"^p_","p."),"^r_","r.")
         end
     end
+    tokenPatterns["p_eft"] = "p.eft"
+
     local s=""
     local writeString=function(sec)
         local result=""
@@ -182,7 +184,7 @@ function Model:toText()
             for tokenPattern,newToken in pairs(tokenPatterns) do
                 value=string.gsub(value,tokenPattern,newToken)
             end
-            result=result..sec.."="..value.."\n"
+            result=result..sec.." = "..value.."\n"
         end
         return result
     end
@@ -190,7 +192,7 @@ function Model:toText()
     if self.model["g"] then
         s=s.."[role_definition]\n"
         for ptype,_ in pairs(self.model["g"]) do
-            s=s..ptype.."="..self.model["g"][ptype].value.."\n"
+            s=s..ptype.." = "..self.model["g"][ptype].value.."\n"
         end
     end
     s=s.."[policy_effect]\n"..writeString("e").."[matchers]\n"..writeString("m")
