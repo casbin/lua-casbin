@@ -390,6 +390,23 @@ describe("Enforcer tests", function ()
         assert.is.True(e:enforce("data2_allow_group", "data2", "write"))
     end)
 
+    it("explicit subject hierarchy test", function ()
+        local model  = path .. "/examples/subject_priority_model.conf"
+        local policy  = path .. "/examples/subject_priority_policy.csv"
+
+        local e = Enforcer:new(model, policy)
+        assert.is.True(e:enforce("jane", "data1", "read"))
+        assert.is.True(e:enforce("alice", "data1", "read"))
+
+        e.model:printPolicy()
+        e.model:sortPoliciesBySubjectHierarchy()
+        e.model:printPolicy()
+
+        assert.is.True(e:enforce("jane", "data1", "read"))
+        assert.is.True(e:enforce("alice", "data1", "read"))
+
+    end)
+
     it("Batch Enforce test", function ()
         local model  = path .. "/examples/basic_model.conf"
         local policy  = path .. "/examples/basic_policy.csv"

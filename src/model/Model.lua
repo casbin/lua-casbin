@@ -210,6 +210,95 @@ function Model:printModel()
     end
 end
 
+local function getSubjectHierarchyMap(policies )
+    local subjectHierarchyMap = { }
+    -- Tree structure of role
+    local policyMap = { }
+    for _, policy in pairs(policies) do
+        if #policy < 2 then
+            return nil, error("policy g expect 2 more params")
+        end
+        local domain = ""
+        if #policy ~= 2 then
+            domain = policy[3]
+        end
+        local child = domain.."::"..policy[1]
+        local parent =domain.."::"..policy[2]
+        table.insert(policyMap[parent],child)
+        if subjectHierarchyMap[child]==nil then
+            subjectHierarchyMap[child] = 0
+        end
+        if subjectHierarchyMap[parent]==nil then
+            subjectHierarchyMap[parent] = 0
+        end
+        subjectHierarchyMap[child] = 1
+    end
+    -- Use queues for levelOrder
+    local queue ={}
+    for k, v in pairs(subjectHierarchyMap) do
+        while true do
+            local root = k
+            if v ~= 0 then
+                break
+            end
+            local lv = 0
+            table.insert(queue,root)
+            while #queue~= 0 do
+                local sz = #queue
+                for i = 0,sz do
+                    local node = queue[1]
+                    table.remove(queue,1)
+                    local nodeValue = tostring(node.value)
+                    subjectHierarchyMap[nodeValue] = lv
+                    if policyMap[nodeValue]~=nil then
+                        for _, child in pairs(policyMap[nodeValue]) do
+                            table.insert(queue,child)
+                        end
+                    end
+                end
+                lv=lv+1
+            end
+        end
+    end
+    return subjectHierarchyMap, nil
+end
+
+function Model:sortPoliciesBySubjectHierarchy()
+    if self.model["e"]["e"].Value ~= "subjectPriority(p_eft) || deny" then
+        return nil
+    end
+    local subIndex = 0
+    local domainIndex = -1
+    for ptype, assertion in pairs(self.model["p"]) do
+        for index, token in pairs(assertion.tokens) do
+            if token == ptype.."_dom" then
+                domainIndex = index
+                break
+            end
+        end
+        local policies = assertion.policy
+        local subjectHierarchyMap, err = getSubjectHierarchyMap(self.model["g"]["g"].policy)
+        if err ~= nil then
+            return err
+        end
+        table.sort(policies, function(i,j)
+        local domain1, domain2 = "", ""
+        if domainIndex ~= -1 then
+            domain1 = policies[i][domainIndex]
+            domain2 = policies[j][domainIndex]
+        end
+        local name1, name2 = domain1.."::"..policies[i][subIndex], domain2.."::"..policies[j][subIndex]
+        local p1 = subjectHierarchyMap[name1]
+        local p2 = subjectHierarchyMap[name2]
+        return p1 > p2
+        end)
+        for i,policy in pairs(assertion.policy) do
+            assertion.policyMap[table.concat(policy,",")]=i
+        end
+    end
+    return nil
+end
+
 -- sortPoliciesByPriority sorts policies by their priorities if 'priority' token exists
 function Model:sortPoliciesByPriority()
     if not self.model["p"] then return end
