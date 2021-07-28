@@ -222,7 +222,7 @@ describe("model tests", function()
         local m = Model:new()
         m:loadModel(basic_path)
         local res = m:toText()
-        local saveText="[request_definition]\nr=sub, obj, act\n[policy_definition]\np=sub, obj, act\n[policy_effect]\ne=some(where (p_eft == allow))\n[matchers]\nm=r.sub == p.sub && r.obj == p.obj && r.act == p.act\n"
+        local saveText="[request_definition]\nr = sub, obj, act\n[policy_definition]\np = sub, obj, act\n[policy_effect]\ne = some(where (p.eft == allow))\n[matchers]\nm = r.sub == p.sub && r.obj == p.obj && r.act == p.act\n"
         assert.are.same(saveText, res)
 
     end)

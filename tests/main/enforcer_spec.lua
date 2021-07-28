@@ -455,4 +455,36 @@ describe("Enforcer tests", function ()
         assert.is.Same({"data2_allow_group", "data2", "read", "allow"}, test(e, "bob", "data2", "read"))
         assert.is.Same({"bob", "data2", "write", "deny"}, test(e, "bob", "data2", "write"))
     end)
+
+    it("newEnforcerFromText test", function ()
+        local modelText = [[
+            [request_definition]
+            r = sub, obj, act
+            [policy_definition]
+            p = sub, obj, act
+            [role_definition]
+            g = _, _
+            [policy_effect]
+            e = some(where (p.eft == allow))
+            [matchers]
+            m = g(r.sub, p.sub) && r.obj == p.obj && r.act == p.act
+        ]]
+
+        local policyText = [[
+            p, alice, data1, read
+            p, bob, data2, write
+            p, data2_admin, data2, read
+            p, data2_admin, data2, write
+            g, alice, data2_admin
+        ]]
+
+        local e = Enforcer:newEnforcerFromText(modelText, policyText)
+
+        assert.is.True(e:enforce("alice", "data1", "read"))
+        assert.is.True(e:enforce("alice", "data2", "read"))
+        assert.is.True(e:enforce("alice", "data2", "write"))
+        assert.is.False(e:enforce("bob", "data1", "read"))
+        assert.is.True(e:enforce("bob", "data2", "write"))
+        assert.is.False(e:enforce("bogus", "data2", "write")) -- Non-existent subject
+    end)
 end)
