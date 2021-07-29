@@ -235,4 +235,15 @@ describe("model tests", function()
             m:printPolicy()
         end)
     end)
+
+    it("test copy", function ()
+        local m = Model:new()
+        m:loadModel(basic_path)
+
+        local rule = {'admin', 'domain1', 'data1', 'read'}
+        m:addPolicy("p", "p", rule)
+
+        assert.is.same(m.model,m:copy())
+    end)
+
 end)
