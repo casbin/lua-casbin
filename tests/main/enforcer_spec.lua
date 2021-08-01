@@ -390,6 +390,20 @@ describe("Enforcer tests", function ()
         assert.is.True(e:enforce("data2_allow_group", "data2", "write"))
     end)
 
+    it("explicit subject priority test", function ()
+        local model  = path .. "/examples/subject_priority_model_with_domain.conf"
+        local policy  = path .. "/examples/subject_priority_policy_with_domain.csv"
+        local e = Enforcer:new(model, policy)
+        assert.is.False(e:enforce("alice", "data1","domain1", "write"))
+        assert.is.False(e:enforce("bob", "data2","domain2", "write"))
+        e.model:printPolicy()
+        e.model:sortPoliciesBySubjectHierarchy()
+        e.model:printPolicy()
+        assert.is.True(e:enforce("alice", "data1","domain1", "write"))
+        assert.is.True(e:enforce("bob", "data2","domain2", "write"))
+    end)
+
+
     it("Batch Enforce test", function ()
         local model  = path .. "/examples/basic_model.conf"
         local policy  = path .. "/examples/basic_policy.csv"

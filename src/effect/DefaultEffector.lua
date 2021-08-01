@@ -64,7 +64,7 @@ function DefaultEffector:mergeEffects(expr, effects)
                 break
             end
         end
-    elseif expr == "priority(p_eft) || deny" then
+    elseif expr == "priority(p_eft) || deny" or expr == "subjectPriority(p_eft) || deny" then
         result = false
         for i, eft in pairs(effects) do
             if eft ~= self.Effect.INDETERMINATE then
