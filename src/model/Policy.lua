@@ -239,19 +239,25 @@ end
     * @return succeeds or not.
 ]]
 function Policy:addPolicies(sec, ptype, rules)
-    local size = #self.model[sec][ptype].policy
+    return self:addPoliciesWithAffected(sec, ptype, rules)~=0
+end
+
+--[[
+    * addPoliciesWithAffected adds policy rules to the model.
+    * @param sec the section, "p" or "g".
+    * @param ptype the policy type, "p", "p2", .. or "g", "g2", ..
+    * @param rules the policy rules.
+    * @return effected.
+]]
+function Policy:addPoliciesWithAffected(sec, ptype, rules)
+    local effected={}
     for _, rule in pairs(rules) do
-        if not self:hasPolicy(sec, ptype, rule) then
-            table.insert(self.model[sec][ptype].policy, rule)
-            self.model[sec][ptype].policyMap[table.concat(rule,",")]=#self.model[sec][ptype].policy
+        if self:addPolicy(sec, ptype, rule) then
+            table.insert(effected, rule)
+
         end
     end
-
-    if size < #self.model[sec][ptype].policy then
-        return true
-    else
-        return false
-    end
+    return effected
 end
 
 --[[
@@ -332,9 +338,8 @@ end
 function Policy:removePoliciesWithEffected(sec, ptype, rules)
     local effected={}
     for _,rule in pairs(rules) do
-        if self:hasPolicy(sec, ptype, rule) then
+        if self:removePolicy(sec,ptype,rule) then
             table.insert(effected,rule)
-            self:removePolicy(sec,ptype,rule)
         end
     end
     return effected
