@@ -59,7 +59,6 @@ describe("model tests", function()
         assert.is.False(m:hasPolicies("p", "p", rulesnotmatched))
     end)
 
-
     it("test addPolicy", function ()
         local m = Model:new()
         m:loadModel(basic_path)
@@ -70,6 +69,25 @@ describe("model tests", function()
         m:addPolicy("p", "p", rule)
 
         assert.is.True(m:hasPolicy("p", "p", rule))
+    end)
+
+    it("test addPoliciesWithAffected", function ()
+        local m = Model:new()
+        m:loadModel(basic_path)
+
+        local rules = {{'admin', 'domain1', 'data1', 'read'},{'admin', 'domain2', 'data2', 'read'},{'admin', 'domain1', 'data1', 'write'}}
+        assert.is.False(m:hasPolicies("p", "p", rules))
+
+        assert.are.same(rules,m:addPoliciesWithAffected("p", "p", rules))
+        assert.is.True(m:hasPolicies("p", "p", rules))
+
+        local rules1 = {{'Alice', 'domain1', 'data1', 'read'},{'Bob', 'domain2', 'data2', 'read'},{'admin', 'domain1', 'data1', 'write'}}
+        assert.is.True(m:hasPolicies("p", "p", rules1))
+
+        assert.are.same({{'Alice', 'domain1', 'data1', 'read'},{'Bob', 'domain2', 'data2', 'read'}},m:addPoliciesWithAffected("p", "p", rules1))
+        assert.is.True(m:hasPolicy("p", "p", {'Alice', 'domain1', 'data1', 'read'}))
+        assert.is.True(m:hasPolicy("p", "p", {'Bob', 'domain2', 'data2', 'read'}))
+
     end)
 
     it("test removePolicy", function ()
@@ -100,6 +118,16 @@ describe("model tests", function()
         assert.are.same(rules,m:removePoliciesWithEffected("p", "p", rules))
         assert.is.False(m:hasPolicies("p", "p", rules))
         assert.is.False(m:removePolicy("p", "p", rules[1]))
+
+        m:addPolicies("p", "p", rules)
+        assert.is.True(m:hasPolicies("p", "p", rules))
+
+        local removeList={{'Alice', 'domain1', 'data1', 'read'},{'admin', 'domain2', 'data2', 'read'},{'admin', 'domain1', 'data1', 'write'}}
+        assert.is.False(m:hasPolicy("p", "p", {'Alice', 'domain1', 'data1', 'read'}))
+
+        assert.are.same({{'admin', 'domain2', 'data2', 'read'},{'admin', 'domain1', 'data1', 'write'}},m:removePoliciesWithEffected("p", "p", removeList))
+        assert.is.False(m:hasPolicy("p", "p", removeList[2]))
+        assert.is.False(m:removePolicy("p", "p", removeList[3]))
     end)
 
     it("test addRolePolicy", function ()
