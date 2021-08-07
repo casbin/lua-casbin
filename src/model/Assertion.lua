@@ -27,6 +27,7 @@ function Assertion:new()
     o.policy = {}
     o.RM = {}
     o.policyMap={}
+    o.priorityIndex=-1
     setmetatable(o,self)
     self.__index = self
     return o
@@ -96,6 +97,10 @@ function Assertion:buildIncrementalRoleLinks(rm, op, rules)
             error("invalid operation")
         end
     end
+end
+
+function Assertion:initPriorityIndex()
+    self.priorityIndex = -1
 end
 
 return Assertion

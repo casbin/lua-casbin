@@ -226,6 +226,25 @@ function Policy:addPolicy(sec, ptype, rule)
     if not self:hasPolicy(sec, ptype, rule) then
         table.insert(self.model[sec][ptype].policy, rule)
         self.model[sec][ptype].policyMap[table.concat(rule,",")]=#self.model[sec][ptype].policy
+        if sec == "p" and self.model[sec][ptype].priorityIndex > 0 then
+            local idxInsert=tonumber(rule[self.model[sec][ptype].priorityIndex])
+            if rule[self.model[sec][ptype].priorityIndex]~= nil then
+                local i = #self.model[sec][ptype].policy-1
+                for j=i, 1, -1 do
+                    local idx=tonumber(self.model[sec][ptype].policy[i+1][self.model[sec][ptype].priorityIndex])
+                    if idx < idxInsert then
+                        self.model[sec][ptype].policy[i+1] = self.model[sec][ptype].policy[i]
+                        self.model[sec][ptype].policyMap[table.concat(self.model[sec][ptype].policy[i+1], ",")]=i+1
+                    else
+                        i=j
+                        break
+                    end
+                    i=j
+                end
+                self.model[sec][ptype].policy[i] = rule
+                self.model[sec][ptype].policyMap[table.concat(rule,",")] = i
+            end
+        end
         return true
     end
     return false
