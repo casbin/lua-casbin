@@ -76,6 +76,7 @@ function Model:addDef(sec, key, value)
     self.model[sec][key].key = key
     self.model[sec][key].value = value
     self.model[sec][key].policyMap={}
+    self.model[sec][key]:initPriorityIndex()
     if sec == "r" or sec == "p" then
         self.model[sec][key].tokens = Util.splitCommaDelimited(self.model[sec][key].value)
         for k, v in pairs(self.model[sec][key].tokens) do
@@ -302,19 +303,17 @@ function Model:sortPoliciesByPriority()
     if not self.model["p"] then return end
 
     for ptype, ast in pairs(self.model["p"]) do
-        local priorityIndex = 0
         for inx, token in pairs(ast.tokens) do
             if token == ptype .. "_priority" then
-                priorityIndex = inx
+                ast.priorityIndex = inx
                 break
             end
         end
-        if priorityIndex == 0 then
+        if ast.priorityIndex == -1 then
             return
         end
-
         table.sort(ast.policy, function (a, b)
-        return a[priorityIndex] < b[priorityIndex]
+        return a[ast.priorityIndex] < b[ast.priorityIndex]
         end)
         for i,policy in pairs(ast.policy) do
             ast.policyMap[table.concat(policy,",")]=i
