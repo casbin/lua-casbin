@@ -140,7 +140,7 @@ end
     * @return the policy rules of section sec and policy type ptype.
 ]]
 function Policy:getPolicy(sec, ptype)
-    local policy = Util.tableDeepCopy(self.model[sec][ptype].policy)
+    local policy = Util.deepCopy(self.model[sec][ptype].policy)
     return policy
 end
 
