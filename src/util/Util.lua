@@ -193,15 +193,15 @@ function Util.replaceInOfMatcher(str)
 end
 
 -- returns deep (recursive) copy of a table (values only)
-function Util.tableDeepCopy(org)
+function Util.deepCopy(org)
+    if type(org) ~= "table" then
+        return org
+    end
     local copy = {}
     for k, v in pairs(org) do
-        if type(v) == "table" then
-            copy[k] = Util.tableDeepCopy(v)
-        else
-            copy[k] = v
-        end
+        copy[k] = Util.deepCopy(v)
     end
+    setmetatable(copy,getmetatable(org))
     return copy
 end
 

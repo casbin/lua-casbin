@@ -321,21 +321,8 @@ function Model:sortPoliciesByPriority()
      end
 end
 
-local function deepcopy(object)
-    if type(object) ~= "table" then
-        return object
-    end
-    local newobject = {}
-
-    for key,value in pairs(object) do
-        newobject[key] = deepcopy(value)
-    end
-    setmetatable(newobject,getmetatable(object))
-    return newobject
-end
-
 function Model:copy()
-    return deepcopy(self.model)
+    return Util.deepCopy(self.model)
 end
 
 return Model

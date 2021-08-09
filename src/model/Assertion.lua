@@ -12,6 +12,8 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
+local Util = require("src/util/Util")
+
 --[[
     * Assertion represents an expression in a section of the model.
     * For example: r = sub, obj, act
@@ -101,6 +103,10 @@ end
 
 function Assertion:initPriorityIndex()
     self.priorityIndex = -1
+end
+
+function Assertion:copy()
+    return Util.deepCopy(self)
 end
 
 return Assertion

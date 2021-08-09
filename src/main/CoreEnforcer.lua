@@ -513,7 +513,7 @@ function CoreEnforcer:enforceEx(...)
             req = req .. "Hit Policy: "
             req = req .. Util.printTable(self.model.model["p"]["p"].policy[explainIndex])
 
-            explainPolicy = Util.tableDeepCopy(self.model.model["p"]["p"].policy[explainIndex])
+            explainPolicy = Util.deepCopy(self.model.model["p"]["p"].policy[explainIndex])
         end
 
         self.logger:info(req)
