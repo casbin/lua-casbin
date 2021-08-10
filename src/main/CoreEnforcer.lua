@@ -239,15 +239,47 @@ end
      * loadPolicy reloads the policy from file/database.
 ]]
 function CoreEnforcer:loadPolicy()
+    local needToRebuild =false
+    local oldModel=self.model
+    self.model=oldModel:copy()
     self.model:clearPolicy()
-    self.adapter:loadPolicy(self.model)
+    local err
+    local rebuild=function()
+        if err ~= nil then
+            self.model = oldModel
+            if self.autoBuildRoleLinks and needToRebuild then
+                self:BuildRoleLinks()
+            end
+        end
+    end
+    err=self.adapter:loadPolicy(self.model)
+    if err~=nil then
+        rebuild()
+        return err
+    end
 
-    self.model:sortPoliciesByPriority()
+    err=self.model:sortPoliciesBySubjectHierarchy()
+    if err~=nil then
+        rebuild()
+        return err
+    end
+
+    err=self.model:sortPoliciesByPriority()
+    if err~=nil then
+        rebuild()
+        return err
+    end
     self.model:printPolicy()
 
     if self.autoBuildRoleLinks then
+        needToRebuild=true
         self:buildRoleLinks()
+        if err~=nil then
+            rebuild()
+            return err
+        end
     end
+    return nil
 end
 
 --[[
