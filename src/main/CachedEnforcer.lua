@@ -13,6 +13,7 @@
 --limitations under the License.
 
 local Enforcer = require("src.main.Enforcer")
+local DefaultCache=require("src.persist.cache.DefaultCache")
 
 -- CachedEnforcer wraps Enforcer and provides decision cache
 local CachedEnforcer = {}
@@ -24,7 +25,7 @@ function CachedEnforcer:new(model, adapter)
     self.__index = self
     setmetatable(e, self)
     e.cacheEnabled = true
-    e.m = {}
+    e.m = DefaultCache:new()
     return e
 end
 
@@ -66,19 +67,15 @@ function CachedEnforcer:enforce(...)
 end
 
 function CachedEnforcer:getCachedResult(key)
-    if self.m[key] ~= nil then
-        return self.m[key], true
-    end
-
-    return nil, false
+    return self.m:get(key)
 end
 
 function CachedEnforcer:setCachedResult(key, res)
-    self.m[key] = res
+    self.m:set(key, res)
 end
 
 function CachedEnforcer:invalidateCache()
-    self.m = {}
+    self.m:clear()
 end
 
 return CachedEnforcer
