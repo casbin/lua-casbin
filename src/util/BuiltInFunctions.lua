@@ -17,11 +17,20 @@ local posix = require("posix.fnmatch")
 
 local BuiltInFunctions = {}
 
+function BuiltInFunctions.validateVariadicArgs(expectedLen, args)
+    if #args ~= expectedLen then
+        return error("Expected"..expectedLen.." arguments, but got "..#args)
+    end
+    for i=1,expectedLen do
+        if type(args[i])~="string" then
+            return error("Argument must be a string")
+        end
+    end
+end
+
 -- Wrapper for keyMatch
 function BuiltInFunctions.keyMatchFunc(args)
-    if #args<2 then
-        error("BuiltInFunctions should have atleast 2 arguments")
-    end
+    BuiltInFunctions.validateVariadicArgs(2, args)
     return BuiltInFunctions.keyMatch(args[1], args[2])
 end
 
@@ -42,9 +51,7 @@ end
 
 -- Wrapper for keyGet
 function BuiltInFunctions.keyGetFunc(args)
-    if #args<2 then
-        error("BuiltInFunctions should have atleast 2 arguments")
-    end
+    BuiltInFunctions.validateVariadicArgs(2, args)
     return BuiltInFunctions.keyGet(args[1], args[2])
 end
 
@@ -67,9 +74,7 @@ end
 
 -- Wrapper for keyMatch2
 function BuiltInFunctions.keyMatch2Func(args)
-    if #args<2 then
-        error("BuiltInFunctions should have atleast 2 arguments")
-    end
+    BuiltInFunctions.validateVariadicArgs(2, args)
     return BuiltInFunctions.keyMatch2(args[1], args[2])
 end
 
@@ -84,9 +89,7 @@ end
 
 -- Wrapper for keyMatch3
 function BuiltInFunctions.keyMatch3Func(args)
-    if #args<2 then
-        error("BuiltInFunctions should have atleast 2 arguments")
-    end
+    BuiltInFunctions.validateVariadicArgs(2, args)
     return BuiltInFunctions.keyMatch3(args[1], args[2])
 end
 
@@ -100,9 +103,7 @@ end
 
 -- Wrapper for regexMatch
 function BuiltInFunctions.regexMatchFunc(args)
-    if #args<2 then
-        error("BuiltInFunctions should have atleast 2 arguments")
-    end
+    BuiltInFunctions.validateVariadicArgs(2, args)
     return BuiltInFunctions.regexMatch(args[1], args[2])
 end
 
@@ -118,9 +119,7 @@ end
 
 -- Wrapper for globMatch
 function BuiltInFunctions.globMatchFunc(args)
-    if #args<2 then
-        error("BuiltInFunctions should have atleast 2 arguments")
-    end
+    BuiltInFunctions.validateVariadicArgs(2, args)
     return BuiltInFunctions.globMatch(args[1], args[2])
 end
 
