@@ -11,6 +11,20 @@ tar zxpf luarocks-3.3.1.tar.gz
 cd luarocks-3.3.1
 ```
 
+
+
+build and install LuaRocks:
+```
+./configure --prefix=/usr/local/openresty/luarocks --with-lua=/usr/local/openresty/luajit/ --with-lua-include=/usr/local/openresty/luajit/include/luajit-2.1 --with-lua-lib=/usr/local/openresty/lualib
+
+make -j8 && sudo make install
+```
+
+> Cannot find the unzip command, just execute the apt installation
+```
+sudo apt install unzip zip
+```
+
 To configure LuaRocks for OpenResty, run this command:
 ```
 ./configure --prefix=/usr/local/openresty/luajit \
