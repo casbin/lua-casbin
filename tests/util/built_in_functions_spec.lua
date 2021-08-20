@@ -98,6 +98,22 @@ describe("BuiltInFunctions tests", function ()
         assert.is.False(BuiltInFunctions.keyMatch3("/myid/using/myresid", "/{id/using/{resId}"))
     end)
 
+    it("keyMatch4 tests", function ()
+        assert.is.True(BuiltInFunctions.keyMatch4("/parent/123/child/123", "/parent/{id}/child/{id}"))
+        assert.is.False(BuiltInFunctions.keyMatch4("/parent/123/child/456", "/parent/{id}/child/{id}"))
+
+        assert.is.True(BuiltInFunctions.keyMatch4("/parent/123/child/123", "/parent/{id}/child/{another_id}"))
+        assert.is.True(BuiltInFunctions.keyMatch4("/parent/123/child/456", "/parent/{id}/child/{another_id}"))
+
+        assert.is.True(BuiltInFunctions.keyMatch4("/parent/123/child/123/book/123", "/parent/{id}/child/{id}/book/{id}"))
+        assert.is.False(BuiltInFunctions.keyMatch4("/parent/123/child/123/book/456", "/parent/{id}/child/{id}/book/{id}"))
+        assert.is.False(BuiltInFunctions.keyMatch4("/parent/123/child/456/book/123", "/parent/{id}/child/{id}/book/{id}"))
+        assert.is.False(BuiltInFunctions.keyMatch4("/parent/123/child/456/book/", "/parent/{id}/child/{id}/book/{id}"))
+        assert.is.False(BuiltInFunctions.keyMatch4("/parent/123/child/456", "/parent/{id}/child/{id}/book/{id}"))
+
+        assert.is.False(BuiltInFunctions.keyMatch4("/parent/123/child/123", "/parent/{i/d}/child/{i/d}"))
+    end)
+
     it("regexMatch tests", function ()
         assert.is.True(BuiltInFunctions.regexMatch("/topic/create", "/topic/create"))
         assert.is.True(BuiltInFunctions.regexMatch("/topic/create/123", "/topic/create"))

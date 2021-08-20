@@ -101,6 +101,45 @@ function BuiltInFunctions.keyMatch3(key1, key2)
 	return BuiltInFunctions.regexMatch(key1, "^"..key.."$")
 end
 
+-- Wrapper for keyMatch4
+function BuiltInFunctions.keyMatch4Func(args)
+    BuiltInFunctions.validateVariadicArgs(2, args)
+    return BuiltInFunctions.keyMatch4(args[1], args[2])
+end
+
+-- KeyMatch4 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
+-- Besides what KeyMatch3 does, KeyMatch4 can also match repeated patterns:
+-- "/parent/123/child/123" matches "/parent/{id}/child/{id}"
+-- "/parent/123/child/456" does not match "/parent/{id}/child/{id}"
+-- But KeyMatch3 will match both.
+function BuiltInFunctions.keyMatch4(key1, key2)
+    key2 = string.gsub(key2, "/%*", "/.*")
+    local tokens={}
+    local repl=function(s)
+        table.insert(tokens, string.sub(s, 1, -1))
+        return "([^/]+)"
+    end
+    key2=string.gsub(key2,"{([^/]+)}",repl)
+    if string.match(key1, key2)==nil then
+        return false
+    end
+    local matches={string.match(key1, key2)}
+    if #tokens~= #matches then
+        error("KeyMatch4: number of tokens is not equal to number of values")
+    end
+    local values={}
+    for key, token in pairs(tokens) do
+        if values[token]==nil then
+            values[token] = matches[key]
+        end
+        if values[token] ~= matches[key] then
+            return false
+        end
+    end
+
+    return true
+end
+
 -- Wrapper for regexMatch
 function BuiltInFunctions.regexMatchFunc(args)
     BuiltInFunctions.validateVariadicArgs(2, args)
