@@ -158,4 +158,13 @@ describe("BuiltInFunctions tests", function ()
         assert.is.False(BuiltInFunctions.globMatch("/prefix/subprefix/foobar", "*/foo/*"))
 
     end)
+
+    it("IPMatch tests", function ()
+        assert.is.True(BuiltInFunctions.IPMatch("192.168.2.123", "192.168.2.0/24"))
+        assert.is.True(BuiltInFunctions.IPMatch("192.168.2.123", "192.168.2.0/25"))
+        assert.is.False(BuiltInFunctions.IPMatch("192.168.2.123", "192.168.2.0/26"))
+        assert.is.True(BuiltInFunctions.IPMatch("192.168.2.123", "192.168.2.123"))
+        assert.is.False(BuiltInFunctions.IPMatch("192.168.2.124", "192.168.2.123"))
+        assert.is.False(BuiltInFunctions.IPMatch("192.166.2.123", "192.168.2.123"))
+    end)
 end)
