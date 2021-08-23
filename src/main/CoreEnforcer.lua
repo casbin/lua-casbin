@@ -404,6 +404,7 @@ function CoreEnforcer:enforceEx(...)
     end
 
     local expString = self.model.model["m"]["m"].value
+    local hasEval = Util.hasEval(expString)
 
     local policyLen = #self.model.model["p"]["p"].policy
 
@@ -429,8 +430,11 @@ function CoreEnforcer:enforceEx(...)
                 context[v] = pvals[k]
             end
 
-            local tExpString = Util.findAndReplaceEval(expString, context)
-            
+            local tExpString = expString
+            if hasEval then
+                tExpString = Util.findAndReplaceEval(expString, context)
+            end
+
             local res, err
             if tExpString == expString then
                 res, err = luaxp.run(compiledExpression, context)

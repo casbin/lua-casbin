@@ -166,6 +166,11 @@ function Util.areTablesSame(a, b)
     return true
 end
 
+-- checks if the matcher string has eval(...)
+function Util.hasEval(str)
+    return string.find(str, "eval%((.-)%)")
+end
+
 -- finds if string has eval and replaces eval(...) with its value so that it can be evaluated by luaxp
 function Util.findAndReplaceEval(str, context)
     local m = string.gsub(str, "eval%((.-)%)", function (s)
