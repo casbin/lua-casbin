@@ -156,6 +156,52 @@ function BuiltInFunctions.regexMatch(key1, key2)
     end
 end
 
+-- IPMatch determines whether IP address ip1 matches the pattern of IP address ip2, ip2 can be an IP address or a CIDR pattern.
+-- For example, "192.168.2.123" matches "192.168.2.0/24"
+function BuiltInFunctions.IPMatch(ip1, ip2)
+    local getip1 = {string.match(ip1,"(%d+)%.(%d+)%.(%d+)%.(%d+)" )}
+    local objIP1=0
+    for i=1,4 do
+        if getip1[i]==nil or tonumber(getip1[i])>255 or tonumber(getip1[i])<0 then
+            error("invalid argument: ip1 in IPMatch() function is not an IP address.")
+        else
+            objIP1=objIP1+2^(8*(4-i))*getip1[i]
+        end
+    end
+    if ip1==ip2 then
+        return true
+    end
+
+    local cidr
+    ip2=string.gsub(ip2,"/(%d+)",function(s) cidr=s return "" end)
+    local getip2 = {string.match(ip2,"(%d+)%.(%d+)%.(%d+)%.(%d+)" )}
+    local objIP2=0
+    for i=1,4 do
+        if getip2[i]==nil or tonumber(getip2[i])>255 or tonumber(getip2[i])<0 then
+            error("invalid argument: ip1 in IPMatch() function is not an IP address.")
+        else
+            objIP2=objIP2+2^(8*(4-i))*getip2[i]
+        end
+    end
+    if cidr==nil then
+        return false
+    else
+        local number1,_=math.modf(objIP1/(2^(32-cidr)))
+        local number2,_=math.modf(objIP2/(2^(32-cidr)))
+        if number1~=number2 then
+            return false
+        else
+            return true
+        end
+    end
+end
+
+-- Wrapper for IPMatch.
+function BuiltInFunctions.IPMatchFunc(args)
+    BuiltInFunctions.validateVariadicArgs(2, args)
+    return BuiltInFunctions.IPMatch(args[1], args[2])
+end
+
 -- Wrapper for globMatch
 function BuiltInFunctions.globMatchFunc(args)
     BuiltInFunctions.validateVariadicArgs(2, args)
