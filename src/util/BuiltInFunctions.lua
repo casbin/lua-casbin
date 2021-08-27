@@ -87,6 +87,36 @@ function BuiltInFunctions.keyMatch2(key1, key2)
 	return BuiltInFunctions.regexMatch(key1, "^"..key.."$")
 end
 
+-- KeyGet2 returns value matched pattern
+-- For example, "/resource1" matches "/:resource"
+-- if the pathVar == "resource", then "resource1" will be returned
+function BuiltInFunctions.keyGet2(key1, key2 , pathVar)
+    key2 = string.gsub(key2, "/%*", "/.*")
+    local keys ={}
+    local repl=function(s)
+        table.insert(keys, string.sub(s, 1, -1))
+        return "([^/]+)"
+    end
+    key2 = string.gsub(key2,":[^/]+",repl)
+    key2 = "^" .. key2 .. "$"
+    local values = {string.match(key1,key2)}
+    if #values == 0 then
+        return ""
+    end
+    for i, key in pairs(keys) do
+        if pathVar == string.sub(key,2,-1) then
+            return values[i]
+        end
+    end
+    return ""
+end
+
+-- Wrapper for KeyGet2
+function BuiltInFunctions.keyGet2Func(args)
+    BuiltInFunctions.validateVariadicArgs(3, args)
+    return BuiltInFunctions.keyGet2(args[1], args[2],args[3])
+end
+
 -- Wrapper for keyMatch3
 function BuiltInFunctions.keyMatch3Func(args)
     BuiltInFunctions.validateVariadicArgs(2, args)
