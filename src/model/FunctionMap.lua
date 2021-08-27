@@ -18,8 +18,11 @@ local FunctionMap = {
     ["keyMatch"] = BuiltInFunctions.keyMatchFunc,
     ["keyGet"] = BuiltInFunctions.keyGetFunc,
     ["keyMatch2"] = BuiltInFunctions.keyMatch2Func,
+    ["keyGet2"] = BuiltInFunctions.keyGet2Func,
     ["keyMatch3"] = BuiltInFunctions.keyMatch3Func,
+    ["keyMatch4"] = BuiltInFunctions.keyMatch4Func,
     ["regexMatch"] = BuiltInFunctions.regexMatchFunc,
+    ["IPMatch"] = BuiltInFunctions.IPMatchFunc,
     ["globMatch"] = BuiltInFunctions.globMatch
 }
 
