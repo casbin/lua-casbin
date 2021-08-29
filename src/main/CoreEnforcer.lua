@@ -543,6 +543,26 @@ function CoreEnforcer:isAutoNotifyDispatcher()
     return self.autoNotifyDispatcher
 end
 
+-- enableEnforce changes the enforcing state of Casbin, when Casbin is disabled, all access will be allowed by the Enforce() function.
+function CoreEnforcer:enableEnforce(enable)
+    self.enabled = enable
+end
+
+-- enableAutoNotifyWatcher controls whether to save a policy rule automatically notify the Watcher when it is added or removed.
+function CoreEnforcer:enableAutoNotifyWatcher(enable)
+    self.autoNotifyWatcher = enable
+end
+
+-- enableAutoNotifyDispatcher controls whether to save a policy rule automatically notify the Dispatcher when it is added or removed.
+function CoreEnforcer:enableAutoNotifyDispatcher(enable)
+    self.autoNotifyDispatcher = enable
+end
+
+-- EnableAutoSave controls whether to save a policy rule automatically to the adapter when it is added or removed.
+function CoreEnforcer:enableAutoSave(autoSave)
+    self.autoSave = autoSave
+end
+
 function CoreEnforcer:setAutoNotifyDispatcher(autoNotifyDispatcher)
     self.autoNotifyDispatcher = autoNotifyDispatcher
 end
