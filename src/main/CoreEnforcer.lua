@@ -116,7 +116,7 @@ function CoreEnforcer:initialize()
     self.enabled = true
     self.autoSave = true
     self.autoBuildRoleLinks = true
-
+    self.autoNotifyDispatcher = true
     self:initBuildRoleLinks()
 end
 

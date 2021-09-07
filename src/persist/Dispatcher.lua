@@ -41,4 +41,14 @@ function Dispatcher:updatePolicy(sec, ptype, oldRule, newRule)
 
 end
 
+-- UpdatePolicies updates some policy rules from all instance
+function Dispatcher:updatePolicies(sec, ptype, oldrules, newRules)
+
+end
+
+-- UpdateFilteredPolicies deletes old rules and adds new rules.
+function Dispatcher:updateFilteredPolicies(sec, ptype, oldRules, newRules)
+
+end
+
 return Dispatcher

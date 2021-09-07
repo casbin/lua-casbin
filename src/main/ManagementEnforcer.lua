@@ -191,6 +191,14 @@ function ManagementEnforcer:UpdatePolicy(oldPolicy, newPolicy)
     return self:UpdateNamedPolicy("p", oldPolicy, newPolicy)
 end
 
+function ManagementEnforcer:UpdatePolicies(oldPolicies, newPolicies)
+    return self:UpdateNamedPolicies("p",  oldPolicies, newPolicies)
+end
+
+function ManagementEnforcer:UpdateNamedPolicies(ptype,oldPolicies, newPolicies)
+    return self:updatePolicies("p",ptype,oldPolicies, newPolicies)
+end
+
 -- UpdateNamedPolicy updates an authorization rule from the current named policy.
 function ManagementEnforcer:UpdateNamedPolicy(ptype, oldPolicy, newPolicy)
     return self:updatePolicy("p", ptype, oldPolicy, newPolicy)

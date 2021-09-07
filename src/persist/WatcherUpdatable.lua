@@ -24,4 +24,10 @@ function WatcherUpdatable:updateForUpdatePolicy(oldRule, newRule)
     
 end
 
+-- UpdateForUpdatePolicies calls the update callback of other instances to synchronize their policy.
+-- It is called after Enforcer.UpdatePolicies()
+function WatcherUpdatable:updateForUpdatePolicies(oldRules, newRules)
+
+end
+
 return WatcherUpdatable
