@@ -23,6 +23,11 @@ InternalEnforcer.__index = InternalEnforcer
     * addPolicy adds a rule to the current policy.
 ]]
 function InternalEnforcer:addPolicy(sec, ptype, rule)
+    if self.dispatcher~=nil and self.autoNotifyDispatcher then
+        self.dispatcher:addPolicies(sec, ptype,{rule})
+        return true
+    end
+
     if self.model:hasPolicy(sec, ptype, rule) then
         return false
     end
@@ -60,6 +65,11 @@ end
     * addPolicies adds rules to the current policy.
 ]]
 function InternalEnforcer:addPolicies(sec, ptype, rules)
+    if self.dispatcher~=nil and self.autoNotifyDispatcher then
+        self.dispatcher:addPolicies(sec, ptype,rules)
+        return true
+    end
+
     if self.model:hasPolicies(sec, ptype, rules) then
         return false
     end
@@ -105,6 +115,11 @@ end
     * removePolicy removes a rule from the current policy.
 ]]
 function InternalEnforcer:removePolicy(sec, ptype, rule)
+    if self.dispatcher~=nil and self.autoNotifyDispatcher then
+        self.dispatcher:removePolicies(sec, ptype,{rule})
+        return true
+    end
+
     if self.adapter and self.autoSave then
 
         local status, err = pcall(function () self.adapter:removePolicy(sec, ptype, rule) end)
@@ -147,7 +162,10 @@ end
     * @return succeeds or not.
 ]]
 function InternalEnforcer:updatePolicy(sec, ptype, oldRule, newRule)
-    -- TODO: update dispatcher
+    if self.dispatcher~=nil and self.autoNotifyDispatcher then
+        self.dispatcher:updatePolicy(sec, ptype,oldRule, newRule)
+        return true
+    end
     
     if self.adapter and self.autoSave then
 
@@ -200,12 +218,70 @@ function InternalEnforcer:updatePolicy(sec, ptype, oldRule, newRule)
     return true
 end
 
+function InternalEnforcer:updatePolicies(sec, ptype, oldRules, newRules)
+    if self.dispatcher~=nil and self.autoNotifyDispatcher then
+        self.dispatcher:updatePolicies(sec, ptype,oldRules, newRules)
+        return true
+    end
+
+    if self.adapter and self.autoSave then
+
+        local status, err = pcall(function () self.adapter:updatePolicies(sec, ptype, oldRules, newRules) end)
+        if status == false and string.sub(err, -15) == "not implemented" then
+            -- log, continue
+        elseif status == false then
+            return false
+        end
+    end
+
+    local ruleUpdated = self.model:updatePolicies(sec, ptype, oldRules, newRules)
+
+    if not ruleUpdated then
+        return false
+    end
+
+    if sec == "g" then
+        local status, err = pcall(function ()
+            self:buildIncrementalRoleLinks(self.model.PolicyOperations.POLICY_REMOVE, ptype, oldRules)
+        end)
+        if status == false and string.sub(err, -15) == "not implemented" then
+            -- log, continue
+        elseif status == false then
+            return false
+        end
+
+        status, err = pcall(function ()
+            self:buildIncrementalRoleLinks(self.model.PolicyOperations.POLICY_ADD, ptype, newRules)
+        end)
+        if status == false and string.sub(err, -15) == "not implemented" then
+            -- log, continue
+        elseif status == false then
+            return false
+        end
+    end
+
+    if self.watcher and self.autoNotifyWatcher then
+        if self.watcher.updateForUpdatePolicies then
+            self.watcher:updateForUpdatePolicies(sec, ptype, oldRules, newRules)
+        else
+            self.watcher:update()
+        end
+    end
+
+    return true
+end
+
 --[[
     * removePolicies removes rules from the current policy.
 ]]
 function InternalEnforcer:removePolicies(sec, ptype, rules)
     if not self.model:hasPolicies(sec, ptype, rules) then
         return false
+    end
+
+    if self.dispatcher~=nil and self.autoNotifyDispatcher then
+        self.dispatcher:removePolicies(sec, ptype,rules)
+        return true
     end
 
     if self.adapter and self.autoSave then
@@ -245,6 +321,11 @@ end
 function InternalEnforcer:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
     if fieldValues == nil or #fieldValues == 0 then
         return false
+    end
+
+    if self.dispatcher~=nil and self.autoNotifyDispatcher then
+        self.dispatcher:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
+        return true
     end
 
     if self.adapter and self.autoSave then
