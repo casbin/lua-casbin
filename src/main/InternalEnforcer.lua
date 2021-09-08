@@ -19,6 +19,10 @@ local InternalEnforcer = {}
 setmetatable(InternalEnforcer, CoreEnforcer)
 InternalEnforcer.__index = InternalEnforcer
 
+function InternalEnforcer:shouldPersist()
+    return self.adapter  and self.autoSave
+end
+
 --[[
     * addPolicy adds a rule to the current policy.
 ]]
@@ -32,7 +36,7 @@ function InternalEnforcer:addPolicy(sec, ptype, rule)
         return false
     end
 
-    if self.adapter and self.autoSave then
+    if self:shouldPersist() then
 
         local status, err = pcall(function () self.adapter:addPolicy(sec, ptype, rule) end)
         if status == false and string.sub(err, -15) == "not implemented" then
@@ -74,7 +78,7 @@ function InternalEnforcer:addPolicies(sec, ptype, rules)
         return false
     end
 
-    if self.adapter and self.autoSave then
+    if self:shouldPersist() then
 
         local status, err = pcall(function ()
             if self.adapter.addPolicies then
@@ -120,7 +124,7 @@ function InternalEnforcer:removePolicy(sec, ptype, rule)
         return true
     end
 
-    if self.adapter and self.autoSave then
+    if self:shouldPersist() then
 
         local status, err = pcall(function () self.adapter:removePolicy(sec, ptype, rule) end)
         if status == false and string.sub(err, -15) == "not implemented" then
@@ -167,7 +171,7 @@ function InternalEnforcer:updatePolicy(sec, ptype, oldRule, newRule)
         return true
     end
     
-    if self.adapter and self.autoSave then
+    if self:shouldPersist() then
 
         local status, err = pcall(function () self.adapter:updatePolicy(sec, ptype, oldRule, newRule) end)
         if status == false and string.sub(err, -15) == "not implemented" then
@@ -224,7 +228,7 @@ function InternalEnforcer:updatePolicies(sec, ptype, oldRules, newRules)
         return true
     end
 
-    if self.adapter and self.autoSave then
+    if self:shouldPersist() then
 
         local status, err = pcall(function () self.adapter:updatePolicies(sec, ptype, oldRules, newRules) end)
         if status == false and string.sub(err, -15) == "not implemented" then
@@ -284,7 +288,7 @@ function InternalEnforcer:removePolicies(sec, ptype, rules)
         return true
     end
 
-    if self.adapter and self.autoSave then
+    if self:shouldPersist() then
 
         local status, err = pcall(function ()
             if self.adapter.removePolicies then
@@ -328,7 +332,7 @@ function InternalEnforcer:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValu
         return true
     end
 
-    if self.adapter and self.autoSave then
+    if self:shouldPersist() then
         
         local status, err = pcall(function () self.adapter:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues) end)
         if status == false and string.sub(err, -15) == "not implemented" then
