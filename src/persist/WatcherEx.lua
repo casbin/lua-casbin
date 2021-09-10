@@ -42,4 +42,16 @@ function WatcherEx:updateForSavePolicy(model)
     
 end
 
+-- updateForAddPolicies calls the update callback of other instances to synchronize their policy.
+-- it is called after Enforcer.AddPolicies()
+function WatcherEx:updateForAddPolicies(sec, ptype, rules)
+
+end
+
+-- updateForRemovePolicies calls the update callback of other instances to synchronize their policy.
+-- It is called after Enforcer.RemovePolicies()
+function WatcherEx:updateForRemovePolicies(sec, ptype, rules)
+
+end
+
 return WatcherEx

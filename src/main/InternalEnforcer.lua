@@ -99,7 +99,11 @@ function InternalEnforcer:addPolicies(sec, ptype, rules)
     end
 
     if self.watcher and self.autoNotifyWatcher then
-        self.watcher:update()
+        if self.watcher.updateForAddPolicies then
+            self.watcher:updateForAddPolicies(sec, ptype, rules)
+        else
+            self.watcher:update()
+        end
     end
 
     return true
@@ -313,7 +317,11 @@ function InternalEnforcer:removePolicies(sec, ptype, rules)
     end
 
     if self.watcher and self.autoNotifyWatcher then
-        self.watcher:update()
+        if self.watcher.updateForRemovePolicies then
+            self.watcher:updateForRemovePolicies(sec, ptype, rules)
+        else
+            self.watcher:update()
+        end
     end
 
     return true
