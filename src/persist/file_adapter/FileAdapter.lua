@@ -117,4 +117,8 @@ function FileAdapter:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
     error("not implemented")
 end
 
+function FileAdapter:updateFilteredPolicies(sec, ptype, newRules, fieldIndex, fieldValues)
+    error("not implemented")
+end
+
 return FileAdapter
