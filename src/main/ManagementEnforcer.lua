@@ -152,6 +152,14 @@ function ManagementEnforcer:AddNamedPolicies(ptype, rules)
     return self:addPolicies("p", ptype, rules)
 end
 
+function ManagementEnforcer:UpdateFilteredPolicies(newPolicies, fieldIndex, fieldValues)
+    return self:UpdateFilteredNamedPolicies("p", newPolicies, fieldIndex, fieldValues)
+end
+
+function ManagementEnforcer:UpdateFilteredNamedPolicies(ptype, newPolicies, fieldIndex, fieldValues)
+    return self:updateFilteredPolicies("p", ptype, newPolicies, fieldIndex, fieldValues)
+end
+
 -- RemovePolicy removes an authorization rule from the current policy.
 function ManagementEnforcer:RemovePolicy(...)
     return self:RemoveNamedPolicy("p", ...)

@@ -371,6 +371,50 @@ function InternalEnforcer:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValu
     return true
 end
 
+function InternalEnforcer:updateFilteredPolicies(sec, ptype, newRules, fieldIndex, fieldValues)
+    if fieldValues == nil or #fieldValues == 0 then
+        return false
+    end
+
+    local oldRules = self.model:getFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
+    if self:shouldPersist() then
+
+        local status, err = pcall(function () self.adapter:updateFilteredPolicies(sec, ptype, newRules, fieldIndex, fieldValues) end)
+        if status == false and string.sub(err, -15) == "not implemented" then
+            -- log, continue
+        elseif status == false then
+            return false
+        end
+    end
+
+    if self.dispatcher~=nil and self.autoNotifyDispatcher then
+        self.dispatcher:updateFilteredPolicies(sec, ptype, oldRules, newRules)
+        return true
+    end
+
+    local ruleChanged = self.model:removePolicies(sec, ptype, oldRules)
+    self.model:addPolicies(sec, ptype, newRules)
+    ruleChanged = ruleChanged and #newRules ~= 0
+    if ruleChanged==false then
+        return ruleChanged
+    end
+
+    if sec == "g" then
+        self:buildIncrementalRoleLinks(self.model.PolicyOperations.POLICY_REMOVE, ptype, oldRules)
+        self:buildIncrementalRoleLinks(self.model.PolicyOperations.POLICY_ADD, ptype, newRules)
+    end
+
+    if self.watcher and self.autoNotifyWatcher then
+        if self.watcher.updateForUpdatePolicies then
+            self.watcher:updateForUpdatePolicies(oldRules, newRules)
+        else
+            self.watcher:update()
+        end
+    end
+
+    return true
+end
+
 function InternalEnforcer:getDomainIndex(ptype)
     if not self.model.model["p"] then return end
     if not self.model.model["p"][ptype] then return end
