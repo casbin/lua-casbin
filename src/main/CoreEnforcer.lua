@@ -153,7 +153,11 @@ end
      * and needs to be reloaded by calling LoadPolicy().
 ]]
 function CoreEnforcer:loadModel()
-    
+    self.model = self.model:loadModel(self.modelPath)
+    self.model.logger = self.logger
+    self.model:printModel()
+
+    self:initialize()
 end
 
 --[[
