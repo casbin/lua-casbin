@@ -270,6 +270,19 @@ describe("Enforcer tests", function ()
         assert.is.True(e:enforce(sub, obj, "write"))
     end)
 
+    it("matcher using in operator bracket", function ()
+        local model  = path .. "/examples/rbac_model_matcher_using_in_op_bracket.conf"
+
+        local e = Enforcer:new(model)
+        e:AddPermissionForUser("alice", "data1", "read")
+        assert.is.True(e:enforce("alice", "data1", "read"))
+        assert.is.True(e:enforce("alice", "data2", "read"))
+        assert.is.True(e:enforce("alice", "data3", "read"))
+        assert.is.False(e:enforce("anyone", "data1", "read"))
+        assert.is.True(e:enforce("anyone", "data2", "read"))
+        assert.is.True(e:enforce("anyone", "data3", "read"))
+    end)
+
     it("abac sub_rule test", function ()
         local model  = path .. "/examples/abac_rule_model.conf"
         local policy  = path .. "/examples/abac_rule_policy.csv"
