@@ -86,6 +86,10 @@ function Model:addDef(sec, key, value)
         self.model[sec][key].value = Util.removeComments(Util.escapeAssertion(self.model[sec][key].value))
     end
 
+    if sec == "m" and string.find(self.model[sec][key].value,"in")~=nil then
+        self.model[sec][key].value = string.gsub(string.gsub(self.model[sec][key].value,"%[","("),"%]",")")
+    end
+
     self.modCount = self.modCount + 1
     return true
 end
