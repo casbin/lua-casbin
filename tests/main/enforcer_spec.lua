@@ -257,6 +257,20 @@ describe("Enforcer tests", function ()
         assert.is.True(e:enforce("alice", "domain2", "/book/1", "write"))
     end)
 
+    it("matcher using in operator bracket test", function ()
+        local model  = path .. "/examples/rbac_model_matcher_using_in_op_bracket.conf"
+        local policy  = path .. "/examples/rbac_policy_matcher_using_in_op_bracket.csv"
+
+        local e = Enforcer:new(model,policy)
+
+        assert.is.True(e:enforce("alice", "data1", "read"))
+        assert.is.True(e:enforce("alice", "data2", "read"))
+        assert.is.True(e:enforce("alice", "data3", "read"))
+        assert.is.False(e:enforce("anyone", "data1", "read"))
+        assert.is.True(e:enforce("anyone", "data2", "read"))
+        assert.is.True(e:enforce("anyone", "data3", "read"))
+    end)
+
     it("abac with empty policy test", function ()
         local model  = path .. "/examples/abac_model.conf"
         local policy  = path .. "/examples/empty_policy.csv"
