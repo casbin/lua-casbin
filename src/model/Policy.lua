@@ -120,14 +120,14 @@ function Policy:clearPolicy()
     if self.model["p"] then
         for _, v in pairs(self.model["p"]) do
             v.policy = {}
-            v.policyMap={}
+            v.policyMap = {}
         end
     end
 
     if self.model["g"] then
         for _, v in pairs(self.model["g"]) do
             v.policy = {}
-            v.policyMap={}
+            v.policyMap = {}
         end
     end
 end
@@ -189,7 +189,7 @@ end
     * @return whether the rule exists.
 ]]
 function Policy:hasPolicy(sec, ptype, rule)
-    if self.model[sec][ptype].policyMap[table.concat(rule,",")]==nil then
+    if self.model[sec][ptype].policyMap[table.concat(rule,",")] == nil then
         return false
     else
         return true
@@ -225,21 +225,21 @@ end
 function Policy:addPolicy(sec, ptype, rule)
     if not self:hasPolicy(sec, ptype, rule) then
         table.insert(self.model[sec][ptype].policy, rule)
-        self.model[sec][ptype].policyMap[table.concat(rule,",")]=#self.model[sec][ptype].policy
+        self.model[sec][ptype].policyMap[table.concat(rule,",")] = #self.model[sec][ptype].policy
         if sec == "p" and self.model[sec][ptype].priorityIndex > 0 then
             local idxInsert=tonumber(rule[self.model[sec][ptype].priorityIndex])
             if rule[self.model[sec][ptype].priorityIndex]~= nil then
                 local i = #self.model[sec][ptype].policy-1
-                for j=i, 1, -1 do
+                for j = i, 1, -1 do
                     local idx=tonumber(self.model[sec][ptype].policy[i+1][self.model[sec][ptype].priorityIndex])
                     if idx < idxInsert then
                         self.model[sec][ptype].policy[i+1] = self.model[sec][ptype].policy[i]
-                        self.model[sec][ptype].policyMap[table.concat(self.model[sec][ptype].policy[i+1], ",")]=i+1
+                        self.model[sec][ptype].policyMap[table.concat(self.model[sec][ptype].policy[i+1], ",")] = i+1
                     else
-                        i=j
+                        i = j
                         break
                     end
-                    i=j
+                    i = j
                 end
                 self.model[sec][ptype].policy[i] = rule
                 self.model[sec][ptype].policyMap[table.concat(rule,",")] = i
@@ -258,7 +258,7 @@ end
     * @return succeeds or not.
 ]]
 function Policy:addPolicies(sec, ptype, rules)
-    return self:addPoliciesWithAffected(sec, ptype, rules)~=0
+    return self:addPoliciesWithAffected(sec, ptype, rules) ~= 0
 end
 
 --[[
@@ -269,7 +269,7 @@ end
     * @return effected.
 ]]
 function Policy:addPoliciesWithAffected(sec, ptype, rules)
-    local effected={}
+    local effected = {}
     for _, rule in pairs(rules) do
         if self:addPolicy(sec, ptype, rule) then
             table.insert(effected, rule)
@@ -292,22 +292,45 @@ function Policy:updatePolicy(sec, ptype, oldRule, newRule)
     if not self:hasPolicy(sec, ptype, oldRule) then return false end
     local key = table.concat(oldRule,",")
     local index = self.model[sec][ptype].policyMap[key]
-    self.model[sec][ptype].policy[index]=newRule
-    self.model[sec][ptype].policyMap[key]=nil
-    local tempKey=table.concat(newRule,",")
-    self.model[sec][ptype].policyMap[tempKey]=index
+    self.model[sec][ptype].policy[index] = newRule
+    self.model[sec][ptype].policyMap[key] = nil
+    local tempKey = table.concat(newRule,",")
+    self.model[sec][ptype].policyMap[tempKey] = index
     return true
 end
 
 -- Updates multiple policy rules from the model.
 function Policy:updatePolicies(sec, ptype, oldRules, newRules)
-    for _, rule in pairs(oldRules) do
-        if not self:hasPolicy(sec, ptype, rule) then
-            return false
+    local rollbackFlag = false
+    local modifiedRuleIndex = {}
+
+    local newIndex = 1
+    for oldIndex, oldRule in pairs(oldRules) do
+        local oldPolicy = table.concat(oldRule, ",")
+        if self.model[sec][ptype].policyMap[oldPolicy] == nil then
+            rollbackFlag = true
+            break
         end
+        local index = self.model[sec][ptype].policyMap[oldPolicy]
+
+        self.model[sec][ptype].policy[index] = newRules[newIndex]
+        self.model[sec][ptype].policyMap[oldPolicy] = nil
+        self.model[sec][ptype].policyMap[table.concat(newRules[newIndex], ",")] = index
+        modifiedRuleIndex[index] = {oldIndex, newIndex}
+        newIndex = newIndex+1
     end
 
-    return self:removePolicies(sec, ptype, oldRules) and self:addPolicies(sec, ptype, newRules)
+    if rollbackFlag then
+        for index, oldNewIndex in pairs(modifiedRuleIndex)  do
+            self.model[sec][ptype].policy[index] = oldRules[oldNewIndex[1]]
+            local oldPolicy = table.concat(oldRules[oldNewIndex[1]], ",")
+            local newPolicy = table.concat(newRules[oldNewIndex[2]], ",")
+            self.model[sec][ptype].policyMap[newPolicy] = nil
+            self.model[sec][ptype].policyMap[oldPolicy] = index
+        end
+        return false
+    end
+    return true
 end
 
 --[[
@@ -323,11 +346,11 @@ function Policy:removePolicy(sec, ptype, rule)
         local key = table.concat(rule,",")
         local index = self.model[sec][ptype].policyMap[key]
         table.remove(self.model[sec][ptype].policy, index)
-        self.model[sec][ptype].policyMap[key]=nil
+        self.model[sec][ptype].policyMap[key] = nil
         local length = #self.model[sec][ptype].policy
         for i=index, length, 1 do
-            local tempKey=table.concat(self.model[sec][ptype].policy[i],",")
-            self.model[sec][ptype].policyMap[tempKey]=i
+            local tempKey = table.concat(self.model[sec][ptype].policy[i],",")
+            self.model[sec][ptype].policyMap[tempKey] = i
         end
         return true
     end
@@ -342,7 +365,7 @@ end
     * @return succeeds or not.
 ]]
 function Policy:removePolicies(sec, ptype, rules)
-    return #self:removePoliciesWithEffected(sec, ptype, rules)~=0
+    return #self:removePoliciesWithEffected(sec, ptype, rules) ~= 0
 end
 
 --[[
@@ -381,7 +404,7 @@ function Policy:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
 
     if not self.model[sec] then return res end
     if not self.model[sec][ptype] then return res end
-    self.model[sec][ptype].policyMap={}
+    self.model[sec][ptype].policyMap = {}
     for _, rule in pairs(self.model[sec][ptype].policy) do
         local matched = true
         for i, value in pairs(fieldValues) do
@@ -396,11 +419,11 @@ function Policy:removeFilteredPolicy(sec, ptype, fieldIndex, fieldValues)
             res = true
         else
             table.insert(tmp, rule)
-            local tempKey=table.concat(rule,",")
-            self.model[sec][ptype].policyMap[tempKey]=#tmp
+            local tempKey = table.concat(rule,",")
+            self.model[sec][ptype].policyMap[tempKey] = #tmp
         end
     end
-    if #tmp~=#self.model[sec][ptype].policy then
+    if #tmp ~= #self.model[sec][ptype].policy then
         self.model[sec][ptype].policy = tmp
     end
     return res, effects
