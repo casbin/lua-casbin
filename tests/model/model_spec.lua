@@ -257,6 +257,33 @@ describe("model tests", function()
         assert.is.False(res)
     end)
 
+    it("test updateFilteredPolicies", function ()
+        local m = Model:new()
+        m:loadModel(rbac_with_domains_path)
+
+        local rules = {
+            {'admin', 'domain1', 'data1', 'read'},
+            {'admin1', 'domain1', 'data1', 'read'},
+            {'admin', 'domain2', 'data3', 'read'}
+        }
+        m:addPolicies("p", "p", rules)
+
+        local newRules = {
+            {'admin', 'domain1', 'data1', 'write'},
+            {'admin1', 'domain1', 'data1', 'write'},
+        }
+
+        m:updateFilteredPolicies("p", "p", 1, {"domain1", "data1"},newRules)
+        local resRules = {
+            {'admin', 'domain1', 'data1', 'write'},
+            {'admin1', 'domain1', 'data1', 'write'},
+            {'admin', 'domain2', 'data3', 'read'}
+        }
+
+        assert.are.same(resRules, m:getPolicy("p","p"))
+
+    end)
+
     it("test getFilteredPolicy", function ()
         local m = Model:new()
         m:loadModel(rbac_with_domains_path)

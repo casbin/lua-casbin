@@ -333,6 +333,44 @@ function Policy:updatePolicies(sec, ptype, oldRules, newRules)
     return true
 end
 
+function Policy:updateFilteredPolicies(sec, ptype, fieldIndex, fieldValues,newRules)
+    local tmp = {}
+    local res = false
+    local effects = {}
+    local newRulesIndex=1
+
+    if not self.model[sec] then return res end
+    if not self.model[sec][ptype] then return res end
+    self.model[sec][ptype].policyMap = {}
+    for _, rule in pairs(self.model[sec][ptype].policy) do
+        local matched = true
+        for i, value in pairs(fieldValues) do
+            if value ~= "" and rule[fieldIndex+i] ~= value then
+                matched = false
+                break
+            end
+        end
+
+        if matched then
+            table.insert(effects, rule)
+            table.insert(tmp, newRules[newRulesIndex])
+            local tempKey1 = table.concat(newRules[newRulesIndex],",")
+            self.model[sec][ptype].policyMap[tempKey1] = #tmp
+            newRulesIndex = newRulesIndex+1
+            res = true
+        else
+            table.insert(tmp, rule)
+            local tempKey = table.concat(rule,",")
+            self.model[sec][ptype].policyMap[tempKey] = #tmp
+        end
+    end
+
+    if res then
+        self.model[sec][ptype].policy = tmp
+    end
+    return res, effects
+end
+
 --[[
     * removePolicy removes a policy rule from the model.
     *
