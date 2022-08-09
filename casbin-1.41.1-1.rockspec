@@ -1,8 +1,8 @@
 package = "casbin"
-version = "1.16.1-1"
+version = "1.41.1-1"
 source = {
-   url = "git://github.com/casbin/lua-casbin",
-   tag = "v1.16.1"
+   url = "https://github.com/casbin/lua-casbin/archive/v1.41.1.tar.gz",
+   dir = "lua-casbin-1.41.1"
 }
 description = {
    summary = "An authorization library that supports access control models like ACL, RBAC, ABAC in Lua (OpenResty)",
