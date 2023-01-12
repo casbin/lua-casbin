@@ -79,7 +79,7 @@ function CoreEnforcer:newEnforcerFromText(modelText, policyText)
     end)
 
     o.model:sortPoliciesByPriority()
-    o.model:printPolicy()
+    -- o.model:printPolicy()
 
     if o.autoBuildRoleLinks then
         o:buildRoleLinks()
