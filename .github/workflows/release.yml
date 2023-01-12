@@ -15,7 +15,6 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Run semantic-release
-        # if: github.repository == 'casbin/lua-casbin' && github.event_name == 'push'
         run: |
           export PATH="$(yarn global bin):$PATH"
           yarn global add semantic-release@19.0.5
