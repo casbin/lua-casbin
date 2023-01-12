@@ -14,17 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
       - name: Run semantic-release
         # if: github.repository == 'casbin/lua-casbin' && github.event_name == 'push'
         run: |
           export PATH="$(yarn global bin):$PATH"
-          node -v
-          yarn global add semantic-release
+          yarn global add semantic-release@19.0.5
           semantic-release
           sleep 10
         env:
