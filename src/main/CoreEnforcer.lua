@@ -74,12 +74,12 @@ function CoreEnforcer:newEnforcerFromText(modelText, policyText)
     o:initialize()
 
     o.model:clearPolicy()
+ 
 	string.gsub(policyText, "[^\r\n]+", function(line)
         o.adapter.loadPolicyLine(Util.trim(line), o.model)
     end)
 
     o.model:sortPoliciesByPriority()
-    o.model:printPolicy()
 
     if o.autoBuildRoleLinks then
         o:buildRoleLinks()
