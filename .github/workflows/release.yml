@@ -23,6 +23,7 @@ jobs:
         # if: github.repository == 'casbin/lua-casbin' && github.event_name == 'push'
         run: |
           export PATH="$(yarn global bin):$PATH"
+          node -v
           yarn global add semantic-release
           semantic-release
           sleep 10
