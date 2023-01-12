@@ -20,7 +20,7 @@ jobs:
           node-version: 18
 
       - name: Run semantic-release
-        if: github.repository == 'casbin/lua-casbin' && github.event_name == 'push'
+        # if: github.repository == 'casbin/lua-casbin' && github.event_name == 'push'
         run: |
           export PATH="$(yarn global bin):$PATH"
           yarn global add semantic-release
