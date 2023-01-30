@@ -16,7 +16,7 @@ dependencies = {
    "lua >= 5.1",
    "lualogging >= 1.5.1",
    "lrexlib-pcre >= 2.9.1",
-   "luaposix >= 35.0"
+   "luaposix = 35.1-1"
 }
 build = {
    type = "builtin",
