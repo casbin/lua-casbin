@@ -1,6 +1,6 @@
 package = "casbin"
 source = {
-   url = "git://github.com/casbin/lua-casbin",
+   url = "https://github.com/casbin/lua-casbin",
 }
 description = {
    summary = "An authorization library that supports access control models like ACL, RBAC, ABAC in Lua (OpenResty)",
