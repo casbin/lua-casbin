@@ -135,7 +135,7 @@ What Casbin does NOT do:
 
 ## Documentation
 
-https://casbin.org/docs/en/overview
+https://casbin.org/docs/overview
 
 ## Online editor
 
@@ -143,16 +143,16 @@ You can also use the online editor (https://casbin.org/editor/) to write your Ca
 
 ## Tutorials
 
-https://casbin.org/docs/en/tutorials
+https://casbin.org/docs/tutorials
 
 ## Policy management
 
 Casbin provides two sets of APIs to manage permissions:
 
-- [Management API](https://casbin.org/docs/en/management-api): the primitive API that provides full support for Casbin policy management.
-- [RBAC API](https://casbin.org/docs/en/rbac-api): a more friendly API for RBAC. This API is a subset of Management API. The RBAC users could use this API to simplify the code.
+- [Management API](https://casbin.org/docs/management-api): the primitive API that provides full support for Casbin policy management.
+- [RBAC API](https://casbin.org/docs/rbac-api): a more friendly API for RBAC. This API is a subset of Management API. The RBAC users could use this API to simplify the code.
 
-We also provide a [web-based UI](https://casbin.org/docs/en/admin-portal) for model management and policy management:
+We also provide a [web-based UI](https://casbin.org/docs/admin-portal) for model management and policy management:
 
 ![model editor](https://hsluoyz.github.io/casbin/ui_model_editor.png)
 
@@ -160,15 +160,15 @@ We also provide a [web-based UI](https://casbin.org/docs/en/admin-portal) for mo
 
 ## Policy persistence
 
-https://casbin.org/docs/en/adapters
+https://casbin.org/docs/adapters
 
 ## Policy consistence between multiple nodes
 
-https://casbin.org/docs/en/watchers
+https://casbin.org/docs/watchers
 
 ## Role manager
 
-https://casbin.org/docs/en/role-managers
+https://casbin.org/docs/role-managers
 
 ## Examples
 
@@ -188,11 +188,11 @@ Priority | [priority_model.conf](https://github.com/casbin/casbin/blob/master/ex
 
 ## Middlewares
 
-Authz middlewares for web frameworks: https://casbin.org/docs/en/middlewares
+Authz middlewares for web frameworks: https://casbin.org/docs/middlewares
 
 ## Our adopters
 
-https://casbin.org/docs/en/adopters
+https://casbin.org/docs/adopters
 
 ## How to Contribute
 
