@@ -252,4 +252,66 @@ function Util.printTable(t)
     return s
 end
 
+function Util.splitCSVLine(line, sep, trimFields)
+    local result = {}
+    local i = 1
+    local inQuotes = false
+    local quoteChar = nil
+    local escaping = false
+    local field = ""
+    
+    if sep == nil then sep = ',' end
+    if trimFields == nil then trimFields = true end
+  
+    -- Loop over the characters of the line
+    while i <= #line do
+        local char = line:sub(i, i)
+        
+        -- Check if we found the escape character and are not inside single quotes
+        if char == '\\' and quoteChar ~= '\'' then
+            -- The next character will be escaped (added directly to the token)
+            escaping = true
+        else
+            if escaping then
+                field = field .. char
+                escaping = false
+            else
+            -- Check if we are already inside quotes
+            if inQuotes then
+                -- Check if we can close quoted text
+                if char == quoteChar then 
+                    inQuotes = false
+                    quoteChar = nil
+                else
+                    field = field .. char
+                end
+            else -- not in quotes
+                if char == '"' or char == '\'' then
+                    inQuotes = true
+                    quoteChar = char
+                elseif char == ',' then
+                    if trimFields then
+                        field = Util.trim(field)
+                end
+        
+                table.insert(result, field)
+                field = ""
+                else
+                    field = field .. char
+                end
+            end
+            end
+        end
+        i = i + 1
+    end
+  
+    -- Add the last field (since it won't have the delimiter after it)
+    if trimFields then
+        field = Util.trim(field)
+    end
+    table.insert(result, field)
+  
+    return result
+end
+
 return Util
