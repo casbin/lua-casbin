@@ -289,7 +289,7 @@ function Util.splitCSVLine(line, sep, trimFields)
                 if char == '"' or char == '\'' then
                     inQuotes = true
                     quoteChar = char
-                elseif char == ',' then
+                elseif char == sep then
                     if trimFields then
                         field = Util.trim(field)
                 end
