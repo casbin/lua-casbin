@@ -252,64 +252,71 @@ function Util.printTable(t)
     return s
 end
 
-function Util.splitEnhanced(line, sep, trimFields, allowEscapes, allowLiterals)
+function Util.isOnlyWhitespaces(str)
+    return str:match("^%s*$") ~= nil
+end
+
+function Util.splitEnhanced(line, sep, trimFields)
     local result = {}
     local i = 1
-    local inQuotes = false
-    local quotesChar = nil
+    local quotedField
     local escaping = false
     local field = ""
     
     if sep == nil then sep = ',' end
     if trimFields == nil then trimFields = true end
-    if allowEscapes == nil then allowEscapes = false end
-    if allowLiterals == nil then allowLiterals = false end
   
     -- Loop over the characters of the line
     while i <= #line do
         local char = line:sub(i, i)
-        
-        -- Check if we found the escape character and are not inside single quotes
-        if allowEscapes and char == '\\' and (allowLiterals and quotesChar ~= '\'') then
-            -- The next character will be escaped (added directly to the token)
-            escaping = true
-        else
-            if escaping then
-                field = field .. char
-                escaping = false
-            else
-            -- Check if we are already inside quotes
-            if inQuotes then
-                -- Check if we can close quoted text
-                if char == quotesChar then 
-                    inQuotes = false
-                    quotesChar = nil
-                else
-                    field = field .. char
+
+        -- Check if it's the first character and it's a double quote.
+        if Util.isOnlyWhitespaces(field) and char == '"' then
+            -- Then this field is a quoted field
+            quotedField = true
+        else -- Not first character or not "
+            if quotedField then
+                if escaping then
+                    if char == sep then
+                        if trimFields then
+                            field = Util.trim(field)
+                        end
+    
+                        table.insert(result, field)
+                        field = ""
+                        quotedField = false
+                    else
+                        field = field .. char
+                        escaping = false
+                    end
+                else -- Not escaping
+                    if char == '"' then
+                        escaping = true
+                    else
+                        field = field .. char
+                    end
                 end
-            else -- not in quotes
-                if char == '"' or (allowLiterals and char == '\'') then
-                    inQuotes = true
-                    quotesChar = char
-                elseif char == sep then
+
+            else -- Not quotedField
+                if char == sep then
                     if trimFields then
                         field = Util.trim(field)
-                end
-        
-                table.insert(result, field)
-                field = ""
+                    end
+
+                    table.insert(result, field)
+                    field = ""
                 else
                     field = field .. char
                 end
             end
-            end
         end
+
         i = i + 1
     end
 
     -- Throw error if there are quotes left open
-    if inQuotes then
-        error("Unmatched quotes: " .. quotesChar)
+    if quotedField then
+        error("Unmatched quotes.")
     end
   
     -- Add the last field (since it won't have the delimiter after it)
