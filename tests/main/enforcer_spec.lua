@@ -515,4 +515,28 @@ describe("Enforcer tests", function ()
         assert.is.True(e:enforce("bob", "data2", "write"))
         assert.is.False(e:enforce("bogus", "data2", "write")) -- Non-existent subject
     end)
+
+    
+    it("regexMatch test", function ()
+
+        local model  = path .. "/examples/basic_model_with_regex.conf"
+        local policy  = path .. "/examples/basic_policy_with_regex.csv"
+        local e = Enforcer:new(model, policy)
+
+        assert.is.True(e:enforce("admin", "/", "PUT"))
+        assert.is.True(e:enforce("admin", "/admin", "GET"))
+        assert.is.True(e:enforce("admin", "/admin/anything", "POST"))
+        assert.is.False(e:enforce("admin123", "/admin", "PUT"))
+
+        assert.is.True(e:enforce("user", "/users/alice", "GET"))
+        assert.is.True(e:enforce("user", "/users/alice", "PUT"))
+        assert.is.True(e:enforce("user123", "/users/alice", "PUT"))
+        assert.is.False(e:enforce("user", "/users/", "PUT"))
+        assert.is.False(e:enforce("user", "/users/123", "PUT"))
+        assert.is.False(e:enforce("user", "/users/alice123456789", "PUT"))
+        assert.is.False(e:enforce("user", "/admin", "PUT"))
+
+        assert.is.True(e:enforce("guest", "/guest/test", "GET"))
+        assert.is.False(e:enforce("guest", "/guest/test", "PUT"))
+    end)
 end)
