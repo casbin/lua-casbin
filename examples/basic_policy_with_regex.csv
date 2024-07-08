@@ -1,0 +1,3 @@
+p, ^admin$, .*, .*
+p, ^user.*, "^/users/[a-zA-Z0-9]{4-10}$", PUT|POST|PATCH|GET|OPTIONS
+p, ^guest$, ^/guest/.*, GET|OPTIONS
