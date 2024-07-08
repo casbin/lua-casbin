@@ -252,23 +252,25 @@ function Util.printTable(t)
     return s
 end
 
-function Util.splitCSVLine(line, sep, trimFields)
+function Util.splitEnhanced(line, sep, trimFields, allowEscapes, allowLiterals)
     local result = {}
     local i = 1
     local inQuotes = false
-    local quoteChar = nil
+    local quotesChar = nil
     local escaping = false
     local field = ""
     
     if sep == nil then sep = ',' end
     if trimFields == nil then trimFields = true end
+    if allowEscapes == nil then allowEscapes = false end
+    if allowLiterals == nil then allowLiterals = false end
   
     -- Loop over the characters of the line
     while i <= #line do
         local char = line:sub(i, i)
         
         -- Check if we found the escape character and are not inside single quotes
-        if char == '\\' and quoteChar ~= '\'' then
+        if allowEscapes and char == '\\' and (allowLiterals and quotesChar ~= '\'') then
             -- The next character will be escaped (added directly to the token)
             escaping = true
         else
@@ -279,16 +281,16 @@ function Util.splitCSVLine(line, sep, trimFields)
             -- Check if we are already inside quotes
             if inQuotes then
                 -- Check if we can close quoted text
-                if char == quoteChar then 
+                if char == quotesChar then 
                     inQuotes = false
-                    quoteChar = nil
+                    quotesChar = nil
                 else
                     field = field .. char
                 end
             else -- not in quotes
-                if char == '"' or char == '\'' then
+                if char == '"' or (allowLiterals and char == '\'') then
                     inQuotes = true
-                    quoteChar = char
+                    quotesChar = char
                 elseif char == sep then
                     if trimFields then
                         field = Util.trim(field)
@@ -303,6 +305,11 @@ function Util.splitCSVLine(line, sep, trimFields)
             end
         end
         i = i + 1
+    end
+
+    -- Throw error if there are quotes left open
+    if inQuotes then
+        error("Unmatched quotes: " .. quotesChar)
     end
   
     -- Add the last field (since it won't have the delimiter after it)
