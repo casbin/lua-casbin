@@ -274,9 +274,10 @@ function Util.splitEnhanced(line, sep, trimFields)
         if Util.isOnlyWhitespaces(field) and char == '"' then
             -- Then this field is a quoted field
             quotedField = true
-        else -- Not first character or not "
+        else
             if quotedField then
                 if escaping then
+                    -- ", End of quoted field
                     if char == sep then
                         if trimFields then
                             field = Util.trim(field)
@@ -285,9 +286,13 @@ function Util.splitEnhanced(line, sep, trimFields)
                         table.insert(result, field)
                         field = ""
                         quotedField = false
-                    else
+                    -- "" Escapes the double quote character
+                    elseif char == '"' then
                         field = field .. char
                         escaping = false
+                    -- " followed by some other character (not allowed)
+                    else
+                        error("Quoted fields cannot have extra characters outside double quotes.")
                     end
                 else -- Not escaping
                     if char == '"' then
@@ -315,7 +320,7 @@ function Util.splitEnhanced(line, sep, trimFields)
     end
 
     -- Throw error if there are quotes left open
-    if quotedField then
+    if quotedField and not escaping then
         error("Unmatched quotes.")
     end
   
