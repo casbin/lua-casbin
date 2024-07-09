@@ -256,14 +256,14 @@ function Util.isOnlyWhitespaces(str)
     return str:match("^%s*$") ~= nil
 end
 
-function Util.splitEnhanced(line, sep, trimFields)
+function Util.splitEnhanced(line, delim, trimFields)
     local result = {}
     local i = 1
     local quotedField
     local escaping = false
     local field = ""
-    
-    if sep == nil then sep = ',' end
+
+    if delim == nil then delim = ',' end
     if trimFields == nil then trimFields = true end
   
     -- Loop over the characters of the line
@@ -278,7 +278,7 @@ function Util.splitEnhanced(line, sep, trimFields)
             if quotedField then
                 if escaping then
                     -- ", End of quoted field
-                    if char == sep then
+                    if char == delim then
                         if trimFields then
                             field = Util.trim(field)
                         end
@@ -303,7 +303,7 @@ function Util.splitEnhanced(line, sep, trimFields)
                 end
 
             else -- Not quotedField
-                if char == sep then
+                if char == delim then
                     if trimFields then
                         field = Util.trim(field)
                     end
