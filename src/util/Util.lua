@@ -256,7 +256,7 @@ function Util.isOnlyWhitespaces(str)
     return str:match("^%s*$") ~= nil
 end
 
-function Util.splitEnhanced(line, delim, trimFields)
+function Util.splitEnhanced(str, delim, trimFields)
     local result = {}
     local i = 1
     local quotedField
@@ -266,9 +266,9 @@ function Util.splitEnhanced(line, delim, trimFields)
     if delim == nil then delim = ',' end
     if trimFields == nil then trimFields = true end
   
-    -- Loop over the characters of the line
-    while i <= #line do
-        local char = line:sub(i, i)
+    -- Loop over the characters of the string
+    while i <= #str do
+        local char = str:sub(i, i)
 
         -- Check if it's the first character and it's a double quote.
         if Util.isOnlyWhitespaces(field) and char == '"' then
