@@ -28,7 +28,7 @@ function Adapter.loadPolicyLine(line, model)
         return
     end
 
-    local tokens = Util.split(line, ",")
+    local tokens = Util.splitEnhanced(line, ',', true)
     local key = tokens[1]
     local sec = key:sub(1, 1)
 

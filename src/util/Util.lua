@@ -252,4 +252,85 @@ function Util.printTable(t)
     return s
 end
 
+function Util.isOnlyWhitespaces(str)
+    return str:match("^%s*$") ~= nil
+end
+
+function Util.splitEnhanced(str, delim, trimFields)
+    local result = {}
+    local i = 1
+    local quotedField
+    local escaping = false
+    local field = ""
+
+    if delim == nil then delim = ',' end
+    if trimFields == nil then trimFields = true end
+  
+    -- Loop over the characters of the string
+    while i <= #str do
+        local char = str:sub(i, i)
+
+        -- Check if it's the first character and it's a double quote.
+        if Util.isOnlyWhitespaces(field) and char == '"' then
+            -- Then this field is a quoted field
+            quotedField = true
+        else
+            if quotedField then
+                if escaping then
+                    -- ", End of quoted field
+                    if char == delim then
+                        if trimFields then
+                            field = Util.trim(field)
+                        end
+    
+                        table.insert(result, field)
+                        field = ""
+                        quotedField = false
+                    -- "" Escapes the double quote character
+                    elseif char == '"' then
+                        field = field .. char
+                        escaping = false
+                    -- " followed by some other character (not allowed)
+                    else
+                        error("Quoted fields cannot have extra characters outside double quotes.")
+                    end
+                else -- Not escaping
+                    if char == '"' then
+                        escaping = true
+                    else
+                        field = field .. char
+                    end
+                end
+
+            else -- Not quotedField
+                if char == delim then
+                    if trimFields then
+                        field = Util.trim(field)
+                    end
+
+                    table.insert(result, field)
+                    field = ""
+                else
+                    field = field .. char
+                end
+            end
+        end
+
+        i = i + 1
+    end
+
+    -- Throw error if there are quotes left open
+    if quotedField and not escaping then
+        error("Unmatched quotes.")
+    end
+  
+    -- Add the last field (since it won't have the delimiter after it)
+    if trimFields then
+        field = Util.trim(field)
+    end
+    table.insert(result, field)
+  
+    return result
+end
+
 return Util

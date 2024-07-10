@@ -84,6 +84,35 @@ describe("util tests", function()
         assert.are.same({"a", "b", "c"}, Util.split("  a,     b   ,c     ", ","))
     end)
 
+    it("test isOnlyWhitespaces", function()
+        assert.is.True(Util.isOnlyWhitespaces("     "))
+        assert.is.True(Util.isOnlyWhitespaces(""))
+        assert.is.True(Util.isOnlyWhitespaces("\t\t"))
+        assert.is.False(Util.isOnlyWhitespaces("  abc"))
+        assert.is.False(Util.isOnlyWhitespaces("abc\t"))
+        assert.is.False(Util.isOnlyWhitespaces("\""))
+    end)
+    
+    it("test splitEnhanced", function()
+        assert.are.same({"a", "b", "c"}, Util.splitEnhanced("a ,b ,c", ",", true))
+        assert.are.same({"a", "b", "c"}, Util.splitEnhanced("a,b,c", ",", true))
+        assert.are.same({"a", "b", "c"}, Util.splitEnhanced("a, b, c", ",", true))
+        assert.are.same({"a", "b", "c"}, Util.splitEnhanced("  a,     b   ,c     ", ",", true))
+
+        assert.are.same({"a", " b", " c"}, Util.splitEnhanced('a, b, c', ",", false))
+        assert.are.same({"a", "b", "c"}, Util.splitEnhanced('a,b,c', ",", false))
+        assert.are.same({"    a", "b", "c"}, Util.splitEnhanced('    a,b,c', ",", false))
+        assert.are.same({"a, b", "c"}, Util.splitEnhanced('"a, b", c', ",", true))
+        assert.are.same({"a,   b", "c"}, Util.splitEnhanced('"   a,   b", c', ",", true))
+        assert.are.same({"a == \"b\"", "c"}, Util.splitEnhanced('a == "b", c', ",", true))
+        assert.are.same({"a == \"b\"", "c"}, Util.splitEnhanced('"a == ""b"" ", c', ",", true))
+        assert.are.same({"a", "b, c"}, Util.splitEnhanced('a, "b, c"', ",", true))
+
+        assert.has_error(function () Util.splitEnhanced('a, "b, c"   ', ",", true) end, "Quoted fields cannot have extra characters outside double quotes.")
+        assert.has_error(function () Util.splitEnhanced('"a, b" hello, c', ",", true) end, "Quoted fields cannot have extra characters outside double quotes.")
+        assert.has_error(function () Util.splitEnhanced('a, b, "c  ') end, "Unmatched quotes.")
+    end)
+
     it("test isInstance", function()
         local parent = {}
         parent.__index = parent
