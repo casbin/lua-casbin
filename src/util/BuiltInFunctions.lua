@@ -28,12 +28,6 @@ function BuiltInFunctions.validateVariadicArgs(expectedLen, args)
     end
 end
 
--- Wrapper for keyMatch
-function BuiltInFunctions.keyMatchFunc(args)
-    BuiltInFunctions.validateVariadicArgs(2, args)
-    return BuiltInFunctions.keyMatch(args[1], args[2])
-end
-
 -- KeyMatch determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
 -- For example, "/foo/bar" matches "/foo/*"
 function BuiltInFunctions.keyMatch(key1, key2)
@@ -49,10 +43,10 @@ function BuiltInFunctions.keyMatch(key1, key2)
     return (key1 == string.sub(key2, 1, i-1))
 end
 
--- Wrapper for keyGet
-function BuiltInFunctions.keyGetFunc(args)
+-- Wrapper for keyMatch
+function BuiltInFunctions.keyMatchFunc(args)
     BuiltInFunctions.validateVariadicArgs(2, args)
-    return BuiltInFunctions.keyGet(args[1], args[2])
+    return BuiltInFunctions.keyMatch(args[1], args[2])
 end
 
 -- KeyGet returns the matched part
@@ -72,10 +66,10 @@ function BuiltInFunctions.keyGet(key1, key2)
     return ""
 end
 
--- Wrapper for keyMatch2
-function BuiltInFunctions.keyMatch2Func(args)
+-- Wrapper for keyGet
+function BuiltInFunctions.keyGetFunc(args)
     BuiltInFunctions.validateVariadicArgs(2, args)
-    return BuiltInFunctions.keyMatch2(args[1], args[2])
+    return BuiltInFunctions.keyGet(args[1], args[2])
 end
 
 -- KeyMatch2 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
@@ -85,6 +79,12 @@ function BuiltInFunctions.keyMatch2(key1, key2)
     if key2 == "*" then key2 = ".*" end
     local key = rex.gsub(key2, ":[^/]+", "[^/]+")
 	return BuiltInFunctions.regexMatch(key1, "^"..key.."$")
+end
+
+-- Wrapper for keyMatch2
+function BuiltInFunctions.keyMatch2Func(args)
+    BuiltInFunctions.validateVariadicArgs(2, args)
+    return BuiltInFunctions.keyMatch2(args[1], args[2])
 end
 
 -- KeyGet2 returns value matched pattern
@@ -117,12 +117,6 @@ function BuiltInFunctions.keyGet2Func(args)
     return BuiltInFunctions.keyGet2(args[1], args[2],args[3])
 end
 
--- Wrapper for keyMatch3
-function BuiltInFunctions.keyMatch3Func(args)
-    BuiltInFunctions.validateVariadicArgs(2, args)
-    return BuiltInFunctions.keyMatch3(args[1], args[2])
-end
-
 -- KeyMatch3 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
 -- For example, "/foo/bar" matches "/foo/*", "/resource1" matches "/{resource}"
 function BuiltInFunctions.keyMatch3(key1, key2)
@@ -131,10 +125,10 @@ function BuiltInFunctions.keyMatch3(key1, key2)
 	return BuiltInFunctions.regexMatch(key1, "^"..key.."$")
 end
 
--- Wrapper for keyMatch4
-function BuiltInFunctions.keyMatch4Func(args)
+-- Wrapper for keyMatch3
+function BuiltInFunctions.keyMatch3Func(args)
     BuiltInFunctions.validateVariadicArgs(2, args)
-    return BuiltInFunctions.keyMatch4(args[1], args[2])
+    return BuiltInFunctions.keyMatch3(args[1], args[2])
 end
 
 -- KeyMatch4 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *.
@@ -170,10 +164,34 @@ function BuiltInFunctions.keyMatch4(key1, key2)
     return true
 end
 
--- Wrapper for regexMatch
-function BuiltInFunctions.regexMatchFunc(args)
+-- Wrapper for keyMatch4
+function BuiltInFunctions.keyMatch4Func(args)
     BuiltInFunctions.validateVariadicArgs(2, args)
-    return BuiltInFunctions.regexMatch(args[1], args[2])
+    return BuiltInFunctions.keyMatch4(args[1], args[2])
+end
+
+-- KeyMatch5 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *
+-- For example,
+-- - "/foo/bar?status=1&type=2" matches "/foo/bar"
+-- - "/parent/child1" and "/parent/child1" matches "/parent/*"
+-- - "/parent/child1?status=1" matches "/parent/*"
+function BuiltInFunctions.keyMatch5(key1, key2)
+    local i = string.find(key1, "?", 1, true)
+
+    if i then
+        key1 = string.sub(key1, 1, i - 1)
+    end
+
+    key2 = string.gsub(key2, "/%*", "/.*")
+    key2 = string.gsub(key2, "%{[^/]+%}", "[^/]+")
+
+    return string.match(key1, "^" .. key2 .. "$") ~= nil
+end
+
+-- Wrapper for keyMatch5
+function BuiltInFunctions.keyMatch5Func(args)
+    BuiltInFunctions.validateVariadicArgs(2, args)
+    return BuiltInFunctions.keyMatch5(args[1], args[2])
 end
 
 -- RegexMatch determines whether key1 matches the pattern of key2 in regular expression.
@@ -184,6 +202,12 @@ function BuiltInFunctions.regexMatch(key1, key2)
     else
         return false
     end
+end
+
+-- Wrapper for regexMatch
+function BuiltInFunctions.regexMatchFunc(args)
+    BuiltInFunctions.validateVariadicArgs(2, args)
+    return BuiltInFunctions.regexMatch(args[1], args[2])
 end
 
 -- IPMatch determines whether IP address ip1 matches the pattern of IP address ip2, ip2 can be an IP address or a CIDR pattern.
@@ -232,12 +256,6 @@ function BuiltInFunctions.IPMatchFunc(args)
     return BuiltInFunctions.IPMatch(args[1], args[2])
 end
 
--- Wrapper for globMatch
-function BuiltInFunctions.globMatchFunc(args)
-    BuiltInFunctions.validateVariadicArgs(2, args)
-    return BuiltInFunctions.globMatch(args[1], args[2])
-end
-
 -- GlobMatch determines whether key1 matches the pattern of key2 using glob pattern
 function BuiltInFunctions.globMatch(key1, key2)
     if posix.fnmatch(key2, key1, posix.FNM_PATHNAME or posix.FNM_PERIOD) == 0 then
@@ -247,28 +265,10 @@ function BuiltInFunctions.globMatch(key1, key2)
     end
 end
 
--- Wrapper for keyMatch5
-function BuiltInFunctions.keyMatch5Func(args)
+-- Wrapper for globMatch
+function BuiltInFunctions.globMatchFunc(args)
     BuiltInFunctions.validateVariadicArgs(2, args)
-    return BuiltInFunctions.keyMatch5(args[1], args[2])
-end
-
--- KeyMatch5 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *
--- For example,
--- - "/foo/bar?status=1&type=2" matches "/foo/bar"
--- - "/parent/child1" and "/parent/child1" matches "/parent/*"
--- - "/parent/child1?status=1" matches "/parent/*"
-function BuiltInFunctions.keyMatch5(key1, key2)
-    local i = string.find(key1, "?", 1, true)
-
-    if i then
-        key1 = string.sub(key1, 1, i - 1)
-    end
-
-    key2 = string.gsub(key2, "/%*", "/.*")
-    key2 = string.gsub(key2, "%{[^/]+%}", "[^/]+")
-
-    return string.match(key1, "^" .. key2 .. "$") ~= nil
+    return BuiltInFunctions.globMatch(args[1], args[2])
 end
 
 -- GenerateGFunction is the factory method of the g(_, _) function.

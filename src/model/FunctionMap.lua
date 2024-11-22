@@ -21,10 +21,10 @@ local FunctionMap = {
     ["keyGet2"] = BuiltInFunctions.keyGet2Func,
     ["keyMatch3"] = BuiltInFunctions.keyMatch3Func,
     ["keyMatch4"] = BuiltInFunctions.keyMatch4Func,
+    ["keyMatch5"] = BuiltInFunctions.keyMatch4Func,
     ["regexMatch"] = BuiltInFunctions.regexMatchFunc,
     ["IPMatch"] = BuiltInFunctions.IPMatchFunc,
     ["globMatch"] = BuiltInFunctions.globMatch,
-    ["keyMatch5"] = BuiltInFunctions.keyMatch4Func,
 }
 
 -- FunctionMap provides a set of built in functions
