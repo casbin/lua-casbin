@@ -19,7 +19,7 @@ local BuiltInFunctions = {}
 
 function BuiltInFunctions.validateVariadicArgs(expectedLen, args)
     if #args ~= expectedLen then
-        return error("Expected"..expectedLen.." arguments, but got "..#args)
+        return error("Expected "..expectedLen.." arguments, but got "..#args)
     end
     for i=1,expectedLen do
         if type(args[i])~="string" then
@@ -245,6 +245,30 @@ function BuiltInFunctions.globMatch(key1, key2)
     else
         return false
     end
+end
+
+-- Wrapper for keyMatch5
+function BuiltInFunctions.keyMatch5Func(args)
+    BuiltInFunctions.validateVariadicArgs(2, args)
+    return BuiltInFunctions.keyMatch5(args[1], args[2])
+end
+
+-- KeyMatch5 determines whether key1 matches the pattern of key2 (similar to RESTful path), key2 can contain a *
+-- For example,
+-- - "/foo/bar?status=1&type=2" matches "/foo/bar"
+-- - "/parent/child1" and "/parent/child1" matches "/parent/*"
+-- - "/parent/child1?status=1" matches "/parent/*"
+function BuiltInFunctions.keyMatch5(key1, key2)
+    local i = string.find(key1, "?", 1, true)
+
+    if i then
+        key1 = string.sub(key1, 1, i - 1)
+    end
+
+    key2 = string.gsub(key2, "/%*", "/.*")
+    key2 = string.gsub(key2, "%{[^/]+%}", "[^/]+")
+
+    return string.match(key1, "^" .. key2 .. "$") ~= nil
 end
 
 -- GenerateGFunction is the factory method of the g(_, _) function.
