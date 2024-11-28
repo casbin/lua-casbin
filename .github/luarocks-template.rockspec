@@ -15,7 +15,7 @@ description = {
 dependencies = {
    "lua >= 5.1",
    "lualogging >= 1.5.1",
-   "lrexlib-pcre >= 2.9.1",
+   "lrexlib-pcre2 >= 2.9.2",
    "luaposix = 35.1-1"
 }
 build = {

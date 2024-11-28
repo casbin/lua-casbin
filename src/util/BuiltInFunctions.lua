@@ -12,7 +12,7 @@
 --See the License for the specific language governing permissions and
 --limitations under the License.
 
-local rex = require ("rex_pcre")
+local rex = require ("rex_pcre2")
 local posix = require("posix.fnmatch")
 
 local BuiltInFunctions = {}
